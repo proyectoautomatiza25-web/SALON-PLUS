@@ -470,9 +470,10 @@ const styles = {
     timelineText: { fontSize: '0.95rem', lineHeight: '1.6', marginBottom: '5px' },
     timelineDoctor: { fontSize: '0.75rem', color: '#94a3b8', fontStyle: 'italic' },
 
-    modalOverlay: { position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 10000 },
-    modal: { width: '600px', padding: '30px' },
-    cancelBtn: { width: '100%', background: 'white', border: '1px solid #e2e8f0', padding: '12px', borderRadius: '8px', cursor: 'pointer', fontWeight: '600' }
+    modalOverlay: { position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(0,0,0,0.7)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 99999, backdropFilter: 'blur(5px)' },
+    modal: { width: '600px', padding: '30px', background: 'white', borderRadius: '24px', boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)', border: '1px solid #e2e8f0', position: 'relative' },
+    cancelBtn: { width: '100%', background: 'white', border: '1px solid #e2e8f0', padding: '12px', borderRadius: '8px', cursor: 'pointer', fontWeight: '600', color: '#64748b', transition: '0.2s' },
+    textarea: { width: '100%', minHeight: '150px', border: '1px solid #cbd5e1', borderRadius: '12px', background: '#f8fafc', outline: 'none', fontSize: '1rem', marginBottom: '20px', fontFamily: 'inherit', resize: 'vertical', padding: '15px', color: '#1e293b', boxShadow: 'inset 0 2px 4px rgba(0,0,0,0.02)' }
 };
 
 export default PatientFile;
