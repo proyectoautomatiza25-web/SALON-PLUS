@@ -236,6 +236,15 @@ export const useSaaSStore = () => {
         setConfig(prev => ({ ...prev, ...newConfig }));
     };
 
+    const addNotification = useCallback((notification) => {
+        setNotifications(prev => [{
+            id: Date.now(),
+            date: new Date().toISOString(),
+            status: 'sent',
+            ...notification
+        }, ...prev]);
+    }, []);
+
     return {
         professionals,
         patients,
@@ -248,6 +257,7 @@ export const useSaaSStore = () => {
         updateProfessional,
         deleteProfessional,
         getStats,
-        updateConfig
+        updateConfig,
+        addNotification
     };
 };

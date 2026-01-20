@@ -5,6 +5,7 @@ const TopNav = ({ currentTab, setTab }) => {
         { id: 'agenda', label: 'Agenda', icon: '🗓️' },
         { id: 'clients', label: 'Pacientes', icon: '👥' },
         { id: 'professionals', label: 'Profesionales', icon: '👨‍⚕️' },
+        // { id: 'notifications', label: 'Notificaciones', icon: '🔔' },
         { id: 'crm', label: 'CRM', icon: '❤️' },
         { id: 'finanzas', label: 'Finanzas', icon: '💰' },
         { id: 'stats', label: 'Estadísticas', icon: '📊' },

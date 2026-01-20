@@ -7,6 +7,7 @@ import TopNav from './components/TopNav';
 import IntegrationsConfig from './IntegrationsConfig';
 import CRM from './CRM';
 import ProfessionalsManagement from './ProfessionalsManagement';
+import NotificationCenter from './NotificationCenter';
 import { useSaaSStore } from './store';
 
 const StatsView = ({ stats }) => (
@@ -49,7 +50,8 @@ const SaaSApp = ({ onLogout }) => {
         addProfessional,
         updateProfessional,
         getStats,
-        updateConfig
+        updateConfig,
+        addNotification
     } = useSaaSStore();
 
     const handleOpenPatient = (patient) => {
@@ -85,6 +87,7 @@ const SaaSApp = ({ onLogout }) => {
                         patient={selectedPatientForFile}
                         onBack={() => setCurrentTab('clients')}
                         onSaveNote={updatePatientHistory}
+                        onAddNotification={addNotification}
                     />
                 )}
 
@@ -95,6 +98,10 @@ const SaaSApp = ({ onLogout }) => {
                         onAddProfessional={addProfessional}
                         onUpdateProfessional={updateProfessional}
                     />
+                )}
+
+                {currentTab === 'notifications' && (
+                    <NotificationCenter notifications={notifications} />
                 )}
 
                 {currentTab === 'finanzas' && (

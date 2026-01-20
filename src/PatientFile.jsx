@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
+import { generatePrescription, generateCertificate } from './services/pdfService';
 
-const PatientFile = ({ patient, onBack, onSaveNote }) => {
+const PatientFile = ({ patient, onBack, onSaveNote, onAddNotification }) => {
     const [newNote, setNewNote] = useState('');
     const [isAIProcessing, setIsAIProcessing] = useState(false);
     const [activeTab, setActiveTab] = useState('evolution');
     const [showPrescriptionModal, setShowPrescriptionModal] = useState(false);
+    const [showCertificateModal, setShowCertificateModal] = useState(false);
 
     const handleAISummarize = () => {
         if (!newNote) return;
@@ -95,7 +97,15 @@ const PatientFile = ({ patient, onBack, onSaveNote }) => {
                                         e.target.style.background = 'white';
                                         e.target.style.color = 'var(--primary)';
                                     }}
-                                    onClick={() => alert(`🚀 Enviando recordatorio inteligente a ${patient.name} vía WhatsApp...`)}
+                                    onClick={() => {
+                                        onAddNotification({
+                                            type: 'whatsapp',
+                                            to: patient.phone,
+                                            message: `Hola ${patient.name}, te extrañamos en Centro Médico Del Valle. Tu salud es prioridad. Agenda tu chequeo anual aquí: [Link]`,
+                                            status: 'sent'
+                                        });
+                                        alert(`🚀 Invitación enviada a ${patient.name} y registrada en el Centro de Notificaciones.`);
+                                    }}
                                 >
                                     ✨ Enviar Invitación Automática
                                 </button>
@@ -150,6 +160,13 @@ const PatientFile = ({ patient, onBack, onSaveNote }) => {
                             onClick={() => setShowPrescriptionModal(true)}
                         >
                             📝 Generar Receta
+                        </button>
+                        <button
+                            className="btn-primary"
+                            style={{ width: '100%', background: '#8b5cf6', marginBottom: '10px' }}
+                            onClick={() => setShowCertificateModal(true)}
+                        >
+                            📑 Generar Certificado
                         </button>
                         <button className="btn-primary" style={{ width: '100%', background: '#10b981', marginBottom: '10px' }}>
                             📧 Enviar Resultados
@@ -311,21 +328,91 @@ const PatientFile = ({ patient, onBack, onSaveNote }) => {
                                 placeholder="Medicamento, dosis, frecuencia..."
                                 rows="6"
                             />
-                            <div style={{ display: 'flex', gap: '10px', marginTop: '20px' }}>
-                                <button className="btn-primary" style={{ flex: 1 }}>
-                                    📧 Generar y Enviar por Email
-                                </button>
-                                <button className="btn-primary" style={{ flex: 1, background: '#10b981' }}>
-                                    💬 Enviar por WhatsApp
-                                </button>
-                            </div>
+                        </div>
+                        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '10px', marginTop: '20px' }}>
                             <button
-                                style={{ ...styles.cancelBtn, marginTop: '10px' }}
-                                onClick={() => setShowPrescriptionModal(false)}
+                                className="btn-primary"
+                                style={{ flex: '1 1 45%', background: '#64748b' }}
+                                onClick={() => {
+                                    // Mock Professional Data (In a real app, this comes from the logged-in user context)
+                                    const currentProfessional = {
+                                        name: "Dra. Nataly Malaspina",
+                                        specialty: "Medicina General",
+                                        rut: "16.123.456-7"
+                                    };
+                                    const prescriptionText = document.querySelector('textarea[placeholder="Medicamento, dosis, frecuencia..."]').value;
+                                    if (!prescriptionText) return alert("Escribe el contenido de la receta");
+
+                                    generatePrescription(patient, currentProfessional, prescriptionText);
+                                }}
                             >
-                                Cancelar
+                                📄 Descargar PDF Oficial
+                            </button>
+                            <button className="btn-primary" style={{ flex: '1 1 45%' }}>
+                                📧 Generar y Enviar por Email
+                            </button>
+                            <button className="btn-primary" style={{ flex: '1 1 100%', background: '#10b981' }}>
+                                💬 Enviar por WhatsApp
                             </button>
                         </div>
+                        <button
+                            style={{ ...styles.cancelBtn, marginTop: '10px' }}
+                            onClick={() => setShowPrescriptionModal(false)}
+                        >
+                            Cancelar
+                        </button>
+                    </div>
+                </div>
+            )}
+
+            {/* Certificate Modal */}
+            {showCertificateModal && (
+                <div style={styles.modalOverlay} onClick={() => setShowCertificateModal(false)}>
+                    <div className="bento-card" style={styles.modal} onClick={e => e.stopPropagation()}>
+                        <h2>Emitir Certificado Médico</h2>
+                        <div style={{ marginTop: '20px' }}>
+                            <label style={{ display: 'block', marginBottom: '10px', fontWeight: 'bold' }}>Diagnóstico / Motivo:</label>
+                            <textarea
+                                id="certDetails"
+                                style={styles.textarea}
+                                placeholder="Ej: Cuadro viral agudo, requiere reposo..."
+                                rows="4"
+                            />
+                            <label style={{ display: 'block', marginBottom: '10px', marginTop: '10px', fontWeight: 'bold' }}>Días de Reposo (0 para Alta):</label>
+                            <input
+                                id="certDays"
+                                type="number"
+                                style={{ ...styles.textarea, minHeight: 'auto', marginBottom: '20px' }}
+                                placeholder="0"
+                            />
+                        </div>
+                        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '10px', marginTop: '20px' }}>
+                            <button
+                                className="btn-primary"
+                                style={{ flex: '1 1 100%', background: '#64748b' }}
+                                onClick={() => {
+                                    const currentProfessional = {
+                                        name: "Dra. Nataly Malaspina",
+                                        specialty: "Medicina General",
+                                        rut: "16.123.456-7"
+                                    };
+                                    const details = document.getElementById('certDetails').value;
+                                    const days = document.getElementById('certDays').value;
+
+                                    if (!details) return alert("Escribe el motivo del certificado");
+
+                                    generateCertificate(patient, currentProfessional, details, days);
+                                }}
+                            >
+                                📄 Descargar PDF Oficial
+                            </button>
+                        </div>
+                        <button
+                            style={{ ...styles.cancelBtn, marginTop: '10px' }}
+                            onClick={() => setShowCertificateModal(false)}
+                        >
+                            Cancelar
+                        </button>
                     </div>
                 </div>
             )}
