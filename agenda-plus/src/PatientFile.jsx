@@ -14,7 +14,16 @@ const PatientFile = ({ patient, onClose }) => {
 
     // Form states
     const [showNewEntry, setShowNewEntry] = useState(false);
-    const [newEntry, setNewEntry] = useState({ reason: '', observation: '', weight: '', bloodPressure: '' });
+    const [newEntry, setNewEntry] = useState({
+        reason: '',
+        anamnesis: '',
+        physicalExam: '',
+        indications: '',
+        weight: '',
+        bloodPressure: '',
+        height: '',
+        imc: ''
+    });
 
     const [showNewReceta, setShowNewReceta] = useState(false);
     const [newReceta, setNewReceta] = useState({ items: [{ medication: '', instruction: '' }] });
@@ -82,368 +91,444 @@ const PatientFile = ({ patient, onClose }) => {
             doctor: 'Dra. Nataly Malaspina',
             specialty: 'Medicina General'
         });
-        setNewEntry({ reason: '', observation: '', weight: '', bloodPressure: '' });
-        setShowNewEntry(false);
-    };
+    });
+    setNewEntry({
+        reason: '',
+        anamnesis: '',
+        physicalExam: '',
+        indications: '',
+        weight: '',
+        bloodPressure: '',
+        height: '',
+        imc: ''
+    });
+    setShowNewEntry(false);
+};
 
-    const handleAddReceta = () => {
-        addReceta(patient.id, {
-            ...newReceta,
-            doctor: 'Dra. Nataly Malaspina'
-        });
-        setNewReceta({ items: [{ medication: '', instruction: '' }] });
-        setShowNewReceta(false);
-    };
+const handleAddReceta = () => {
+    addReceta(patient.id, {
+        ...newReceta,
+        doctor: 'Dra. Nataly Malaspina'
+    });
+    setNewReceta({ items: [{ medication: '', instruction: '' }] });
+    setShowNewReceta(false);
+};
 
-    const tabs = [
-        { id: 'summary', label: 'Resumen', icon: User },
-        { id: 'clinical', label: 'Ficha Médica', icon: Clipboard },
-        { id: 'recetas', label: 'Recetas', icon: Pill },
-        { id: 'files', label: 'Exámenes y Archivos', icon: Paperclip },
-        { id: 'billing', label: 'Cuentas y Pagos', icon: CreditCard }
-    ];
+const tabs = [
+    { id: 'summary', label: 'Resumen', icon: User },
+    { id: 'clinical', label: 'Ficha Médica', icon: Clipboard },
+    { id: 'recetas', label: 'Recetas', icon: Pill },
+    { id: 'files', label: 'Exámenes y Archivos', icon: Paperclip },
+    { id: 'billing', label: 'Cuentas y Pagos', icon: CreditCard }
+];
 
-    return (
-        <div style={styles.overlay}>
-            <div style={styles.modal} className="glass-panel animate-slide">
-                {/* Modal Header */}
-                <header style={styles.header}>
-                    <div style={styles.patientInfo}>
-                        <div style={styles.bigAvatar}>{patient.name.charAt(0)}</div>
-                        <div>
-                            <h2 style={styles.patientName}>{patient.name}</h2>
-                            <p style={styles.patientSub}>{patient.rut} • {patient.prevision} • {patient.category}</p>
+return (
+    <div style={styles.overlay}>
+        <div style={styles.modal} className="glass-panel animate-slide">
+            {/* Modal Header */}
+            <header style={styles.header}>
+                <div style={styles.patientInfo}>
+                    <div style={styles.bigAvatar}>{patient.name.charAt(0)}</div>
+                    <div>
+                        <h2 style={styles.patientName}>{patient.name}</h2>
+                        <p style={styles.patientSub}>{patient.rut} • {patient.prevision} • {patient.category}</p>
+                    </div>
+                </div>
+                <div style={{ display: 'flex', gap: '10px' }}>
+                    <button
+                        onClick={() => sendWhatsApp(`Hola ${patient.name}, te saludamos del Centro Médico Del Valle. Queríamos recordarte tu orden médica...`)}
+                        title="Enviar WhatsApp"
+                        style={{ ...styles.iconBtn, color: '#25D366', borderColor: '#25D366' }}
+                    >
+                        <MessageCircle size={20} />
+                    </button>
+                    <button onClick={onClose} style={styles.closeBtn}>✕</button>
+                </div>
+            </header>
+
+            {/* Tabs Navigation */}
+            <nav style={styles.tabNav}>
+                {tabs.map(tab => (
+                    <button
+                        key={tab.id}
+                        onClick={() => setActiveTab(tab.id)}
+                        style={{
+                            ...styles.tab,
+                            color: activeTab === tab.id ? 'var(--primary)' : '#94a3b8',
+                            borderBottom: activeTab === tab.id ? '2px solid var(--primary)' : 'none'
+                        }}
+                    >
+                        <tab.icon size={18} />
+                        <span>{tab.label}</span>
+                    </button>
+                ))}
+            </nav>
+
+            {/* Content Area */}
+            <div style={styles.content}>
+
+                {/* SUMMARY TAB */}
+                {activeTab === 'summary' && (
+                    <div style={styles.summaryGrid}>
+                        <div className="bento-card" style={styles.infoCard}>
+                            <h3 style={styles.cardTitle}>Datos del Paciente</h3>
+                            <div style={styles.infoRow}><span>Email:</span> <strong>{patient.email}</strong></div>
+                            <div style={styles.infoRow}><span>Teléfono:</span> <strong>{patient.phone}</strong></div>
+                            <div style={styles.infoRow}><span>F. Nacimiento:</span> <strong>{patient.birthDate}</strong></div>
+                            <div style={styles.infoRow}><span>Dirección:</span> <strong>{patient.address}</strong></div>
+                            <div style={styles.infoRow}><span>Grupo Sanguíneo:</span> <strong>{patient.bloodType}</strong></div>
+                        </div>
+
+                        <div className="bento-card" style={{ ...styles.infoCard, borderLeft: '4px solid #ef4444' }}>
+                            <h3 style={styles.cardTitle}>⚠️ Alergias y Contraindicaciones</h3>
+                            <ul style={styles.list}>
+                                {patient.allergies.map((a, i) => <li key={i}>{a}</li>)}
+                                {patient.allergies.length === 0 && <li>Ninguna registrada</li>}
+                            </ul>
+                        </div>
+
+                        <div className="bento-card" style={{ ...styles.infoCard, borderLeft: '4px solid #3b82f6' }}>
+                            <h3 style={styles.cardTitle}>💊 Medicación Actual</h3>
+                            <ul style={styles.list}>
+                                {patient.medications.map((m, i) => <li key={i}>{m}</li>)}
+                                {patient.medications.length === 0 && <li>Ninguna registrada</li>}
+                            </ul>
                         </div>
                     </div>
-                    <div style={{ display: 'flex', gap: '10px' }}>
-                        <button
-                            onClick={() => sendWhatsApp(`Hola ${patient.name}, te saludamos del Centro Médico Del Valle. Queríamos recordarte tu orden médica...`)}
-                            title="Enviar WhatsApp"
-                            style={{ ...styles.iconBtn, color: '#25D366', borderColor: '#25D366' }}
-                        >
-                            <MessageCircle size={20} />
-                        </button>
-                        <button onClick={onClose} style={styles.closeBtn}>✕</button>
-                    </div>
-                </header>
+                )}
 
-                {/* Tabs Navigation */}
-                <nav style={styles.tabNav}>
-                    {tabs.map(tab => (
-                        <button
-                            key={tab.id}
-                            onClick={() => setActiveTab(tab.id)}
-                            style={{
-                                ...styles.tab,
-                                color: activeTab === tab.id ? 'var(--primary)' : '#94a3b8',
-                                borderBottom: activeTab === tab.id ? '2px solid var(--primary)' : 'none'
-                            }}
-                        >
-                            <tab.icon size={18} />
-                            <span>{tab.label}</span>
-                        </button>
-                    ))}
-                </nav>
-
-                {/* Content Area */}
-                <div style={styles.content}>
-
-                    {/* SUMMARY TAB */}
-                    {activeTab === 'summary' && (
-                        <div style={styles.summaryGrid}>
-                            <div className="bento-card" style={styles.infoCard}>
-                                <h3 style={styles.cardTitle}>Datos del Paciente</h3>
-                                <div style={styles.infoRow}><span>Email:</span> <strong>{patient.email}</strong></div>
-                                <div style={styles.infoRow}><span>Teléfono:</span> <strong>{patient.phone}</strong></div>
-                                <div style={styles.infoRow}><span>F. Nacimiento:</span> <strong>{patient.birthDate}</strong></div>
-                                <div style={styles.infoRow}><span>Dirección:</span> <strong>{patient.address}</strong></div>
-                                <div style={styles.infoRow}><span>Grupo Sanguíneo:</span> <strong>{patient.bloodType}</strong></div>
-                            </div>
-
-                            <div className="bento-card" style={{ ...styles.infoCard, borderLeft: '4px solid #ef4444' }}>
-                                <h3 style={styles.cardTitle}>⚠️ Alergias y Contraindicaciones</h3>
-                                <ul style={styles.list}>
-                                    {patient.allergies.map((a, i) => <li key={i}>{a}</li>)}
-                                    {patient.allergies.length === 0 && <li>Ninguna registrada</li>}
-                                </ul>
-                            </div>
-
-                            <div className="bento-card" style={{ ...styles.infoCard, borderLeft: '4px solid #3b82f6' }}>
-                                <h3 style={styles.cardTitle}>💊 Medicación Actual</h3>
-                                <ul style={styles.list}>
-                                    {patient.medications.map((m, i) => <li key={i}>{m}</li>)}
-                                    {patient.medications.length === 0 && <li>Ninguna registrada</li>}
-                                </ul>
-                            </div>
+                {/* CLINICAL HISTORY TAB */}
+                {activeTab === 'clinical' && (
+                    <div style={styles.historyContainer}>
+                        <div style={styles.historyAction}>
+                            <button className="btn-primary" onClick={() => setShowNewEntry(!showNewEntry)}>
+                                <Plus size={18} />
+                                <span>{showNewEntry ? 'Cancelar Atención' : 'Realizar Nueva Atención'}</span>
+                            </button>
                         </div>
-                    )}
 
-                    {/* CLINICAL HISTORY TAB */}
-                    {activeTab === 'clinical' && (
-                        <div style={styles.historyContainer}>
-                            <div style={styles.historyAction}>
-                                <button className="btn-primary" onClick={() => setShowNewEntry(!showNewEntry)}>
-                                    <Plus size={18} />
-                                    <span>{showNewEntry ? 'Cancelar Atención' : 'Realizar Nueva Atención'}</span>
+                        {showNewEntry && (
+                            <div className="bento-card" style={styles.entryForm}>
+                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
+                                    <h3 style={{ margin: 0 }}>Nueva Evolución Médica</h3>
+                                    <div style={styles.tag}>Atención Profesional</div>
+                                </div>
+
+                                <div style={styles.formGrid}>
+                                    <div style={styles.inputGroup}>
+                                        <label>Motivo de Consulta</label>
+                                        <input
+                                            type="text"
+                                            value={newEntry.reason}
+                                            onChange={e => setNewEntry({ ...newEntry, reason: e.target.value })}
+                                            placeholder="Ej: Control mensual, Otitis recurrente..."
+                                        />
+                                    </div>
+
+                                    <div style={{ ...styles.sectionHeader, marginTop: '10px' }}>
+                                        <MessageCircle size={16} color="var(--primary)" />
+                                        <strong>Anamnesis</strong>
+                                    </div>
+                                    <textarea
+                                        rows={3}
+                                        style={styles.textArea}
+                                        value={newEntry.anamnesis}
+                                        onChange={e => setNewEntry({ ...newEntry, anamnesis: e.target.value })}
+                                        placeholder="Antecedentes, síntomas actuales..."
+                                    />
+
+                                    <div style={styles.sectionHeader}>
+                                        <Clipboard size={16} color="var(--primary)" />
+                                        <strong>Examen físico</strong>
+                                    </div>
+                                    <div style={styles.vitalsFormGrid}>
+                                        <div style={styles.inputGroup}>
+                                            <label>Peso (kg)</label>
+                                            <input type="text" placeholder="32" value={newEntry.weight} onChange={e => setNewEntry({ ...newEntry, weight: e.target.value })} />
+                                        </div>
+                                        <div style={styles.inputGroup}>
+                                            <label>Talla (cm)</label>
+                                            <input type="text" placeholder="130.8" value={newEntry.height} onChange={e => setNewEntry({ ...newEntry, height: e.target.value })} />
+                                        </div>
+                                        <div style={styles.inputGroup}>
+                                            <label>IMC</label>
+                                            <input type="text" placeholder="18.7" value={newEntry.imc} onChange={e => setNewEntry({ ...newEntry, imc: e.target.value })} />
+                                        </div>
+                                        <div style={styles.inputGroup}>
+                                            <label>P.A.</label>
+                                            <input type="text" placeholder="120/80" value={newEntry.bloodPressure} onChange={e => setNewEntry({ ...newEntry, bloodPressure: e.target.value })} />
+                                        </div>
+                                    </div>
+                                    <textarea
+                                        rows={2}
+                                        style={styles.textArea}
+                                        value={newEntry.physicalExam}
+                                        onChange={e => setNewEntry({ ...newEntry, physicalExam: e.target.value })}
+                                        placeholder="Detalles del examen físico (ej: cerumen impacado...)"
+                                    />
+
+                                    <div style={styles.sectionHeader}>
+                                        <Pill size={16} color="var(--primary)" />
+                                        <strong>Indicaciones</strong>
+                                    </div>
+                                    <textarea
+                                        rows={3}
+                                        style={styles.textArea}
+                                        value={newEntry.indications}
+                                        onChange={e => setNewEntry({ ...newEntry, indications: e.target.value })}
+                                        placeholder="Tratamiento, medicamentos, reposo..."
+                                    />
+                                </div>
+
+                                <button className="btn-primary" onClick={handleAddEntry} style={{ marginTop: '15px', alignSelf: 'flex-end' }}>
+                                    <Save size={18} />
+                                    <span>Guardar en Ficha Permanente</span>
                                 </button>
                             </div>
+                        )}
 
-                            {showNewEntry && (
-                                <div className="bento-card" style={styles.entryForm}>
-                                    <h3>Evolución Médica (SOAP)</h3>
-                                    <div style={styles.formGrid}>
-                                        <div style={styles.inputGroup}>
-                                            <label>Motivo de Consulta</label>
-                                            <input
-                                                type="text"
-                                                value={newEntry.reason}
-                                                onChange={e => setNewEntry({ ...newEntry, reason: e.target.value })}
-                                                placeholder="Ej: Control mensual"
-                                            />
+                        <div style={styles.timeline}>
+                            {patient.history.map((entry, i) => (
+                                <div key={entry.id} style={styles.timelineEntry}>
+                                    <div style={styles.timelineDot} />
+                                    <div className="bento-card" style={styles.timelineCard}>
+                                        <div style={styles.entryHeader}>
+                                            <span><strong>{new Date(entry.date).toLocaleDateString()}</strong> - {entry.doctor}</span>
+                                            <span style={styles.tag}>{entry.specialty}</span>
                                         </div>
-                                        <div style={styles.row}>
-                                            <div style={styles.inputGroup}>
-                                                <label>Peso (kg)</label>
-                                                <input type="text" placeholder="70" value={newEntry.weight} onChange={e => setNewEntry({ ...newEntry, weight: e.target.value })} />
-                                            </div>
-                                            <div style={styles.inputGroup}>
-                                                <label>Presión Art.</label>
-                                                <input type="text" placeholder="120/80" value={newEntry.bloodPressure} onChange={e => setNewEntry({ ...newEntry, bloodPressure: e.target.value })} />
-                                            </div>
-                                        </div>
-                                        <div style={styles.inputGroup}>
-                                            <label>Observaciones / Diagnóstico</label>
-                                            <textarea
-                                                rows={4}
-                                                value={newEntry.observation}
-                                                onChange={e => setNewEntry({ ...newEntry, observation: e.target.value })}
-                                                placeholder="Descripción detallada de la atención..."
-                                            />
-                                        </div>
-                                    </div>
-                                    <button className="btn-primary" onClick={handleAddEntry} style={{ marginTop: '15px' }}>
-                                        <Save size={18} />
-                                        <span>Guardar en Ficha</span>
-                                    </button>
-                                </div>
-                            )}
+                                        <h4 style={{ color: 'var(--primary)', marginBottom: '15px' }}>Motivo: {entry.reason}</h4>
 
-                            <div style={styles.timeline}>
-                                {patient.history.map((entry, i) => (
-                                    <div key={entry.id} style={styles.timelineEntry}>
-                                        <div style={styles.timelineDot} />
-                                        <div className="bento-card" style={styles.timelineCard}>
-                                            <div style={styles.entryHeader}>
-                                                <span><strong>{new Date(entry.date).toLocaleDateString()}</strong> - {entry.doctor}</span>
-                                                <span style={styles.tag}>{entry.specialty}</span>
+                                        {entry.anamnesis && (
+                                            <div style={styles.entrySection}>
+                                                <div style={styles.sectionSubHeader}><MessageCircle size={14} /> Anamnesis</div>
+                                                <div style={styles.sectionContent}>{entry.anamnesis}</div>
                                             </div>
-                                            <h4>Motivo: {entry.reason}</h4>
-                                            <p>{entry.observation}</p>
-                                            {(entry.weight || entry.bloodPressure) && (
-                                                <div style={styles.vitals}>
-                                                    {entry.weight && <span>Peso: {entry.weight}</span>}
-                                                    {entry.bloodPressure && <span>P.A: {entry.bloodPressure}</span>}
+                                        )}
+
+                                        {(entry.physicalExam || entry.weight || entry.height) && (
+                                            <div style={styles.entrySection}>
+                                                <div style={styles.sectionSubHeader}><Clipboard size={14} /> Examen físico</div>
+                                                <div style={styles.sectionContent}>
+                                                    <div style={styles.vitalsRow}>
+                                                        {entry.weight && <span><strong>Peso:</strong> {entry.weight}</span>}
+                                                        {entry.height && <span><strong>Talla:</strong> {entry.height}</span>}
+                                                        {entry.imc && <span><strong>IMC:</strong> {entry.imc}</span>}
+                                                        {entry.bloodPressure && <span><strong>P.A:</strong> {entry.bloodPressure}</span>}
+                                                    </div>
+                                                    {entry.physicalExam && <div style={{ marginTop: '5px' }}>{entry.physicalExam}</div>}
                                                 </div>
-                                            )}
-                                        </div>
+                                            </div>
+                                        )}
+
+                                        {entry.indications && (
+                                            <div style={styles.entrySection}>
+                                                <div style={styles.sectionSubHeader}><Pill size={14} /> Indicaciones</div>
+                                                <div style={styles.sectionContent}>{entry.indications}</div>
+                                            </div>
+                                        )}
+
+                                        {entry.observation && !entry.anamnesis && (
+                                            <p style={{ marginTop: '10px' }}>{entry.observation}</p>
+                                        )}
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                )}
+
+                {/* RECETAS TAB */}
+                {activeTab === 'recetas' && (
+                    <div style={styles.recetasContainer}>
+                        <button className="btn-primary" onClick={() => setShowNewReceta(!showNewReceta)} style={{ marginBottom: '20px' }}>
+                            <Plus size={18} />
+                            <span>{showNewReceta ? 'Ocultar' : 'Emitir Nueva Receta'}</span>
+                        </button>
+
+                        {showNewReceta && (
+                            <div className="bento-card" style={styles.entryForm}>
+                                <h3>Generador de Recetas</h3>
+                                {newReceta.items.map((item, i) => (
+                                    <div key={i} style={styles.recetaItem}>
+                                        <input
+                                            placeholder="Medicamento (Ej: Amoxicilina 500mg)"
+                                            style={{ flex: 1 }}
+                                            value={item.medication}
+                                            onChange={e => {
+                                                const newItems = [...newReceta.items];
+                                                newItems[i].medication = e.target.value;
+                                                setNewReceta({ ...newReceta, items: newItems });
+                                            }}
+                                        />
+                                        <input
+                                            placeholder="Instrucción (Ej: 1 cada 8h)"
+                                            style={{ flex: 1 }}
+                                            value={item.instruction}
+                                            onChange={e => {
+                                                const newItems = [...newReceta.items];
+                                                newItems[i].instruction = e.target.value;
+                                                setNewReceta({ ...newReceta, items: newItems });
+                                            }}
+                                        />
                                     </div>
                                 ))}
+                                <button className="btn-primary" onClick={handleAddReceta} style={{ marginTop: '15px' }}>Emite Receta Digital</button>
                             </div>
-                        </div>
-                    )}
+                        )}
 
-                    {/* RECETAS TAB */}
-                    {activeTab === 'recetas' && (
-                        <div style={styles.recetasContainer}>
-                            <button className="btn-primary" onClick={() => setShowNewReceta(!showNewReceta)} style={{ marginBottom: '20px' }}>
-                                <Plus size={18} />
-                                <span>{showNewReceta ? 'Ocultar' : 'Emitir Nueva Receta'}</span>
-                            </button>
-
-                            {showNewReceta && (
-                                <div className="bento-card" style={styles.entryForm}>
-                                    <h3>Generador de Recetas</h3>
-                                    {newReceta.items.map((item, i) => (
-                                        <div key={i} style={styles.recetaItem}>
-                                            <input
-                                                placeholder="Medicamento (Ej: Amoxicilina 500mg)"
-                                                style={{ flex: 1 }}
-                                                value={item.medication}
-                                                onChange={e => {
-                                                    const newItems = [...newReceta.items];
-                                                    newItems[i].medication = e.target.value;
-                                                    setNewReceta({ ...newReceta, items: newItems });
-                                                }}
-                                            />
-                                            <input
-                                                placeholder="Instrucción (Ej: 1 cada 8h)"
-                                                style={{ flex: 1 }}
-                                                value={item.instruction}
-                                                onChange={e => {
-                                                    const newItems = [...newReceta.items];
-                                                    newItems[i].instruction = e.target.value;
-                                                    setNewReceta({ ...newReceta, items: newItems });
-                                                }}
-                                            />
+                        <div style={styles.recetasList}>
+                            {patient.recetas.map(r => (
+                                <div key={r.id} className="bento-card" style={styles.recetaCard}>
+                                    <div style={styles.entryHeader}>
+                                        <strong>Receta - {new Date(r.date).toLocaleDateString()}</strong>
+                                        <div style={{ display: 'flex', gap: '10px' }}>
+                                            <button onClick={() => downloadRecetaPDF(r)} style={styles.iconBtn} title="Descargar PDF">
+                                                <Printer size={14} />
+                                            </button>
+                                            <button style={styles.iconBtn}><ExternalLink size={14} /></button>
+                                        </div>
+                                    </div>
+                                    {r.items.map((item, i) => (
+                                        <div key={i} style={{ marginBottom: '10px', fontSize: '0.9rem' }}>
+                                            <strong>{item.medication}</strong>: {item.instruction}
                                         </div>
                                     ))}
-                                    <button className="btn-primary" onClick={handleAddReceta} style={{ marginTop: '15px' }}>Emite Receta Digital</button>
+                                    <p style={{ fontSize: '0.75rem', color: '#94a3b8', marginTop: '10px' }}>Médico: {r.doctor}</p>
                                 </div>
-                            )}
-
-                            <div style={styles.recetasList}>
-                                {patient.recetas.map(r => (
-                                    <div key={r.id} className="bento-card" style={styles.recetaCard}>
-                                        <div style={styles.entryHeader}>
-                                            <strong>Receta - {new Date(r.date).toLocaleDateString()}</strong>
-                                            <div style={{ display: 'flex', gap: '10px' }}>
-                                                <button onClick={() => downloadRecetaPDF(r)} style={styles.iconBtn} title="Descargar PDF">
-                                                    <Printer size={14} />
-                                                </button>
-                                                <button style={styles.iconBtn}><ExternalLink size={14} /></button>
-                                            </div>
-                                        </div>
-                                        {r.items.map((item, i) => (
-                                            <div key={i} style={{ marginBottom: '10px', fontSize: '0.9rem' }}>
-                                                <strong>{item.medication}</strong>: {item.instruction}
-                                            </div>
-                                        ))}
-                                        <p style={{ fontSize: '0.75rem', color: '#94a3b8', marginTop: '10px' }}>Médico: {r.doctor}</p>
-                                    </div>
-                                ))}
-                            </div>
+                            ))}
                         </div>
-                    )}
+                    </div>
+                )}
 
-                    {/* FILES TAB */}
-                    {activeTab === 'files' && (
-                        <div style={styles.filesGrid}>
-                            <div style={{ gridColumn: '1/-1', marginBottom: '20px', display: 'flex', gap: '15px' }}>
+                {/* FILES TAB */}
+                {activeTab === 'files' && (
+                    <div style={styles.filesGrid}>
+                        <div style={{ gridColumn: '1/-1', marginBottom: '20px', display: 'flex', gap: '15px' }}>
+                            <input
+                                type="text"
+                                placeholder="Nombre del archivo (ej: Ecografía Abdominal)"
+                                id="docName"
+                                style={{ ...styles.modalInput, margin: 0, flex: 1 }}
+                            />
+                            <select id="docType" style={{ ...styles.modalInput, margin: 0, width: '150px' }}>
+                                <option>Examen</option>
+                                <option>Epicrisis</option>
+                                <option>Consentimiento</option>
+                                <option>Otro</option>
+                            </select>
+                            <button
+                                className="btn-primary"
+                                onClick={() => {
+                                    const name = document.getElementById('docName').value;
+                                    const type = document.getElementById('docType').value;
+                                    if (name) {
+                                        addDocument(patient.id, { name, type });
+                                        document.getElementById('docName').value = '';
+                                    }
+                                }}
+                            >
+                                <Plus size={18} />
+                                <span>Adjuntar</span>
+                            </button>
+                        </div>
+                        {patient.documents.map(doc => (
+                            <div key={doc.id} className="bento-card" style={styles.fileCard}>
+                                <Paperclip size={24} color="var(--primary)" />
+                                <div style={{ flex: 1 }}>
+                                    <h4 style={{ fontSize: '0.9rem' }}>{doc.name}</h4>
+                                    <p style={{ fontSize: '0.75rem', color: '#94a3b8' }}>{doc.type} • {new Date(doc.date).toLocaleDateString()}</p>
+                                </div>
+                                <button style={styles.iconBtn}><Download size={16} /></button>
+                            </div>
+                        ))}
+                        {patient.documents.length === 0 && <div style={{ gridColumn: '1/-1', ...styles.empty }}>No hay documentos adjuntos.</div>}
+                    </div>
+                )}
+
+                {/* BILLING TAB */}
+                {activeTab === 'billing' && (
+                    <div style={styles.billingContainer}>
+                        <div className="bento-card" style={styles.debtBanner}>
+                            <div style={{ display: 'flex', gap: '15px', alignItems: 'center' }}>
+                                <AlertCircle color={patient.debts && patient.debts.some(d => d.type === 'Cargo') ? '#ef4444' : '#10b981'} size={32} />
+                                <div>
+                                    <h3 style={{ color: patient.debts && patient.debts.some(d => d.type === 'Cargo') ? '#ef4444' : '#10b981' }}>
+                                        {patient.debts && patient.debts.some(d => d.type === 'Cargo') ? 'Saldo Pendiente' : 'Cuenta al Día'}
+                                    </h3>
+                                    <p style={{ fontSize: '1.5rem', fontWeight: '900' }}>
+                                        ${patient.debts ? patient.debts.reduce((acc, d) => d.type === 'Cargo' ? acc + d.amount : acc - d.amount, 0).toLocaleString() : 0}
+                                    </p>
+                                </div>
+                            </div>
+                            <div style={{ display: 'flex', gap: '10px' }}>
                                 <input
-                                    type="text"
-                                    placeholder="Nombre del archivo (ej: Ecografía Abdominal)"
-                                    id="docName"
-                                    style={{ ...styles.modalInput, margin: 0, flex: 1 }}
+                                    type="number"
+                                    id="payAmount"
+                                    placeholder="Monto"
+                                    style={{ ...styles.modalInput, margin: 0, width: '120px' }}
                                 />
-                                <select id="docType" style={{ ...styles.modalInput, margin: 0, width: '150px' }}>
-                                    <option>Examen</option>
-                                    <option>Epicrisis</option>
-                                    <option>Consentimiento</option>
-                                    <option>Otro</option>
-                                </select>
                                 <button
                                     className="btn-primary"
+                                    style={{ background: '#10b981' }}
                                     onClick={() => {
-                                        const name = document.getElementById('docName').value;
-                                        const type = document.getElementById('docType').value;
-                                        if (name) {
-                                            addDocument(patient.id, { name, type });
-                                            document.getElementById('docName').value = '';
+                                        const amount = parseInt(document.getElementById('payAmount').value);
+                                        if (amount > 0) {
+                                            addTransaction(patient.id, { amount, type: 'Abono', description: 'Pago de consulta' });
+                                            document.getElementById('payAmount').value = '';
                                         }
                                     }}
                                 >
-                                    <Plus size={18} />
-                                    <span>Adjuntar</span>
+                                    Regularizar Pago
                                 </button>
                             </div>
-                            {patient.documents.map(doc => (
-                                <div key={doc.id} className="bento-card" style={styles.fileCard}>
-                                    <Paperclip size={24} color="var(--primary)" />
-                                    <div style={{ flex: 1 }}>
-                                        <h4 style={{ fontSize: '0.9rem' }}>{doc.name}</h4>
-                                        <p style={{ fontSize: '0.75rem', color: '#94a3b8' }}>{doc.type} • {new Date(doc.date).toLocaleDateString()}</p>
-                                    </div>
-                                    <button style={styles.iconBtn}><Download size={16} /></button>
-                                </div>
-                            ))}
-                            {patient.documents.length === 0 && <div style={{ gridColumn: '1/-1', ...styles.empty }}>No hay documentos adjuntos.</div>}
                         </div>
-                    )}
 
-                    {/* BILLING TAB */}
-                    {activeTab === 'billing' && (
-                        <div style={styles.billingContainer}>
-                            <div className="bento-card" style={styles.debtBanner}>
-                                <div style={{ display: 'flex', gap: '15px', alignItems: 'center' }}>
-                                    <AlertCircle color={patient.debts && patient.debts.some(d => d.type === 'Cargo') ? '#ef4444' : '#10b981'} size={32} />
-                                    <div>
-                                        <h3 style={{ color: patient.debts && patient.debts.some(d => d.type === 'Cargo') ? '#ef4444' : '#10b981' }}>
-                                            {patient.debts && patient.debts.some(d => d.type === 'Cargo') ? 'Saldo Pendiente' : 'Cuenta al Día'}
-                                        </h3>
-                                        <p style={{ fontSize: '1.5rem', fontWeight: '900' }}>
-                                            ${patient.debts ? patient.debts.reduce((acc, d) => d.type === 'Cargo' ? acc + d.amount : acc - d.amount, 0).toLocaleString() : 0}
-                                        </p>
-                                    </div>
-                                </div>
-                                <div style={{ display: 'flex', gap: '10px' }}>
-                                    <input
-                                        type="number"
-                                        id="payAmount"
-                                        placeholder="Monto"
-                                        style={{ ...styles.modalInput, margin: 0, width: '120px' }}
-                                    />
-                                    <button
-                                        className="btn-primary"
-                                        style={{ background: '#10b981' }}
-                                        onClick={() => {
-                                            const amount = parseInt(document.getElementById('payAmount').value);
-                                            if (amount > 0) {
-                                                addTransaction(patient.id, { amount, type: 'Abono', description: 'Pago de consulta' });
-                                                document.getElementById('payAmount').value = '';
-                                            }
-                                        }}
-                                    >
-                                        Regularizar Pago
-                                    </button>
-                                </div>
-                            </div>
-
-                            <h3>Historial de Transacciones</h3>
-                            <div className="bento-card" style={{ padding: '0' }}>
-                                <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-                                    <thead>
-                                        <tr style={{ borderBottom: '1px solid #e2e8f0', textAlign: 'left', background: '#f8fafc' }}>
-                                            <th style={{ padding: '12px 20px', fontSize: '0.85rem' }}>Fecha</th>
-                                            <th style={{ padding: '12px 20px', fontSize: '0.85rem' }}>Descripción</th>
-                                            <th style={{ padding: '12px 20px', fontSize: '0.85rem' }}>Tipo</th>
-                                            <th style={{ padding: '12px 20px', fontSize: '0.85rem' }}>Monto</th>
+                        <h3>Historial de Transacciones</h3>
+                        <div className="bento-card" style={{ padding: '0' }}>
+                            <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+                                <thead>
+                                    <tr style={{ borderBottom: '1px solid #e2e8f0', textAlign: 'left', background: '#f8fafc' }}>
+                                        <th style={{ padding: '12px 20px', fontSize: '0.85rem' }}>Fecha</th>
+                                        <th style={{ padding: '12px 20px', fontSize: '0.85rem' }}>Descripción</th>
+                                        <th style={{ padding: '12px 20px', fontSize: '0.85rem' }}>Tipo</th>
+                                        <th style={{ padding: '12px 20px', fontSize: '0.85rem' }}>Monto</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {patient.debts && patient.debts.map(d => (
+                                        <tr key={d.id} style={{ borderBottom: '1px solid #f1f5f9' }}>
+                                            <td style={{ padding: '12px 20px', fontSize: '0.85rem' }}>{new Date(d.date).toLocaleDateString()}</td>
+                                            <td style={{ padding: '12px 20px', fontSize: '0.85rem' }}>{d.description}</td>
+                                            <td style={{ padding: '12px 20px', fontSize: '0.85rem' }}>
+                                                <span style={{
+                                                    padding: '4px 8px',
+                                                    borderRadius: '6px',
+                                                    fontSize: '0.75rem',
+                                                    fontWeight: '700',
+                                                    background: d.type === 'Cargo' ? '#fee2e2' : '#dcfce7',
+                                                    color: d.type === 'Cargo' ? '#991b1b' : '#166534'
+                                                }}>
+                                                    {d.type}
+                                                </span>
+                                            </td>
+                                            <td style={{ padding: '12px 20px', fontSize: '0.85rem', fontWeight: '800' }}>
+                                                {d.type === 'Cargo' ? '-' : '+'}${d.amount.toLocaleString()}
+                                            </td>
                                         </tr>
-                                    </thead>
-                                    <tbody>
-                                        {patient.debts && patient.debts.map(d => (
-                                            <tr key={d.id} style={{ borderBottom: '1px solid #f1f5f9' }}>
-                                                <td style={{ padding: '12px 20px', fontSize: '0.85rem' }}>{new Date(d.date).toLocaleDateString()}</td>
-                                                <td style={{ padding: '12px 20px', fontSize: '0.85rem' }}>{d.description}</td>
-                                                <td style={{ padding: '12px 20px', fontSize: '0.85rem' }}>
-                                                    <span style={{
-                                                        padding: '4px 8px',
-                                                        borderRadius: '6px',
-                                                        fontSize: '0.75rem',
-                                                        fontWeight: '700',
-                                                        background: d.type === 'Cargo' ? '#fee2e2' : '#dcfce7',
-                                                        color: d.type === 'Cargo' ? '#991b1b' : '#166534'
-                                                    }}>
-                                                        {d.type}
-                                                    </span>
-                                                </td>
-                                                <td style={{ padding: '12px 20px', fontSize: '0.85rem', fontWeight: '800' }}>
-                                                    {d.type === 'Cargo' ? '-' : '+'}${d.amount.toLocaleString()}
-                                                </td>
-                                            </tr>
-                                        ))}
-                                    </tbody>
-                                </table>
-                                {(!patient.debts || patient.debts.length === 0) && (
-                                    <div style={styles.empty}>No hay transacciones registradas este período.</div>
-                                )}
-                            </div>
+                                    ))}
+                                </tbody>
+                            </table>
+                            {(!patient.debts || patient.debts.length === 0) && (
+                                <div style={styles.empty}>No hay transacciones registradas este período.</div>
+                            )}
                         </div>
-                    )}
+                    </div>
+                )}
 
-                </div>
             </div>
         </div>
-    );
+    </div>
+);
 };
 
 const styles = {
@@ -485,6 +570,13 @@ const styles = {
     debtBanner: { padding: '30px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '30px', background: '#fef2f2', borderRadius: '16px' },
     empty: { padding: '40px', textAlign: 'center', color: '#94a3b8', fontStyle: 'italic' },
     modalInput: { padding: '12px 16px', borderRadius: '10px', border: '1.5px solid #e2e8f0', fontSize: '0.9rem', outline: 'none', transition: 'all 0.2s', width: '100%', marginBottom: '15px' },
+    textArea: { padding: '12px 16px', borderRadius: '12px', border: '1.5px solid #e2e8f0', fontSize: '0.95rem', outline: 'none', background: '#fcfcfc', width: '100%', resize: 'none' },
+    sectionHeader: { display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.9rem', color: '#64748b', marginBottom: '8px' },
+    vitalsFormGrid: { display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '15px', marginBottom: '10px' },
+    entrySection: { marginBottom: '20px' },
+    sectionSubHeader: { display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.8rem', fontWeight: '800', color: '#94a3b8', textTransform: 'uppercase', marginBottom: '8px' },
+    sectionContent: { padding: '15px', background: '#f8fafc', borderRadius: '12px', fontSize: '0.95rem', border: '1px solid #f1f5f9' },
+    vitalsRow: { display: 'flex', flexWrap: 'wrap', gap: '20px', fontSize: '0.85rem', color: '#1e293b', marginBottom: '8px', paddingBottom: '8px', borderBottom: '1px solid #e2e8f0' },
     modalOverlay: { position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(0,0,0,0.5)', zIndex: 200, display: 'flex', alignItems: 'center', justifyContent: 'center' },
     modal: { background: '#fff', padding: '30px', borderRadius: '24px', width: '100%', maxWidth: '500px' }
 };

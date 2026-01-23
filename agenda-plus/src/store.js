@@ -66,7 +66,19 @@ const initialPatients = [
         allergies: ['Penicilina'],
         medications: ['Paracetamol 500mg'],
         history: [
-            { id: 'h1', date: '2025-12-10', doctor: 'Dra. Nataly Malaspina', specialty: 'Medicina General', reason: 'Control presión arterial', observation: 'Paciente estable, mantiene medicación.', bloodPressure: '120/80', weight: '75kg' }
+            {
+                id: 'h1',
+                date: '2026-01-23',
+                doctor: 'Dra. Francis Zabaleta',
+                specialty: 'Pediatría',
+                reason: 'Control 7 años / Otitis',
+                anamnesis: 'Madre refiere otitis recurrente, último episodio hace 3 meses.',
+                physicalExam: 'Sobepes. cerumen impacado izq. resto normal.',
+                indications: 'Bonavid otoclean ibup sos por dolores en huesos largos en reposo.',
+                weight: '32kg',
+                height: '130.8cm',
+                imc: '18.7'
+            }
         ],
         recetas: [
             { id: 'r1', date: '2025-12-10', doctor: 'Dra. Nataly Malaspina', items: [{ medication: 'Enalapril 10mg', instruction: '1 cada 12 horas por 30 días' }] }
