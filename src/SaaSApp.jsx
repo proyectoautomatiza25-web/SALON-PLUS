@@ -8,32 +8,9 @@ import IntegrationsConfig from './IntegrationsConfig';
 import CRM from './CRM';
 import ProfessionalsManagement from './ProfessionalsManagement';
 import NotificationCenter from './NotificationCenter';
+import Dashboard from './Dashboard';
+import CampaignsManager from './CampaignsManager';
 import { useSaaSStore } from './store';
-
-const StatsView = ({ stats }) => (
-    <div style={{ padding: '40px' }}>
-        <h1 style={{ color: 'var(--primary)', fontWeight: '800', marginBottom: '30px' }}>Estadísticas de Operación</h1>
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '30px' }}>
-            <div className="card" style={{ padding: '30px' }}>
-                <h3>Distribución de Citas</h3>
-                <div style={{ marginTop: '20px' }}>
-                    <div style={{ marginBottom: '10px' }}>Confirmadas: <b>{stats.confirmedAppointments}</b></div>
-                    <div style={{ marginBottom: '10px' }}>Pendientes (NP): <b>{stats.pendingAppointments}</b></div>
-                </div>
-            </div>
-            <div className="card" style={{ padding: '30px' }}>
-                <h3>Pacientes Activos</h3>
-                <div style={{ fontSize: '3rem', fontWeight: '900', color: 'var(--status-success)' }}>{stats.activePatients}</div>
-                <p>Usuarios únicos con actividad en los últimos 30 días.</p>
-            </div>
-            <div className="card" style={{ padding: '30px' }}>
-                <h3>Notificaciones Enviadas</h3>
-                <div style={{ fontSize: '2rem', fontWeight: '800', color: '#6366f1' }}>{stats.notificationsSent || 0}</div>
-                <p>WhatsApp + Email combinados</p>
-            </div>
-        </div>
-    </div>
-);
 
 const SaaSApp = ({ onLogout }) => {
     const [currentTab, setCurrentTab] = useState('agenda');
@@ -109,7 +86,11 @@ const SaaSApp = ({ onLogout }) => {
                 )}
 
                 {currentTab === 'stats' && (
-                    <StatsView stats={getStats()} />
+                    <Dashboard stats={getStats()} />
+                )}
+
+                {currentTab === 'campaigns' && (
+                    <CampaignsManager />
                 )}
 
                 {currentTab === 'crm' && (

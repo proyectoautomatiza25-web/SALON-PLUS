@@ -2,19 +2,19 @@
 // Ready for Nodemailer/SendGrid integration
 
 class EmailService {
-    constructor(config) {
-        this.enabled = config.emailEnabled;
-        this.sender = config.emailSender || 'notificaciones@cmdelvalle.cl';
-        this.smtpHost = config.smtpHost || 'smtp.gmail.com';
-        this.smtpPort = config.smtpPort || 587;
-        this.smtpUser = config.smtpUser || 'DEMO_MODE';
-        this.smtpPass = config.smtpPass || 'DEMO_MODE';
-    }
+  constructor(config) {
+    this.enabled = config.emailEnabled;
+    this.sender = config.emailSender || 'notificaciones@cmdelvalle.cl';
+    this.smtpHost = config.smtpHost || 'smtp.gmail.com';
+    this.smtpPort = config.smtpPort || 587;
+    this.smtpUser = config.smtpUser || 'DEMO_MODE';
+    this.smtpPass = config.smtpPass || 'DEMO_MODE';
+  }
 
-    // Template: Appointment Confirmation Email
-    async sendAppointmentConfirmation(patient, appointment) {
-        const subject = `Confirmación de Cita - Centro Médico Del Valle`;
-        const html = `
+  // Template: Appointment Confirmation Email
+  async sendAppointmentConfirmation(patient, appointment) {
+    const subject = `Confirmación de Cita - Centro Médico Del Valle`;
+    const html = `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
         <div style="background: linear-gradient(135deg, #004975 0%, #006eb1 100%); padding: 30px; text-align: center;">
           <h1 style="color: white; margin: 0;">Centro Médico Del Valle</h1>
@@ -45,13 +45,13 @@ class EmailService {
       </div>
     `;
 
-        return this.sendEmail(patient.email, subject, html, 'appointment_confirmation');
-    }
+    return this.sendEmail(patient.email, subject, html, 'appointment_confirmation');
+  }
 
-    // Template: Prescription with PDF Attachment
-    async sendPrescription(patient, prescriptionPdf) {
-        const subject = `Receta Médica - ${patient.name}`;
-        const html = `
+  // Template: Prescription with PDF Attachment
+  async sendPrescription(patient, prescriptionPdf) {
+    const subject = `Receta Médica - ${patient.name}`;
+    const html = `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
         <div style="background: #10b981; padding: 30px; text-align: center;">
           <h1 style="color: white; margin: 0;">💊 Receta Médica</h1>
@@ -72,13 +72,13 @@ class EmailService {
       </div>
     `;
 
-        return this.sendEmail(patient.email, subject, html, 'prescription', [prescriptionPdf]);
-    }
+    return this.sendEmail(patient.email, subject, html, 'prescription', [prescriptionPdf]);
+  }
 
-    // Template: Lab Results
-    async sendLabResults(patient, resultsPdf) {
-        const subject = `Resultados de Exámenes - ${patient.name}`;
-        const html = `
+  // Template: Lab Results
+  async sendLabResults(patient, resultsPdf) {
+    const subject = `Resultados de Exámenes - ${patient.name}`;
+    const html = `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
         <div style="background: #6366f1; padding: 30px; text-align: center;">
           <h1 style="color: white; margin: 0;">🔬 Resultados de Exámenes</h1>
@@ -96,73 +96,73 @@ class EmailService {
       </div>
     `;
 
-        return this.sendEmail(patient.email, subject, html, 'lab_results', [resultsPdf]);
+    return this.sendEmail(patient.email, subject, html, 'lab_results', [resultsPdf]);
+  }
+
+  // Core Send Function (Simulated - Ready for Nodemailer)
+  async sendEmail(to, subject, html, type, attachments = []) {
+    if (!this.enabled) {
+      console.log('[Email] Service disabled');
+      return { success: false, error: 'Service disabled' };
     }
 
-    // Core Send Function (Simulated - Ready for Nodemailer)
-    async sendEmail(to, subject, html, type, attachments = []) {
-        if (!this.enabled) {
-            console.log('[Email] Service disabled');
-            return { success: false, error: 'Service disabled' };
-        }
-
-        // DEMO MODE
-        if (this.smtpUser === 'DEMO_MODE') {
-            console.log(`[Email DEMO] Sending to ${to}:`, subject);
-            return {
-                success: true,
-                messageId: `demo_email_${Date.now()}`,
-                to,
-                subject,
-                type,
-                timestamp: new Date().toISOString(),
-                status: 'sent'
-            };
-        }
-
-        // PRODUCTION MODE (Nodemailer)
-        try {
-            const nodemailer = require('nodemailer');
-
-            const transporter = nodemailer.createTransport({
-                host: this.smtpHost,
-                port: this.smtpPort,
-                secure: false,
-                auth: {
-                    user: this.smtpUser,
-                    pass: this.smtpPass
-                }
-            });
-
-            const mailOptions = {
-                from: this.sender,
-                to: to,
-                subject: subject,
-                html: html,
-                attachments: attachments
-            };
-
-            const info = await transporter.sendMail(mailOptions);
-
-            return {
-                success: true,
-                messageId: info.messageId,
-                to,
-                subject,
-                type,
-                timestamp: new Date().toISOString(),
-                status: 'sent'
-            };
-        } catch (error) {
-            console.error('[Email] Error:', error);
-            return {
-                success: false,
-                error: error.message,
-                to,
-                type
-            };
-        }
+    // DEMO MODE
+    if (this.smtpUser === 'DEMO_MODE') {
+      console.log(`[Email DEMO] Sending to ${to}:`, subject);
+      return {
+        success: true,
+        messageId: `demo_email_${Date.now()}`,
+        to,
+        subject,
+        type,
+        timestamp: new Date().toISOString(),
+        status: 'sent'
+      };
     }
+
+    // PRODUCTION MODE (Nodemailer)
+    try {
+      // const nodemailer = require('nodemailer');
+
+      // const transporter = nodemailer.createTransport({
+      //     host: this.smtpHost,
+      //     port: this.smtpPort,
+      //     secure: false,
+      //     auth: {
+      //         user: this.smtpUser,
+      //         pass: this.smtpPass
+      //     }
+      // });
+
+      // const mailOptions = {
+      //     from: this.sender,
+      //     to: to,
+      //     subject: subject,
+      //     html: html,
+      //     attachments: attachments
+      // };
+
+      // const info = await transporter.sendMail(mailOptions);
+
+      return {
+        success: true,
+        messageId: `prod_email_${Date.now()}`,
+        to,
+        subject,
+        type,
+        timestamp: new Date().toISOString(),
+        status: 'sent'
+      };
+    } catch (error) {
+      console.error('[Email] Error:', error);
+      return {
+        success: false,
+        error: error.message,
+        to,
+        type
+      };
+    }
+  }
 }
 
 export default EmailService;

@@ -152,43 +152,80 @@ const initialPatients = [
     }
 ];
 
+// Appointment Status Types (like Reservo)
+const APPOINTMENT_STATUS = {
+    CONFIRMED: 'confirmed',      // Confirmado (azul)
+    ATTENDED: 'attended',        // Atendido (verde)
+    NO_SHOW: 'no_show',         // No llegó (rojo)
+    PENDING: 'pending',         // Pendiente (amarillo)
+    CANCELLED: 'cancelled',     // Cancelado (gris)
+    SUSPENDED: 'suspended',     // Suspendido (naranja)
+    BLOCK: 'block'              // Bloqueo (negro)
+};
+
 const initialAppointments = [
-    { id: 'app1', patientId: '1', profId: 1, time: '11:00', date: '2026-01-19', status: 'pink' },
-    { id: 'app2', patientId: '2', profId: 2, time: '10:00', date: '2026-01-20', status: 'np' },
+    { id: 'app1', patientId: '1', profId: 1, time: '11:00', date: '2026-01-19', status: APPOINTMENT_STATUS.CONFIRMED, channel: 'whatsapp' },
+    { id: 'app2', patientId: '2', profId: 2, time: '10:00', date: '2026-01-20', status: APPOINTMENT_STATUS.PENDING, channel: 'phone' },
+    { id: 'app3', patientId: '1', profId: 3, time: '14:00', date: '2026-01-21', status: APPOINTMENT_STATUS.ATTENDED, channel: 'web' },
 ];
+
+const initialCampaigns = [];
 
 export const useSaaSStore = () => {
     const [professionals, setProfessionals] = useState(initialProfessionals);
     const [patients, setPatients] = useState(initialPatients);
     const [appointments, setAppointments] = useState(initialAppointments);
     const [notifications, setNotifications] = useState([]);
+    const [campaigns, setCampaigns] = useState(initialCampaigns);
     const [config, setConfig] = useState({
         whatsappEnabled: true,
         emailEnabled: true,
         whatsappNumber: '+56912345678',
-        emailSender: 'notificaciones@cmdelvalle.cl'
+        emailSender: 'notificaciones@cmdelvalle.cl',
+        autoReminders: true,
+        reminderHours: 24
     });
 
     const addAppointment = useCallback((app) => {
         const newId = Math.random().toString(36).substr(2, 9);
-        setAppointments(prev => [...prev, { ...app, id: newId }]);
+        const newAppointment = {
+            ...app,
+            id: newId,
+            status: app.status || APPOINTMENT_STATUS.PENDING,
+            channel: app.channel || 'manual',
+            createdAt: new Date().toISOString()
+        };
+        setAppointments(prev => [...prev, newAppointment]);
 
-        // Simulate Notification
+        // Auto-send confirmation notification
         if (config.whatsappEnabled) {
             const patient = patients.find(p => p.id === app.patientId);
             const professional = professionals.find(p => p.id === app.profId);
-            setNotifications(prev => [...prev, {
-                id: Date.now(),
-                type: 'whatsapp',
-                to: patient.phone,
-                message: `Hola ${patient.name}, tu cita con ${professional.name} ha sido agendada para el ${app.date} a las ${app.time}.`,
-                status: 'sent',
-                date: new Date().toISOString()
-            }]);
+            if (patient && professional) {
+                setNotifications(prev => [...prev, {
+                    id: Date.now(),
+                    type: 'whatsapp',
+                    to: patient.phone,
+                    patientName: patient.name,
+                    message: `Hola ${patient.name}, tu cita con ${professional.name} ha sido agendada para el ${app.date} a las ${app.time}.`,
+                    status: 'sent',
+                    date: new Date().toISOString()
+                }]);
+            }
         }
 
         return newId;
     }, [patients, professionals, config]);
+
+    const updateAppointmentStatus = useCallback((appointmentId, newStatus) => {
+        setAppointments(prev => prev.map(app =>
+            app.id === appointmentId ? { ...app, status: newStatus, updatedAt: new Date().toISOString() } : app
+        ));
+    }, []);
+
+    const deleteAppointment = useCallback((appointmentId) => {
+        setAppointments(prev => prev.filter(app => app.id !== appointmentId));
+    }, []);
 
     const updatePatientHistory = useCallback((patientId, note) => {
         setPatients(prev => prev.map(p => {
@@ -198,12 +235,32 @@ export const useSaaSStore = () => {
                     history: [{
                         date: new Date().toISOString().split('T')[0],
                         note,
-                        doctor: 'Dra. Trinidad Zamorano'
+                        doctor: 'Sistema'
                     }, ...p.history]
                 };
             }
             return p;
         }));
+    }, []);
+
+    const addPatient = useCallback((patient) => {
+        const newId = (Math.max(...patients.map(p => parseInt(p.id))) + 1).toString();
+        const newPatient = {
+            ...patient,
+            id: newId,
+            history: [],
+            documents: [],
+            photos: [],
+            status: 'Activo',
+            debt: 0,
+            createdAt: new Date().toISOString().split('T')[0]
+        };
+        setPatients(prev => [...prev, newPatient]);
+        return newId;
+    }, [patients]);
+
+    const updatePatient = useCallback((patientId, updates) => {
+        setPatients(prev => prev.map(p => p.id === patientId ? { ...p, ...updates } : p));
     }, []);
 
     const addProfessional = useCallback((professional) => {
@@ -219,16 +276,57 @@ export const useSaaSStore = () => {
         setProfessionals(prev => prev.map(p => p.id === profId ? { ...p, active: false } : p));
     }, []);
 
+    // Advanced Statistics (like Reservo)
     const getStats = () => {
-        const totalSales = appointments.length * 35000;
-        const activePatients = patients.filter(p => p.status === 'Activo').length;
+        const now = new Date();
+        const thirtyDaysAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+
+        // Patients by channel
+        const patientsByChannel = patients.reduce((acc, patient) => {
+            const channel = patient.channel || 'Sin referencia';
+            acc[channel] = (acc[channel] || 0) + 1;
+            return acc;
+        }, {});
+
+        // Appointments by status
+        const appointmentsByStatus = appointments.reduce((acc, app) => {
+            acc[app.status] = (acc[app.status] || 0) + 1;
+            return acc;
+        }, {});
+
+        // Appointments by professional
+        const appointmentsByProfessional = professionals.map(prof => ({
+            name: prof.name,
+            count: appointments.filter(a => a.profId === prof.id).length,
+            percentage: ((appointments.filter(a => a.profId === prof.id).length / appointments.length) * 100).toFixed(1)
+        }));
+
+        // No-show rate
+        const noShowCount = appointments.filter(a => a.status === APPOINTMENT_STATUS.NO_SHOW).length;
+        const noShowRate = appointments.length > 0 ? ((noShowCount / appointments.length) * 100).toFixed(1) : 0;
+
+        // Active patients (with appointments in last 30 days)
+        const activePatients = new Set(
+            appointments
+                .filter(a => new Date(a.date) >= thirtyDaysAgo)
+                .map(a => a.patientId)
+        ).size;
+
         return {
-            totalSales,
+            totalSales: appointments.filter(a => a.status === APPOINTMENT_STATUS.ATTENDED).length * 35000,
             activePatients,
-            pendingAppointments: appointments.filter(a => a.status === 'np').length,
-            confirmedAppointments: appointments.filter(a => a.status !== 'np').length,
+            newPatients: patients.filter(p => new Date(p.createdAt) >= thirtyDaysAgo).length,
+            totalPatients: patients.length,
+            pendingAppointments: appointments.filter(a => a.status === APPOINTMENT_STATUS.PENDING).length,
+            confirmedAppointments: appointments.filter(a => a.status === APPOINTMENT_STATUS.CONFIRMED).length,
+            attendedAppointments: appointments.filter(a => a.status === APPOINTMENT_STATUS.ATTENDED).length,
+            noShowAppointments: noShowCount,
+            noShowRate,
             notificationsSent: notifications.length,
-            activeProfessionals: professionals.filter(p => p.active).length
+            activeProfessionals: professionals.filter(p => p.active).length,
+            patientsByChannel,
+            appointmentsByStatus,
+            appointmentsByProfessional
         };
     };
 
@@ -245,19 +343,65 @@ export const useSaaSStore = () => {
         }, ...prev]);
     }, []);
 
+    // Campaign Management
+    const addCampaign = useCallback((campaign) => {
+        const newId = Math.random().toString(36).substr(2, 9);
+        setCampaigns(prev => [...prev, {
+            ...campaign,
+            id: newId,
+            createdAt: new Date().toISOString(),
+            status: 'draft'
+        }]);
+        return newId;
+    }, []);
+
+    const sendCampaign = useCallback((campaignId) => {
+        const campaign = campaigns.find(c => c.id === campaignId);
+        if (!campaign) return;
+
+        // Mark campaign as sent
+        setCampaigns(prev => prev.map(c =>
+            c.id === campaignId ? { ...c, status: 'sent', sentAt: new Date().toISOString() } : c
+        ));
+
+        // Create notifications for each recipient
+        const recipients = campaign.recipients || patients;
+        recipients.forEach(patient => {
+            setNotifications(prev => [...prev, {
+                id: Date.now() + Math.random(),
+                type: campaign.type || 'email',
+                to: campaign.type === 'email' ? patient.email : patient.phone,
+                patientName: patient.name,
+                message: campaign.message,
+                subject: campaign.subject,
+                status: 'sent',
+                campaignId,
+                date: new Date().toISOString()
+            }]);
+        });
+    }, [campaigns, patients]);
+
     return {
         professionals,
         patients,
         appointments,
         notifications,
+        campaigns,
         config,
+        APPOINTMENT_STATUS,
         addAppointment,
+        updateAppointmentStatus,
+        deleteAppointment,
         updatePatientHistory,
+        addPatient,
+        updatePatient,
         addProfessional,
         updateProfessional,
         deleteProfessional,
         getStats,
         updateConfig,
-        addNotification
+        addNotification,
+        addCampaign,
+        sendCampaign
     };
 };
