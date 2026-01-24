@@ -8,6 +8,27 @@ import { useSaaSStore } from './store';
 
 const timeSlots = ['09:00', '10:00', '11:00', '12:00', '14:00', '15:00', '16:00', '17:00'];
 
+const AppointmentCard = ({ app, patient, onOpen, updateStatus, statusEnum, getAppStyle }) => (
+    <div
+        style={{ ...styles.appointment, ...getAppStyle(app.status) }}
+        className="appointment-card"
+    >
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '8px' }}>
+            <div style={styles.appTitle} onClick={() => patient && onOpen(patient)}>{patient?.name || 'Cita Bloqueada'}</div>
+            <div className="actions" style={styles.actions} onClick={(e) => e.stopPropagation()}>
+                <button onClick={() => updateStatus(app.id, statusEnum.ATTENDED)} title="Atender" style={{ ...styles.actionBtn, background: '#10b981' }}><CheckCircle size={14} /></button>
+                <button onClick={() => updateStatus(app.id, statusEnum.NO_SHOW)} title="No Llegó" style={{ ...styles.actionBtn, background: '#ef4444' }}><XCircle size={14} /></button>
+            </div>
+        </div>
+        <div style={styles.appSubtitle} onClick={() => patient && onOpen(patient)}>
+            {app.observation || 'Consulta General'}
+        </div>
+        {app.status === statusEnum.CONFIRMED && (
+            <div style={styles.urgentBadge}>Pendiente</div>
+        )}
+    </div>
+);
+
 const Agenda = ({ onOpenPatient }) => {
     const {
         appointments, patients, professionals,
@@ -18,13 +39,14 @@ const Agenda = ({ onOpenPatient }) => {
     const activeProfessionals = professionals.filter(p => p.active);
     const [selectedProf, setSelectedProf] = useState(activeProfessionals[0] || {});
     const [searchQuery, setSearchQuery] = useState('');
+    const [viewMode, setViewMode] = useState('week'); // 'week' or 'day-group'
 
     // Modal states
     const [showNewAppt, setShowNewAppt] = useState(false);
     const [newApptData, setNewApptData] = useState({
         patientId: '',
         time: '09:00',
-        date: new Date().toISOString().split('T')[0],
+        date: '2026-01-19',
         price: '',
         observation: '',
         category: 'General'
@@ -78,12 +100,27 @@ const Agenda = ({ onOpenPatient }) => {
 
                     <div style={styles.dateNav}>
                         <button style={styles.navBtn}><ChevronLeft size={20} /></button>
-                        <div style={styles.currentDate}>20 - 25 de Enero, 2026</div>
+                        <div style={styles.currentDate}>19 - 24 de Enero, 2026</div>
                         <button style={styles.navBtn}><ChevronRight size={20} /></button>
                     </div>
                 </div>
 
                 <div style={styles.headerActions}>
+                    <div style={styles.viewToggle}>
+                        <button
+                            style={{ ...styles.toggleBtn, borderTopLeftRadius: '10px', borderBottomLeftRadius: '10px', background: viewMode === 'week' ? 'var(--primary-gradient)' : '#fff', color: viewMode === 'week' ? '#fff' : '#64748b' }}
+                            onClick={() => setViewMode('week')}
+                        >
+                            Individual
+                        </button>
+                        <button
+                            style={{ ...styles.toggleBtn, borderTopRightRadius: '10px', borderBottomRightRadius: '10px', background: viewMode === 'day-group' ? 'var(--primary-gradient)' : '#fff', color: viewMode === 'day-group' ? '#fff' : '#64748b' }}
+                            onClick={() => setViewMode('day-group')}
+                        >
+                            Multi-Agenda
+                        </button>
+                    </div>
+
                     <div style={styles.searchBox}>
                         <Search size={18} color="#94a3b8" />
                         <input
@@ -119,43 +156,55 @@ const Agenda = ({ onOpenPatient }) => {
 
             {/* Calendar Grid */}
             <div className="bento-card" style={styles.calendarContainer}>
-                <div style={styles.calHeader}>
-                    <div style={styles.timeEmpty}>Hera</div>
-                    {['Lun 19', 'Mar 20', 'Mié 21', 'Jue 22', 'Vie 23', 'Sáb 24'].map(day => (
-                        <div key={day} style={styles.dayCol}>{day}</div>
-                    ))}
+                <div style={{ ...styles.calHeader }} className="sticky-header">
+                    <div style={styles.timeEmpty}>HORA</div>
+                    {viewMode === 'week' ? (
+                        ['Lun 19', 'Mar 20', 'Mié 21', 'Jue 22', 'Vie 23', 'Sáb 24'].map(day => (
+                            <div key={day} style={styles.dayCol}>{day}</div>
+                        ))
+                    ) : (
+                        activeProfessionals.map(prof => (
+                            <div key={prof.id} style={{ ...styles.dayCol, color: prof.color }}>
+                                <div style={{ fontSize: '0.85rem' }}>{prof.name.split(' ')[1]}</div>
+                                <div style={{ fontSize: '0.65rem', opacity: 0.6 }}>{prof.role}</div>
+                            </div>
+                        ))
+                    )}
                 </div>
 
                 <div style={styles.calBody}>
                     {timeSlots.map(time => (
                         <div key={time} style={styles.timeRow}>
                             <div style={styles.timeLabel}>{time}</div>
-                            {[19, 20, 21, 22, 23, 24].map(dayDateNum => {
-                                const dayDate = `2026-01-${dayDateNum}`;
-                                const app = appointments.find(a => a.time === time && a.date === dayDate && a.profId === selectedProf.id);
-                                const patient = app ? patients.find(p => p.id === app.patientId) : null;
+                            {viewMode === 'week' ? (
+                                [19, 20, 21, 22, 23, 24].map(dayDateNum => {
+                                    const dayDate = `2026-01-${dayDateNum}`;
+                                    const app = appointments.find(a => a.time === time && a.date === dayDate && a.profId === selectedProf.id);
+                                    const patient = app ? patients.find(p => p.id === app.patientId) : null;
 
-                                return (
-                                    <div key={dayDateNum} style={styles.slot}>
-                                        {app && (
-                                            <div
-                                                style={{ ...styles.appointment, ...getAppStyle(app.status) }}
-                                                className="appointment-card"
-                                                onClick={() => patient && onOpenPatient(patient)}
-                                            >
-                                                <div style={styles.appTitle}>{patient?.name || 'Cita Bloqueada'}</div>
-                                                <div style={styles.appSubtitle}>{app.observation || 'Consulta General'}</div>
+                                    return (
+                                        <div key={dayDateNum} style={styles.slot}>
+                                            {app && (
+                                                <AppointmentCard app={app} patient={patient} onOpen={onOpenPatient} updateStatus={updateAppointmentStatus} statusEnum={APPOINTMENT_STATUS} getAppStyle={getAppStyle} />
+                                            )}
+                                        </div>
+                                    );
+                                })
+                            ) : (
+                                activeProfessionals.map(prof => {
+                                    const dayDate = `2026-01-19`; // Demo fixed date for multi-view
+                                    const app = appointments.find(a => a.time === time && a.date === dayDate && a.profId === prof.id);
+                                    const patient = app ? patients.find(p => p.id === app.patientId) : null;
 
-                                                <div className="actions" style={styles.actions} onClick={(e) => e.stopPropagation()}>
-                                                    <button onClick={() => updateAppointmentStatus(app.id, APPOINTMENT_STATUS.ATTENDED)} title="Atender" style={{ ...styles.actionBtn, background: '#10b981' }}><CheckCircle size={12} /></button>
-                                                    <button onClick={() => updateAppointmentStatus(app.id, APPOINTMENT_STATUS.NO_SHOW)} title="No Llegó" style={{ ...styles.actionBtn, background: '#ef4444' }}><XCircle size={12} /></button>
-                                                    <button onClick={() => onOpenPatient(patient)} title="Ver Ficha" style={{ ...styles.actionBtn, background: '#3b82f6' }}><FileText size={12} /></button>
-                                                </div>
-                                            </div>
-                                        )}
-                                    </div>
-                                );
-                            })}
+                                    return (
+                                        <div key={prof.id} style={styles.slot}>
+                                            {app && (
+                                                <AppointmentCard app={app} patient={patient} onOpen={onOpenPatient} updateStatus={updateAppointmentStatus} statusEnum={APPOINTMENT_STATUS} getAppStyle={getAppStyle} />
+                                            )}
+                                        </div>
+                                    );
+                                })
+                            )}
                         </div>
                     ))}
                 </div>
@@ -217,9 +266,11 @@ const Agenda = ({ onOpenPatient }) => {
             )}
 
             <style>{`
-                .appointment-card:hover .actions { display: flex !important; }
-                .appointment-card { position: relative; transition: all 0.2s; cursor: pointer; overflow: hidden; }
-                .appointment-card:hover { transform: translateY(-2px); z-index: 5; box-shadow: 0 10px 20px rgba(0,0,0,0.1); }
+                .appointment-card:hover .actions { opacity: 1 !important; transform: translateX(0); }
+                .appointment-card { position: relative; transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); cursor: pointer; overflow: hidden; }
+                .appointment-card:hover { transform: translateY(-3px); z-index: 10; box-shadow: 0 12px 24px rgba(0,0,0,0.15); }
+                .sticky-header { position: sticky; top: -40px; z-index: 20; background: #fff; }
+                .actions { opacity: 0; transform: translateX(10px); transition: all 0.2s ease; }
             `}</style>
         </div>
     );
@@ -244,18 +295,21 @@ const styles = {
     dot: { width: '8px', height: '8px', borderRadius: '50%' },
     toolBtn: { padding: '8px 15px', background: '#fff', border: '1.5px solid #e2e8f0', borderRadius: '10px', fontSize: '0.8rem', fontWeight: '700', color: '#64748b', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px' },
     calendarContainer: { overflow: 'hidden', padding: 0 },
-    calHeader: { display: 'flex', background: '#f8fafc', borderBottom: '1.5px solid #e2e8f0' },
-    timeEmpty: { width: '80px', padding: '15px', fontSize: '0.7rem', fontWeight: '800', color: '#cbd5e1', textAlign: 'center' },
-    dayCol: { flex: 1, padding: '15px', textAlign: 'center', fontSize: '0.8rem', fontWeight: '900', color: '#1e293b' },
+    calHeader: { display: 'flex', background: '#f8fafc', borderBottom: '1.5px solid #e2e8f0', width: '100%' },
+    timeEmpty: { width: '85px', padding: '15px', fontSize: '0.7rem', fontWeight: '800', color: '#94a3b8', textAlign: 'center', borderRight: '1px solid #f1f5f9' },
+    dayCol: { flex: 1, padding: '15px', textAlign: 'center', fontSize: '0.8rem', fontWeight: '900', color: '#1e293b', minWidth: '140px' },
     calBody: { flex: 1 },
-    timeRow: { display: 'flex', borderBottom: '1px solid #f1f5f9', minHeight: '95px' },
-    timeLabel: { width: '80px', textAlign: 'center', paddingTop: '20px', fontSize: '0.75rem', fontWeight: '900', color: '#94a3b8' },
-    slot: { flex: 1, borderRight: '1px solid #f1f5f9', padding: '5px', position: 'relative' },
-    appointment: { height: '100%', borderRadius: '12px', padding: '12px', display: 'flex', flexDirection: 'column', gap: '2px' },
-    appTitle: { fontWeight: '900', fontSize: '0.8rem' },
-    appSubtitle: { fontSize: '0.7rem', opacity: 0.9, fontWeight: '600' },
-    actions: { position: 'absolute', top: '8px', right: '8px', display: 'none', flexDirection: 'column', gap: '5px' },
-    actionBtn: { border: 'none', width: '28px', height: '28px', borderRadius: '8px', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', boxShadow: '0 4px 10px rgba(0,0,0,0.1)' },
+    timeRow: { display: 'flex', borderBottom: '1px solid #f1f5f9', minHeight: '105px' },
+    timeLabel: { width: '85px', textAlign: 'center', paddingTop: '22px', fontSize: '0.75rem', fontWeight: '900', color: '#94a3b8', borderRight: '1px solid #f1f5f9' },
+    slot: { flex: 1, borderRight: '1px solid #f1f5f9', padding: '6px', position: 'relative', minWidth: '140px' },
+    appointment: { height: '100%', borderRadius: '12px', padding: '12px', display: 'flex', flexDirection: 'column', gap: '4px', position: 'relative', minHeight: '85px' },
+    appTitle: { fontWeight: '900', fontSize: '0.85rem', flex: 1, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', color: 'inherit' },
+    appSubtitle: { fontSize: '0.7rem', opacity: 0.8, fontWeight: '600', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' },
+    urgentBadge: { position: 'absolute', bottom: '8px', right: '8px', fontSize: '0.6rem', fontWeight: '900', padding: '2px 6px', borderRadius: '4px', background: 'rgba(255,255,255,0.8)', border: '1px solid currentColor' },
+    actions: { display: 'flex', gap: '6px', marginLeft: '10px' },
+    actionBtn: { border: 'none', width: '26px', height: '26px', borderRadius: '8px', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', transition: 'all 0.2s', boxShadow: '0 2px 4px rgba(0,0,0,0.1)' },
+    viewToggle: { display: 'flex', background: '#fff', borderRadius: '12px', padding: '4px', border: '1.5px solid #e2e8f0' },
+    toggleBtn: { padding: '8px 16px', border: 'none', cursor: 'pointer', fontSize: '0.8rem', fontWeight: '800', transition: 'all 0.2s' },
     modalOverlay: { position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(0,0,0,0.4)', zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center' },
     modal: { background: '#fff', width: '450px', borderRadius: '24px', padding: '30px', boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)' },
     modalHeader: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '25px' },

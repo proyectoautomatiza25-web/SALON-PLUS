@@ -1,57 +1,57 @@
 import React from 'react'
-import { Microscope, Baby, Brain, Speech, Activity, Heart, ArrowRight } from 'lucide-react'
+import { Users, Calendar, TrendingUp, Mail, BarChart3, Zap, ArrowRight } from 'lucide-react'
 
-const serviceList = [
+const featureList = [
     {
-        title: 'Medicina General',
-        desc: 'Atención primaria y preventiva con diagnósticos precisos para toda la familia.',
-        icon: <Microscope size={35} />,
+        title: 'Gestión de Pacientes',
+        desc: 'CRM médico completo con fichas digitales, historial clínico y seguimiento personalizado.',
+        icon: <Users size={35} />,
         color: '#E0F2F1'
     },
     {
-        title: 'Pediatría',
-        desc: 'Cuidado especializado en el crecimiento y salud de los más pequeños.',
-        icon: <Baby size={35} />,
+        title: 'Agendamiento Inteligente',
+        desc: 'Calendario visual, reservas online, recordatorios automáticos y gestión de disponibilidad.',
+        icon: <Calendar size={35} />,
         color: '#FFF3E0'
     },
     {
-        title: 'Psicología',
-        desc: 'Apoyo profesional para el bienestar emocional y mental de nuestros pacientes.',
-        icon: <Brain size={35} />,
+        title: 'Analytics Avanzado',
+        desc: 'Dashboard con métricas en tiempo real, reportes personalizados y análisis de tendencias.',
+        icon: <TrendingUp size={35} />,
         color: '#F3E5F5'
     },
     {
-        title: 'Fonoaudiología',
-        desc: 'Especialistas en terapias de lenguaje, audición y deglución.',
-        icon: <Speech size={35} />,
+        title: 'Campañas Automatizadas',
+        desc: 'Email y WhatsApp masivos, segmentación de pacientes y seguimiento de campañas.',
+        icon: <Mail size={35} />,
         color: '#E3F2FD'
     },
     {
-        title: 'Nutrición',
-        desc: 'Planes alimenticios personalizados para mejorar tu vitalidad y salud.',
-        icon: <Activity size={35} />,
+        title: 'Reportes y Estadísticas',
+        desc: 'Visualización de KPIs, tasa de ausentismo, ingresos y rendimiento por profesional.',
+        icon: <BarChart3 size={35} />,
         color: '#F1F8E9'
     },
     {
-        title: 'Cardiología',
-        desc: 'Detección y tratamiento experto de afecciones cardiovasculares.',
-        icon: <Heart size={35} />,
+        title: 'Integraciones',
+        desc: 'Conecta con WhatsApp, Email, pagos online y sistemas de facturación electrónica.',
+        icon: <Zap size={35} />,
         color: '#FFEBEE'
     }
 ]
 
 const Services = () => {
     return (
-        <section id="services" className="section container" style={{ paddingBottom: '12rem' }}>
+        <section id="features" className="section container" style={{ paddingBottom: '12rem' }}>
             <div style={{ textAlign: 'center', marginBottom: '7rem' }}>
                 <h6 style={{ color: 'var(--primary)', fontWeight: '900', letterSpacing: '3px', textTransform: 'uppercase', marginBottom: '1.5rem', fontSize: '1rem' }}>
-                    Nuestras Especialidades
+                    Funcionalidades Completas
                 </h6>
                 <h2 style={{ fontSize: '4rem', fontWeight: '900', color: '#1a2a2a', letterSpacing: '-1.5px' }}>
-                    Atención <span className="gradient-text">Profesional</span> para Ti
+                    Todo lo que necesitas en <span className="gradient-text">Una Plataforma</span>
                 </h2>
                 <p style={{ marginTop: '1.5rem', color: '#4a5568', fontSize: '1.25rem', maxWidth: '700px', margin: '1.5rem auto 0' }}>
-                    Ofrecemos un enfoque multidisciplinario para garantizar el mejor cuidado de tu salud.
+                    Agenda Plus integra todas las herramientas esenciales para modernizar tu centro médico.
                 </p>
             </div>
 
@@ -60,7 +60,7 @@ const Services = () => {
                 gridTemplateColumns: 'repeat(auto-fit, minmax(380px, 1fr))',
                 gap: '3rem'
             }}>
-                {serviceList.map((service, index) => (
+                {featureList.map((feature, index) => (
                     <div key={index} className="glass" style={{
                         padding: '3.5rem',
                         borderRadius: '40px',
@@ -71,7 +71,7 @@ const Services = () => {
                         overflow: 'hidden'
                     }}>
                         <div style={{
-                            backgroundColor: service.color,
+                            backgroundColor: feature.color,
                             width: '90px',
                             height: '90px',
                             borderRadius: '24px',
@@ -82,10 +82,10 @@ const Services = () => {
                             marginBottom: '2.5rem',
                             boxShadow: 'inset 0 2px 10px rgba(0,0,0,0.05)'
                         }}>
-                            {service.icon}
+                            {feature.icon}
                         </div>
-                        <h3 style={{ fontSize: '1.9rem', fontWeight: '900', marginBottom: '1.2rem', color: '#1a2a2a' }}>{service.title}</h3>
-                        <p style={{ color: '#4a5568', marginBottom: '2.5rem', lineHeight: '1.7', fontSize: '1.15rem', fontWeight: '500' }}>{service.desc}</p>
+                        <h3 style={{ fontSize: '1.9rem', fontWeight: '900', marginBottom: '1.2rem', color: '#1a2a2a' }}>{feature.title}</h3>
+                        <p style={{ color: '#4a5568', marginBottom: '2.5rem', lineHeight: '1.7', fontSize: '1.15rem', fontWeight: '500' }}>{feature.desc}</p>
                         <div style={{
                             color: 'var(--primary)',
                             fontWeight: '800',
@@ -94,7 +94,7 @@ const Services = () => {
                             gap: '12px',
                             fontSize: '1.1rem'
                         }}>
-                            Agendar Atención <ArrowRight size={20} />
+                            Ver Detalles <ArrowRight size={20} />
                         </div>
                     </div>
                 ))}

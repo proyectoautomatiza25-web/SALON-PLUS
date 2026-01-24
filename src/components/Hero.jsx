@@ -1,10 +1,7 @@
 import React from 'react'
-import { ArrowRight, CheckCircle2, MapPin } from 'lucide-react'
-import { SchedulingService } from '../services/schedulingService'
+import { ArrowRight, CheckCircle2, Zap, TrendingUp, Users, Calendar } from 'lucide-react'
 
 const Hero = () => {
-    const bookingAction = SchedulingService.getBookingAction();
-
     return (
         <section id="hero" className="section container" style={{
             display: 'grid',
@@ -28,8 +25,8 @@ const Hero = () => {
                     marginBottom: '2rem',
                     border: '1px solid rgba(0, 158, 157, 0.2)'
                 }}>
-                    <CheckCircle2 size={18} />
-                    Centro Médico del Valle: Excelencia y Confianza
+                    <Zap size={18} />
+                    Automatiza Sur - Tecnología Médica Inteligente
                 </div>
                 <h1 style={{
                     fontSize: '4.5rem',
@@ -39,7 +36,7 @@ const Hero = () => {
                     color: '#1a2a2a',
                     letterSpacing: '-1.5px'
                 }}>
-                    Cuidamos de ti de manera <span className="gradient-text">Integral</span>
+                    Gestiona tu Centro Médico con <span className="gradient-text">Agenda Plus</span>
                 </h1>
                 <p style={{
                     fontSize: '1.3rem',
@@ -49,15 +46,49 @@ const Hero = () => {
                     lineHeight: '1.8',
                     fontWeight: '450'
                 }}>
-                    Nuestra misión es mantener a nuestros pacientes en óptimas condiciones, ofreciendo servicios médicos de calidad y tecnología de vanguardia en Puerto Montt.
+                    La plataforma SaaS completa para centros médicos modernos. Gestión de pacientes, agendamiento inteligente, campañas automatizadas y análisis en tiempo real.
                 </p>
 
+                {/* Features Grid */}
+                <div style={{
+                    display: 'grid',
+                    gridTemplateColumns: '1fr 1fr',
+                    gap: '1.5rem',
+                    marginBottom: '3rem'
+                }}>
+                    {[
+                        { icon: <Calendar size={20} />, text: 'Agenda Inteligente' },
+                        { icon: <Users size={20} />, text: 'CRM Médico' },
+                        { icon: <TrendingUp size={20} />, text: 'Analytics Avanzado' },
+                        { icon: <Zap size={20} />, text: 'Automatización' }
+                    ].map((feature, idx) => (
+                        <div key={idx} style={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '10px',
+                            color: '#1a2a2a',
+                            fontWeight: '600'
+                        }}>
+                            <div style={{
+                                backgroundColor: 'rgba(0, 158, 157, 0.1)',
+                                padding: '8px',
+                                borderRadius: '10px',
+                                color: 'var(--primary)',
+                                display: 'flex'
+                            }}>
+                                {feature.icon}
+                            </div>
+                            {feature.text}
+                        </div>
+                    ))}
+                </div>
+
                 <div style={{ display: 'flex', gap: '1.5rem', flexWrap: 'wrap' }}>
-                    <a href={bookingAction.payload} target="_blank" rel="noopener noreferrer" className="btn btn-primary" style={{ padding: '1.3rem 3rem' }}>
-                        Agendar Hora <ArrowRight size={22} />
+                    <a href="#demo" className="btn btn-primary" style={{ padding: '1.3rem 3rem' }}>
+                        Solicitar Demo <ArrowRight size={22} />
                     </a>
-                    <a href="#services" className="btn btn-outline" style={{ padding: '1.3rem 3rem' }}>
-                        Nuestras Especialidades
+                    <a href="#features" className="btn btn-outline" style={{ padding: '1.3rem 3rem' }}>
+                        Ver Funcionalidades
                     </a>
                 </div>
 
@@ -71,10 +102,10 @@ const Hero = () => {
                     borderRadius: '16px',
                     borderLeft: '4px solid var(--primary)'
                 }}>
-                    <MapPin size={24} color="var(--primary)" />
+                    <CheckCircle2 size={24} color="var(--primary)" />
                     <div>
-                        <p style={{ fontWeight: '700', color: '#1a2a2a', fontSize: '1.05rem' }}>Av. Sargento Silva 381</p>
-                        <p style={{ color: '#4a5568', fontSize: '0.95rem' }}>Puerto Montt, Los Lagos</p>
+                        <p style={{ fontWeight: '700', color: '#1a2a2a', fontSize: '1.05rem' }}>Implementación en 24 horas</p>
+                        <p style={{ color: '#4a5568', fontSize: '0.95rem' }}>Sin instalación, 100% en la nube</p>
                     </div>
                 </div>
             </div>
@@ -85,64 +116,59 @@ const Hero = () => {
                 alignItems: 'center',
                 gap: '2rem'
             }}>
-                {/* Centro Médico Image */}
+                {/* Dashboard Preview con imagen real */}
                 <div style={{
                     position: 'relative',
                     width: '100%',
-                    borderRadius: '48px',
+                    borderRadius: '32px',
                     overflow: 'hidden',
                     boxShadow: '0 40px 80px rgba(0, 50, 50, 0.15)',
-                    border: '12px solid white'
+                    border: '8px solid white',
+                    background: 'white'
                 }}>
                     <img
-                        src="/centro-medico.png"
-                        alt="Centro Médico del Valle - Puerto Montt"
+                        src="/dashboard-preview.png"
+                        alt="Dashboard Agenda Plus - Vista previa"
                         style={{
                             width: '100%',
-                            height: '500px',
-                            objectFit: 'cover'
+                            height: 'auto',
+                            display: 'block'
                         }}
                     />
                 </div>
 
-                {/* Social Media Row with Original Logos */}
+                {/* Stats Row */}
                 <div style={{
                     display: 'flex',
-                    gap: '2.5rem',
+                    gap: '2rem',
                     alignItems: 'center',
                     background: 'white',
-                    padding: '1.2rem 2.5rem',
+                    padding: '1.5rem 2.5rem',
                     borderRadius: '100px',
                     boxShadow: '0 15px 35px rgba(0,0,0,0.08)',
-                    border: '1px solid rgba(0,0,0,0.03)'
+                    border: '1px solid rgba(0,0,0,0.03)',
+                    width: '100%',
+                    justifyContent: 'space-around'
                 }}>
-                    <a href="https://www.youtube.com/@AdosisdePediatra" target="_blank" rel="noopener noreferrer" style={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: '12px',
-                        textDecoration: 'none',
-                        color: '#1a2a2a',
-                        fontWeight: '700',
-                        fontSize: '0.95rem',
-                        transition: 'transform 0.3s ease'
-                    }}>
-                        <img src="https://upload.wikimedia.org/wikipedia/commons/e/ef/Youtube_logo.png" alt="YouTube" style={{ height: '24px' }} />
-                        <span>@AdosisdePediatra</span>
-                    </a>
-                    <div style={{ width: '1px', height: '20px', background: '#e2e8f0' }} />
-                    <a href="https://www.instagram.com/adosisdepediatra/" target="_blank" rel="noopener noreferrer" style={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: '12px',
-                        textDecoration: 'none',
-                        color: '#1a2a2a',
-                        fontWeight: '700',
-                        fontSize: '0.95rem',
-                        transition: 'transform 0.3s ease'
-                    }}>
-                        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/a/a5/Instagram_icon.png/600px-Instagram_icon.png" alt="Instagram" style={{ height: '24px' }} />
-                        <span>@adosisdepediatra</span>
-                    </a>
+                    {[
+                        { value: '500+', label: 'Centros Médicos' },
+                        { value: '99.9%', label: 'Uptime' },
+                        { value: '24/7', label: 'Soporte' }
+                    ].map((stat, idx) => (
+                        <div key={idx} style={{ textAlign: 'center' }}>
+                            <div style={{
+                                fontSize: '2rem',
+                                fontWeight: '900',
+                                color: 'var(--primary)',
+                                marginBottom: '0.3rem'
+                            }}>{stat.value}</div>
+                            <div style={{
+                                fontSize: '0.9rem',
+                                color: '#4a5568',
+                                fontWeight: '600'
+                            }}>{stat.label}</div>
+                        </div>
+                    ))}
                 </div>
             </div>
         </section>

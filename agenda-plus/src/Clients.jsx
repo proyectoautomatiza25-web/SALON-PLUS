@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Search, Plus, Filter, MoreHorizontal, FileText, Phone, Mail as MailIcon, User } from 'lucide-react';
 import { useSaaSStore } from './store';
 
-const Clients = ({ onOpenPatient }) => {
+const Clients = ({ onOpenPatient, currentProfId }) => {
     const { patients, addPatient } = useSaaSStore();
     const [searchQuery, setSearchQuery] = useState('');
     const [showAddModal, setShowAddModal] = useState(false);
@@ -10,14 +10,16 @@ const Clients = ({ onOpenPatient }) => {
 
     const handleAdd = (e) => {
         e.preventDefault();
-        addPatient(newData);
+        addPatient({ ...newData, ownerProfId: currentProfId });
         setShowAddModal(false);
         setNewData({ name: '', rut: '', phone: '', email: '', prevision: 'Fonasa', category: 'General' });
     };
 
     const filteredPatients = patients.filter(p =>
-        p.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        p.rut.includes(searchQuery)
+        p.ownerProfId === currentProfId && (
+            p.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            p.rut.includes(searchQuery)
+        )
     );
 
     return (

@@ -176,12 +176,20 @@ const Agenda = ({ appointments, patients, professionals, onAddAppointment, onOpe
                                     const patient = app ? patients.find(p => p.id === app.patientId) : null;
 
                                     return (
-                                        <div key={dayNum} style={styles.slot}>
-                                            {app && (
+                                        <div
+                                            key={dayNum}
+                                            style={styles.slot}
+                                            className={!app ? "slot-hover" : ""}
+                                            onClick={() => !app && setShowBooking(true)}
+                                        >
+                                            {app ? (
                                                 <div
                                                     className="appointment-card"
                                                     style={{ ...styles.appointment, ...getAppStyle(app.status) }}
-                                                    onClick={() => onOpenPatient(patient)}
+                                                    onClick={(e) => {
+                                                        e.stopPropagation();
+                                                        onOpenPatient(patient);
+                                                    }}
                                                 >
                                                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '5px' }}>
                                                         <div style={{ fontWeight: '800', fontSize: '0.8rem' }}>
@@ -205,41 +213,15 @@ const Agenda = ({ appointments, patients, professionals, onAddAppointment, onOpe
                                                         {getStatusLabel(app.status)}
                                                     </div>
 
-                                                    {/* Quick Actions */}
                                                     <div className="appointment-actions" style={styles.appointmentActions}>
-                                                        <button
-                                                            onClick={(e) => {
-                                                                e.stopPropagation();
-                                                                updateAppointmentStatus(app.id, APPOINTMENT_STATUS.ATTENDED);
-                                                            }}
-                                                            style={{ ...styles.actionBtn, background: '#10b981' }}
-                                                            title="Marcar como Atendido"
-                                                        >
-                                                            <CheckCircle size={12} />
-                                                        </button>
-                                                        <button
-                                                            onClick={(e) => {
-                                                                e.stopPropagation();
-                                                                updateAppointmentStatus(app.id, APPOINTMENT_STATUS.NO_SHOW);
-                                                            }}
-                                                            style={{ ...styles.actionBtn, background: '#ef4444' }}
-                                                            title="Marcar como No llegó"
-                                                        >
-                                                            <XCircle size={12} />
-                                                        </button>
-                                                        <button
-                                                            onClick={(e) => {
-                                                                e.stopPropagation();
-                                                                if (confirm('¿Eliminar esta cita?')) {
-                                                                    deleteAppointment(app.id);
-                                                                }
-                                                            }}
-                                                            style={{ ...styles.actionBtn, background: '#64748b' }}
-                                                            title="Eliminar cita"
-                                                        >
-                                                            <Trash2 size={12} />
-                                                        </button>
+                                                        <button onClick={(e) => { e.stopPropagation(); updateAppointmentStatus(app.id, APPOINTMENT_STATUS.ATTENDED); }} style={{ ...styles.actionBtn, background: '#10b981' }} title="Atendido"><CheckCircle size={12} /></button>
+                                                        <button onClick={(e) => { e.stopPropagation(); updateAppointmentStatus(app.id, APPOINTMENT_STATUS.NO_SHOW); }} style={{ ...styles.actionBtn, background: '#ef4444' }} title="No llegó"><XCircle size={12} /></button>
+                                                        <button onClick={(e) => { e.stopPropagation(); if (confirm('¿Eliminar cita?')) deleteAppointment(app.id); }} style={{ ...styles.actionBtn, background: '#64748b' }} title="Eliminar"><Trash2 size={12} /></button>
                                                     </div>
+                                                </div>
+                                            ) : (
+                                                <div style={styles.emptySlotContent}>
+                                                    <span className="add-icon">+</span>
                                                 </div>
                                             )}
                                         </div>
@@ -266,6 +248,7 @@ const Agenda = ({ appointments, patients, professionals, onAddAppointment, onOpe
                 .appointment-card:hover {
                     transform: scale(1.02);
                     box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+                    z-index: 10;
                 }
                 .searchResultItem:hover {
                     background: #e2e8f0 !important;
@@ -274,6 +257,14 @@ const Agenda = ({ appointments, patients, professionals, onAddAppointment, onOpe
                 .actionBtn:hover {
                     transform: scale(1.1);
                     filter: brightness(1.1);
+                }
+                .slot-hover:hover {
+                    background-color: #f0f9ff !important;
+                    cursor: pointer;
+                }
+                .slot-hover:hover .add-icon {
+                    opacity: 1;
+                    transform: scale(1.1);
                 }
             `}</style>
         </div>
@@ -351,7 +342,10 @@ const styles = {
     calBody: { flex: 1 },
     timeRow: { display: 'flex', borderBottom: '1px solid #f1f5f9', minHeight: '90px' },
     timeTag: { width: '80px', textAlign: 'center', paddingTop: '15px', fontSize: '0.75rem', fontWeight: '800', color: '#94a3b8' },
-    slot: { flex: 1, borderRight: '1px solid #f1f5f9', position: 'relative', padding: '4px' },
+    slot: { flex: 1, borderRight: '1px solid #f1f5f9', position: 'relative', padding: '4px', transition: 'background-color 0.2s' },
+
+    emptySlotContent: { width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#cbd5e1', fontSize: '1.5rem', fontWeight: '300' },
+
     appointment: {
         height: '100%',
         borderRadius: '10px',

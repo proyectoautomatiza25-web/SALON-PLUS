@@ -10,9 +10,10 @@ import ProfessionalsManagement from './ProfessionalsManagement';
 import NotificationCenter from './NotificationCenter';
 import Dashboard from './Dashboard';
 import CampaignsManager from './CampaignsManager';
+import DemoBanner from './components/DemoBanner';
 import { useSaaSStore } from './store';
 
-const SaaSApp = ({ onLogout }) => {
+const SaaSApp = ({ onLogout, isDemoMode = false }) => {
     const [currentTab, setCurrentTab] = useState('agenda');
     const [selectedPatientForFile, setSelectedPatientForFile] = useState(null);
 
@@ -36,8 +37,16 @@ const SaaSApp = ({ onLogout }) => {
         setCurrentTab('patient-file');
     };
 
+    const handleUpgrade = () => {
+        alert('Redirigiendo a página de pago...');
+        // Aquí iría la lógica para actualizar a plan completo
+    };
+
     return (
         <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh', background: 'var(--bg-app)' }}>
+            {/* Banner de Demo */}
+            {isDemoMode && <DemoBanner daysRemaining={14} onUpgrade={handleUpgrade} />}
+
             <TopNav currentTab={currentTab} setTab={setCurrentTab} />
 
             <main style={{ flex: 1, overflowY: 'auto' }}>

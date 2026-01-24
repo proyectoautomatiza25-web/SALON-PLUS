@@ -1,8 +1,9 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import {
   Coffee, ShoppingBag, MapPin,
   QrCode, Star, ChevronRight, X,
-  Instagram, Facebook, Twitter, Plus, Minus, CheckCircle
+  Plus, Minus, CheckCircle, Bell,
+  Search, ArrowLeft
 } from 'lucide-react'
 import { useKingdomStore } from './store'
 
@@ -10,334 +11,261 @@ function App() {
   const { menu, cart, user, addToCart, updateQty, checkout } = useKingdomStore();
   const [activeTab, setActiveTab] = useState('inicio');
   const [showCart, setShowCart] = useState(false);
-  const [orderComplete, setOrderComplete] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState(null);
-  const [showQRScanner, setShowQRScanner] = useState(false);
+  const [showToast, setShowToast] = useState(false);
 
   const cartTotal = cart.reduce((acc, i) => acc + (i.price * i.qty), 0);
 
-  const handleCheckout = () => {
-    checkout();
-    setOrderComplete(true);
-    setTimeout(() => {
-      setOrderComplete(false);
-      setShowCart(false);
-    }, 3000);
+  const triggerToast = () => {
+    setShowToast(true);
+    setTimeout(() => setShowToast(false), 2000);
   }
 
-  const handleScanQR = () => {
-    setShowQRScanner(true);
-    setTimeout(() => {
-      setShowQRScanner(false);
-      alert("¡Código Real Escaneado! +50 Coronas añadidas a tu reino.");
-    }, 3000);
+  const handleAddToCart = (item) => {
+    addToCart(item);
+    triggerToast();
   }
 
   return (
-    <div className="app-shell">
-      {/* Premium Navigation */}
-      <nav className="nav flex justify-between items-center">
-        <div className="flex items-center gap-2">
-          <div className="premium-gradient brand-logo">
-            <Coffee size={24} />
-          </div>
-          <span className="brand-text">THE KINGDOM <span className="text-gold">COFFEE</span></span>
+    <div className="kingdom-app-surface">
+      {/* App Header (Top Notch Area) */}
+      <header className="app-header">
+        <div className="brand-title">
+          THE KINGDOM <span className="gold-text">APP</span>
         </div>
-
-        <div className="hidden-mobile">
-          {['INICIO', 'MENÚ', 'SUCURSALES', 'RECOMPENSAS'].map(link => (
-            <a
-              key={link}
-              href="#"
-              onClick={(e) => { e.preventDefault(); setActiveTab(link.toLowerCase()); window.scrollTo(0, 0); }}
-              className={`nav-link ${activeTab === link.toLowerCase() ? 'active' : ''}`}
-            >
-              {link}
-            </a>
-          ))}
+        <div style={{ display: 'flex', gap: '15px' }}>
+          <button className="icon-btn-circle" style={{ background: 'rgba(255,255,255,0.08)' }}><Bell size={20} /></button>
+          <div className="avatar-nav" style={{ width: '36px', height: '36px', fontSize: '14px' }}>{user.name.charAt(0)}</div>
         </div>
+      </header>
 
-        <div className="flex items-center gap-4">
-          <button onClick={handleScanQR} className="icon-btn-circle" title="Escanear en tienda">
-            <QrCode size={20} />
-          </button>
-          <button onClick={() => setShowCart(true)} className="icon-btn-circle" style={{ position: 'relative' }}>
-            <ShoppingBag size={20} />
-            {cart.length > 0 && <span className="cart-badge">{cart.length}</span>}
-          </button>
-          <div className="user-profile-nav" onClick={() => setActiveTab('recompensas')}>
-            <div className="avatar-nav">{user.name.charAt(0)}</div>
-            <div className="points-nav">{user.points} pts</div>
-          </div>
+      {/* Floating Toast Notification */}
+      {showToast && (
+        <div className="toast-premium">
+          <CheckCircle size={20} />
+          <span>AGREGADO A TU PEDIDO</span>
         </div>
-      </nav>
+      )}
 
-      {/* Main Content Sections */}
-      <main>
+      {/* Dynamic Content Area */}
+      <main className="app-content">
+
         {activeTab === 'inicio' && (
-          <>
-            <section className="hero">
-              <div className="hero-bg">
-                <div className="hero-overlay" />
-                <img src="/hero-coffee.png" alt="Kingdom" className="hero-img" />
+          <div className="animate-app-slide">
+            <div className="hero-card">
+              <img src="https://images.unsplash.com/photo-1509042239860-f550ce710b93?w=800&q=80" className="hero-img" alt="Hero" />
+              <div className="hero-overlay">
+                <div className="tag" style={{ border: 'none', background: 'var(--primary)', color: '#000', marginBottom: '10px' }}>OFERTA REAL</div>
+                <h1 style={{ fontSize: '2.2rem', lineHeight: 1, fontWeight: 900 }}>COSECHA DE <br /><span className="gold-text">INVIERNO</span></h1>
+                <p style={{ fontSize: '0.9rem', color: '#ccc', marginTop: '10px' }}>25% de descuento en Cold Brews exclusivos.</p>
               </div>
+            </div>
 
-              <div className="container hero-content">
-                <div className="hero-grid">
-                  <div className="animate-fade-in">
-                    <div className="tag">
-                      <Star size={14} fill="currentColor" /> EXPERIENCIA DE ESPECIALIDAD
-                    </div>
-                    <h1 className="h1">RESCATA <br /> TU <span className="text-gold">REINO</span></h1>
-                    <p className="hero-desc">
-                      Descubre el café que despierta tu poder. Granos seleccionados de fincas exclusivas, tostados con precisión real.
-                    </p>
-                    <div className="flex gap-4">
-                      <button onClick={() => setActiveTab('menú')} className="btn btn-primary flex items-center gap-2">
-                        EXPLORAR EL MENÚ <ChevronRight size={18} />
-                      </button>
-                      <button onClick={() => setActiveTab('sucursales')} className="btn btn-ghost">NUESTRAS SEDES</button>
-                    </div>
-                  </div>
+            <h2 className="section-label">Para ti ahora <ArrowLeft size={18} style={{ transform: 'rotate(180deg)' }} /></h2>
+            <div className="cat-slider">
+              {['Favoritos', 'Especiales', 'En Grano', 'Promos'].map((c, i) => (
+                <div key={i} className={`cat-pill ${i === 0 ? 'active' : ''}`}>{c}</div>
+              ))}
+            </div>
 
-                  <div className="flex-end animate-fade-in delay-200">
-                    <div className="glass-card card-reward" onClick={() => setActiveTab('recompensas')}>
-                      <div className="flex justify-between mb-10">
-                        <div className="premium-gradient brand-logo">
-                          <QrCode size={24} />
-                        </div>
-                        <div className="text-right">
-                          <p className="points-label">SALDO PUNTOS</p>
-                          <p className="points-value">{user.points.toLocaleString()}</p>
-                        </div>
-                      </div>
-                      <h3 className="membership-title">Membresía: {user.level}</h3>
-                      <div className="progress-bar">
-                        <div className="progress-fill" style={{ width: `${(user.points / user.nextReward) * 100}%` }} />
-                      </div>
-                      <p className="points-footer">{user.nextReward - user.points} PTS PARA EL SIGUIENTE NIVEL</p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </section>
-
-            <section className="container grid-3" style={{ paddingBottom: '100px' }}>
-              {[
-                { icon: MapPin, title: 'Sedes Reales', desc: 'Encuentra tu Kingdom Coffee más cercano.' },
-                { icon: ShoppingBag, title: 'Pick Up Express', desc: 'Pide por la app y retira sin esperas.' },
-                { icon: Star, title: 'Kingdom Rewards', desc: 'Acumula coronas y canjea cafés gratis.' }
-              ].map((item, i) => (
-                <div key={i} className="glass-card feature-tile">
-                  <div className="brand-logo premium-gradient" style={{ marginBottom: '25px' }}><item.icon size={24} /></div>
-                  <h3 style={{ marginBottom: '15px', fontWeight: 900 }}>{item.title}</h3>
-                  <p style={{ color: 'rgba(255,255,255,0.4)', fontSize: '0.9rem' }}>{item.desc}</p>
+            <div className="menu-grid">
+              {menu.slice(0, 4).map(item => (
+                <div key={item.id} className="app-card" onClick={() => setSelectedProduct(item)}>
+                  <img src={item.image} className="card-img" />
+                  <h4 style={{ fontSize: '0.9rem', marginBottom: '4px' }}>{item.name}</h4>
+                  <p className="card-price">${item.price.toLocaleString()}</p>
                 </div>
               ))}
-            </section>
-          </>
+            </div>
+
+            <div className="status-card" style={{ marginTop: '30px' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <div>
+                  <h3 style={{ fontWeight: 900 }}>TU REINO</h3>
+                  <p style={{ color: 'var(--primary)', fontSize: '0.8rem', fontWeight: 800 }}>RANGO: {user.level.split(' ')[0]}</p>
+                </div>
+                <QrCode size={30} className="gold-text" />
+              </div>
+              <div className="progress-track">
+                <div className="progress-bar" style={{ width: '65%' }} />
+              </div>
+              <p style={{ fontSize: '0.7rem', color: '#777', textAlign: 'center' }}>FALTAN 750 PTS PARA EL SIGUIENTE NIVEL</p>
+            </div>
+          </div>
         )}
 
         {activeTab === 'menú' && (
-          <section className="container section-padding animate-fade-in">
-            <h2 className="section-title">Nuestra <span className="text-gold">Carta Real</span></h2>
+          <div className="animate-app-slide">
+            <h2 className="section-label" style={{ fontSize: '1.8rem', marginBottom: '30px' }}>Carta Real</h2>
+            <div className="search-bar" style={{ background: '#1c1f26', padding: '16px', borderRadius: '18px', display: 'flex', gap: '12px', marginBottom: '25px', border: '1px solid rgba(255,255,255,0.05)' }}>
+              <Search size={20} color="#666" />
+              <input placeholder="¿Qué se te antoja hoy?" style={{ background: 'none', border: 'none', color: '#fff', outline: 'none', width: '100%' }} />
+            </div>
+
             <div className="menu-grid">
               {menu.map(item => (
-                <div key={item.id} className="glass-card menu-card" onClick={() => setSelectedProduct(item)}>
-                  <div className="menu-img-wrapper">
-                    <img src={item.image} alt={item.name} className="menu-img" />
-                    <span className="menu-category">{item.category}</span>
-                  </div>
-                  <div className="menu-info">
-                    <div className="flex justify-between items-center mb-2">
-                      <h3 style={{ fontWeight: 900 }}>{item.name}</h3>
-                      <span className="text-gold font-black">${item.price.toLocaleString()}</span>
-                    </div>
-                    <p className="menu-desc">{item.desc}</p>
-                    <button onClick={(e) => { e.stopPropagation(); addToCart(item); }} className="btn btn-primary w-full flex items-center justify-center gap-2 mt-4">
-                      <Plus size={18} /> AGREGAR
+                <div key={item.id} className="app-card" onClick={() => setSelectedProduct(item)}>
+                  <div style={{ position: 'relative' }}>
+                    <img src={item.image} className="card-img" />
+                    <button
+                      className="icon-btn-circle"
+                      style={{ position: 'absolute', bottom: '8px', right: '8px', background: 'var(--primary)', color: '#000', width: '32px', height: '32px' }}
+                      onClick={(e) => { e.stopPropagation(); handleAddToCart(item); }}
+                    >
+                      <Plus size={18} />
                     </button>
                   </div>
+                  <h4 style={{ fontSize: '0.9rem', marginBottom: '4px' }}>{item.name}</h4>
+                  <p className="card-price">${item.price.toLocaleString()}</p>
                 </div>
               ))}
             </div>
-          </section>
+          </div>
         )}
 
-        {activeTab === 'sucursales' && (
-          <section className="container section-padding animate-fade-in">
-            <h2 className="section-title">Nuestros <span className="text-gold">Palacios</span></h2>
-            <div className="grid-3">
-              {[
-                { name: 'Kingdom Tobalaba', address: 'Av. Tobalaba 1234, Providencia', distance: '1.2 km', open: true },
-                { name: 'Kingdom Los Leones', address: 'Av. Los Leones 567, Providencia', distance: '2.5 km', open: true },
-                { name: 'Kingdom Parque Arauco', address: 'Av. Kennedy 5413, Las Condes', distance: '4.8 km', open: false }
-              ].map((sed, i) => (
-                <div key={i} className="glass-card">
-                  <div className="flex justify-between mb-6">
-                    <h3 style={{ fontWeight: 900 }}>{sed.name}</h3>
-                    <span className={`branch-status ${sed.open ? 'open' : 'closed'}`}>{sed.open ? '● Abierto' : '● Cerrado'}</span>
-                  </div>
-                  <p className="branch-address">{sed.address}</p>
-                  <div className="branch-distance">
-                    <MapPin size={14} /> {sed.distance}
-                  </div>
-                  <button className="btn btn-ghost w-full">¿CÓMO LLEGAR?</button>
-                </div>
-              ))}
+        {activeTab === 'mapa' && (
+          <div className="animate-app-slide">
+            <h2 className="section-label">Sucursales</h2>
+            <div style={{ background: '#1c1f26', height: '250px', borderRadius: '32px', marginBottom: '20px', display: 'flex', alignItems: 'center', justifyContent: 'center', border: '1px solid rgba(255,255,255,0.05)' }}>
+              <MapPin size={40} className="gold-text" />
             </div>
-          </section>
+            {[
+              { name: 'Palacio Tobalaba', dist: '1.2km' },
+              { name: 'Corte Los Leones', dist: '2.5km' }
+            ].map((s, i) => (
+              <div key={i} className="app-card" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px', padding: '20px' }}>
+                <h4 style={{ fontWeight: 800 }}>{s.name}</h4>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--primary)', fontSize: '0.8rem', fontWeight: 900 }}>
+                  <MapPin size={14} /> {s.dist}
+                </div>
+              </div>
+            ))}
+          </div>
         )}
 
-        {activeTab === 'recompensas' && (
-          <section className="container section-padding animate-fade-in">
-            <h2 className="section-title">Tu <span className="text-gold">Reino de Beneficios</span></h2>
-            <div className="rewards-layout">
-              <div className="glass-card profile-card">
-                <div className="avatar-big">{user.name.charAt(0)}</div>
-                <h3 className="user-name">{user.name}</h3>
-                <p className="user-level-badge">{user.level}</p>
-                <div className="credit-box">
-                  <p className="credit-label">CRÉDITO REAL</p>
-                  <p className="credit-value">${(user.points * 10).toLocaleString()}</p>
-                </div>
-              </div>
-              <div className="rewards-actions">
-                <div className="glass-card offer-card">
-                  <div>
-                    <h4 className="offer-title">CAFÉ GRATIS DISPONIBLE</h4>
-                    <p className="offer-desc">Canjea tu Espresso Real o Capuchino Imperial ahora.</p>
-                  </div>
-                  <button className="btn btn-primary">CANJEAR</button>
-                </div>
-                <div className="glass-card qr-big-card" onClick={handleScanQR}>
-                  <QrCode size={48} className="text-gold mb-4" />
-                  <h4 className="offer-title">ESCANEAR EN SUCURSAL</h4>
-                  <p className="offer-desc">Escanea el código en caja para acumular coronas automáticamente.</p>
-                </div>
-              </div>
+        {activeTab === 'club' && (
+          <div className="animate-app-slide">
+            <h2 className="section-label">Kingdom Club</h2>
+            <div className="status-card" style={{ height: '240px', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', textAlign: 'center' }}>
+              <div className="avatar-big" style={{ width: '80px', height: '80px', marginBottom: '15px' }}>{user.name.charAt(0)}</div>
+              <h3 style={{ fontWeight: 900 }}>{user.name}</h3>
+              <p className="gold-text" style={{ fontWeight: 800 }}>{user.level}</p>
             </div>
-          </section>
+
+            <div className="app-card" style={{ padding: '24px', borderStyle: 'dashed', borderColor: 'var(--primary)' }}>
+              <h4 style={{ color: 'var(--primary)', marginBottom: '8px' }}>RECOMPENSA DISPONIBLE</h4>
+              <p style={{ fontSize: '0.8rem', opacity: 0.6 }}>Canjea un Muffin Real ahora.</p>
+              <button className="btn btn-primary" style={{ width: '100%', marginTop: '15px', padding: '12px' }}>CANJEAR</button>
+            </div>
+          </div>
         )}
+
       </main>
 
-      {/* Cart Drawer Overlay */}
-      {showCart && (
-        <div className="modal-overlay animate-fade-in" onClick={() => setShowCart(false)}>
-          <div className="cart-drawer animate-fade-in" onClick={e => e.stopPropagation()} style={{ position: 'absolute', right: 0 }}>
-            <div style={{ padding: '40px' }}>
-              <div className="flex justify-between items-center mb-10">
-                <h2 style={{ fontSize: '1.8rem', fontWeight: 900 }}>Tu <span className="text-gold">Pedido</span></h2>
-                <button onClick={() => setShowCart(false)} className="close-btn-round"><X size={24} /></button>
-              </div>
-
-              {orderComplete ? (
-                <div style={{ textAlign: 'center', padding: '100px 0' }}>
-                  <CheckCircle size={80} className="text-gold mb-6" />
-                  <h3 style={{ fontSize: '2rem', fontWeight: 900 }}>¡CONQUISTA COMPLETADA!</h3>
-                  <p style={{ color: 'rgba(255,255,255,0.4)', marginTop: '10px' }}>Estamos preparando tu tesoro.</p>
-                </div>
-              ) : cart.length > 0 ? (
-                <>
-                  <div className="cart-items">
-                    {cart.map(item => (
-                      <div key={item.id} style={{ display: 'flex', gap: '20px', marginBottom: '30px', borderBottom: '1px solid var(--border)', paddingBottom: '20px' }}>
-                        <img src={item.image} style={{ width: '80px', height: '80px', borderRadius: '16px', objectFit: 'cover' }} />
-                        <div style={{ flex: 1 }}>
-                          <h4 style={{ fontWeight: 900 }}>{item.name}</h4>
-                          <p className="text-gold" style={{ fontWeight: 800 }}>${item.price.toLocaleString()}</p>
-                          <div className="flex items-center gap-4 mt-3">
-                            <button onClick={() => updateQty(item.id, -1)} className="qty-btn"><Minus size={14} /></button>
-                            <span style={{ fontWeight: 900 }}>{item.qty}</span>
-                            <button onClick={() => updateQty(item.id, 1)} className="qty-btn"><Plus size={14} /></button>
-                          </div>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </>
-              ) : (
-                <div style={{ textAlign: 'center', padding: '100px 0', opacity: 0.2 }}>
-                  <ShoppingBag size={80} />
-                  <p style={{ marginTop: '20px', fontWeight: 800 }}>TU TESORO ESTÁ VACÍO</p>
-                </div>
-              )}
-            </div>
-
-            {!orderComplete && cart.length > 0 && (
-              <div className="cart-footer">
-                <div className="flex justify-between items-center mb-8">
-                  <span style={{ color: 'rgba(255,255,255,0.4)', fontWeight: 800 }}>TOTAL A PAGAR</span>
-                  <span style={{ fontSize: '2rem', fontWeight: 900 }}>${cartTotal.toLocaleString()}</span>
-                </div>
-                <button onClick={handleCheckout} className="btn btn-primary w-full py-6 text-xl">PROCESAR PEDIDO REAL</button>
-              </div>
-            )}
-          </div>
-        </div>
+      {/* Floating Cart Button */}
+      {cart.length > 0 && !showCart && (
+        <button className="cart-floating-btn animate-app-slide" onClick={() => setShowCart(true)}>
+          <ShoppingBag size={24} color="#000" />
+          <span style={{ position: 'absolute', top: '-5px', right: '-5px', background: '#fff', color: '#000', fontSize: '12px', fontWeight: 900, width: '22px', height: '22px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>{cart.length}</span>
+        </button>
       )}
 
-      {/* Product Detail Modal */}
+      {/* Bottom Nav Controller */}
+      <nav className="app-nav">
+        {[
+          { id: 'inicio', label: 'INICIO', icon: Star },
+          { id: 'menú', label: 'ORDENAR', icon: Coffee },
+          { id: 'mapa', label: 'SEDES', icon: MapPin },
+          { id: 'club', label: 'CLUB', icon: QrCode }
+        ].map(tab => (
+          <div
+            key={tab.id}
+            className={`nav-item ${activeTab === tab.id ? 'active' : ''}`}
+            onClick={() => { setActiveTab(tab.id); window.scrollTo(0, 0); }}
+          >
+            <tab.icon size={22} fill={activeTab === tab.id ? 'currentColor' : 'none'} />
+            <span>{tab.label}</span>
+            <div className="nav-indicator" />
+          </div>
+        ))}
+      </nav>
+
+      {/* Product Detail Overlay */}
       {selectedProduct && (
-        <div className="modal-overlay animate-fade-in" onClick={() => setSelectedProduct(null)}>
-          <div className="glass-card modal-product animate-slide" onClick={e => e.stopPropagation()}>
-            <div className="modal-grid-detail">
-              <img src={selectedProduct.image} className="modal-product-img" alt={selectedProduct.name} />
-              <div className="modal-product-info">
-                <div className="flex justify-between items-start mb-6">
-                  <div>
-                    <span className="tag">{selectedProduct.category}</span>
-                    <h2 style={{ fontSize: '2.5rem', fontWeight: 900, lineHeight: 1 }}>{selectedProduct.name}</h2>
+        <div className="full-screen-modal animate-app-slide">
+          <div style={{ position: 'relative', height: '50%' }}>
+            <img src={selectedProduct.image} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+            <button
+              className="icon-btn-circle"
+              style={{ position: 'absolute', top: '40px', left: '24px', background: 'rgba(0,0,0,0.5)', backdropFilter: 'blur(10px)' }}
+              onClick={() => setSelectedProduct(null)}
+            >
+              <ArrowLeft size={24} />
+            </button>
+          </div>
+          <div style={{ flex: 1, padding: '30px', background: 'var(--bg-app)', borderTopLeftRadius: '32px', borderTopRightRadius: '32px', marginTop: '-32px', position: 'relative' }}>
+            <div className="tag" style={{ border: 'none', background: 'rgba(212, 175, 55, 0.1)', color: 'var(--primary)', marginBottom: '15px' }}>{selectedProduct.category}</div>
+            <h2 style={{ fontSize: '2rem', fontWeight: 900, marginBottom: '10px' }}>{selectedProduct.name}</h2>
+            <p style={{ color: '#aaa', lineHeight: 1.6, marginBottom: '30px' }}>{selectedProduct.desc}</p>
+
+            <div style={{ position: 'absolute', bottom: '40px', left: '24px', right: '24px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <div>
+                <p style={{ fontSize: '0.8rem', opacity: 0.5, fontWeight: 700 }}>PRECIO</p>
+                <p style={{ fontSize: '1.8rem', fontWeight: 900, color: 'var(--primary)' }}>${selectedProduct.price.toLocaleString()}</p>
+              </div>
+              <button
+                className="btn btn-primary"
+                style={{ padding: '20px 40px', fontSize: '1rem' }}
+                onClick={() => { handleAddToCart(selectedProduct); setSelectedProduct(null); }}
+              >
+                AGREGAR
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Cart Drawer */}
+      {showCart && (
+        <div className="full-screen-modal animate-app-slide" style={{ padding: '40px 24px' }}>
+          <header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '40px' }}>
+            <h2 style={{ fontSize: '2rem', fontWeight: 900 }}>MI <span className="gold-text">PEDIDO</span></h2>
+            <button className="icon-btn-circle" style={{ background: 'rgba(255,255,255,0.05)' }} onClick={() => setShowCart(false)}><X size={30} /></button>
+          </header>
+
+          <div style={{ flex: 1, overflowY: 'auto' }}>
+            {cart.map(item => (
+              <div key={item.id} style={{ display: 'flex', gap: '20px', marginBottom: '24px', background: '#1c1f26', padding: '16px', borderRadius: '24px' }}>
+                <img src={item.image} style={{ width: '80px', height: '80px', borderRadius: '16px', objectFit: 'cover' }} />
+                <div style={{ flex: 1 }}>
+                  <h4 style={{ fontWeight: 800 }}>{item.name}</h4>
+                  <p className="gold-text" style={{ fontWeight: 900 }}>${item.price.toLocaleString()}</p>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '15px', marginTop: '10px' }}>
+                    <button className="qty-btn" onClick={() => updateQty(item.id, -1)}><Minus size={14} /></button>
+                    <span style={{ fontWeight: 900 }}>{item.qty}</span>
+                    <button className="qty-btn" onClick={() => updateQty(item.id, 1)}><Plus size={14} /></button>
                   </div>
-                  <button onClick={() => setSelectedProduct(null)} className="close-btn-round"><X size={24} /></button>
-                </div>
-                <p style={{ color: 'rgba(255,255,255,0.6)', fontSize: '1.1rem', marginBottom: '40px' }}>{selectedProduct.desc}</p>
-                <div className="flex justify-between items-center mb-8">
-                  <span style={{ fontSize: '2rem', fontWeight: 900, color: 'var(--primary)' }}>${selectedProduct.price.toLocaleString()}</span>
-                  <button onClick={() => { addToCart(selectedProduct); setSelectedProduct(null); }} className="btn btn-primary py-6 px-10 text-xl">
-                    AÑADIR A MI CONQUISTA
-                  </button>
                 </div>
               </div>
+            ))}
+          </div>
+
+          <div style={{ paddingTop: '20px' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '20px' }}>
+              <span style={{ opacity: 0.5, fontWeight: 800 }}>TOTAL</span>
+              <span style={{ fontSize: '1.8rem', fontWeight: 900 }}>${cartTotal.toLocaleString()}</span>
             </div>
+            <button
+              className="btn btn-primary"
+              style={{ width: '100%', padding: '24px' }}
+              onClick={() => { checkout(); setShowCart(false); alert("¡ORDEN ENVIADA!"); }}
+            >
+              FINALIZAR COMPRA REAL
+            </button>
           </div>
         </div>
       )}
 
-      {/* QR Scanner Simulation */}
-      {showQRScanner && (
-        <div className="modal-overlay flex items-center justify-center animate-fade-in" style={{ zIndex: 1000 }}>
-          <div className="qr-scanner-box">
-            <div className="qr-guide-corners" />
-            <div className="qr-scan-line" />
-            <div className="qr-text">
-              <h3>BUSCANDO CÓDIGO REAL...</h3>
-              <p>Apunta al código en la caja</p>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Footer */}
-      <footer style={{ padding: '80px 0', borderTop: '1px solid var(--border)', background: '#050505' }}>
-        <div className="container" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '60px' }}>
-          <div>
-            <div className="flex items-center gap-2 mb-6">
-              <div className="premium-gradient brand-logo"><Coffee size={20} /></div>
-              <span className="brand-text">THE KINGDOM <span className="text-gold">COFFEE</span></span>
-            </div>
-            <p style={{ color: 'rgba(255,255,255,0.2)', fontSize: '0.85rem' }}>El café oficial de los que conquistan el mundo todos los días.</p>
-          </div>
-          <div>
-            <h4 style={{ fontWeight: 900, marginBottom: '20px', fontSize: '0.8rem', letterSpacing: '2px' }}>SÍGUENOS</h4>
-            <div className="flex gap-4">
-              <Instagram size={20} className="text-gold" />
-              <Facebook size={20} className="text-gold" />
-              <Twitter size={20} className="text-gold" />
-            </div>
-          </div>
-        </div>
-      </footer>
     </div>
   )
 }

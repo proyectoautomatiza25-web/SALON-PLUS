@@ -14,10 +14,18 @@ const LoginModal = ({ isOpen, onClose, onLogin }) => {
         setError('');
         setIsLoading(true);
 
-        // Simulación de autenticación (reemplazar con tu backend real)
+        // Simulación de autenticación
         setTimeout(() => {
-            // Credenciales de ejemplo - CAMBIAR EN PRODUCCIÓN
-            if (username === 'admin' && password === 'admin123') {
+            // Verificar si es Admin
+            const isAdmin = username === 'admin' && password === 'admin123';
+
+            // Verificar si es Cuenta Demo
+            const demoData = JSON.parse(localStorage.getItem('demoCredentials') || '{}');
+            const isDemo = demoData.email &&
+                (username === demoData.email || username === demoData.email.split('@')[0]) &&
+                password === demoData.password;
+
+            if (isAdmin || isDemo) {
                 onLogin();
                 onClose();
                 setUsername('');

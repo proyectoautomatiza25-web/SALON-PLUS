@@ -1,0 +1,38 @@
+/* Ajustes para el modal de registro de demo */
+.demo-modal-overlay {
+    max-height: 85vh !important;
+    overflow-y: auto !important;
+}
+
+.demo-modal-content {
+    max-width: 480px !important;
+    padding: 2rem !important;
+    max-height: 80vh !important;
+    overflow-y: auto !important;
+}
+
+.demo-modal-content h2 {
+    font-size: 2rem !important;
+}
+
+.demo-modal-content input {
+    padding: 0.9rem 0.9rem 0.9rem 2.8rem !important;
+    font-size: 0.95rem !important;
+}
+
+.demo-modal-content label {
+    font-size: 0.9rem !important;
+    margin-bottom: 0.4rem !important;
+}
+
+/* Hacer el modal responsive */
+@media (max-width: 640px) {
+    .demo-modal-content {
+        padding: 1.5rem !important;
+        margin: 1rem !important;
+    }
+
+    .demo-modal-content h2 {
+        font-size: 1.75rem !important;
+    }
+}

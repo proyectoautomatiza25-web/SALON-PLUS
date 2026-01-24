@@ -18,7 +18,8 @@ const SaaSApp = ({ user, onLogout }) => {
     const [currentTab, setCurrentTab] = useState('dashboard');
     const [selectedPatient, setSelectedPatient] = useState(null);
     const [searchQuery, setSearchQuery] = useState('');
-    const { getStats, patients } = useSaaSStore();
+    const { getStats, patients, professionals } = useSaaSStore();
+    const [currentProf, setCurrentProf] = useState(professionals[0]);
 
     const menuItems = [
         { id: 'dashboard', label: 'Resumen', icon: BarChart },
@@ -115,10 +116,19 @@ const SaaSApp = ({ user, onLogout }) => {
                         </div>
                         <button style={styles.iconBtn}><Bell size={20} /></button>
                         <div style={styles.userProfile}>
-                            <div style={styles.userAvatar}>Z</div>
+                            <select
+                                value={currentProf.id}
+                                onChange={(e) => setCurrentProf(professionals.find(p => p.id === parseInt(e.target.value)))}
+                                style={styles.contextSelect}
+                            >
+                                {professionals.map(p => (
+                                    <option key={p.id} value={p.id}>{p.name}</option>
+                                ))}
+                            </select>
+                            <div style={{ ...styles.userAvatar, background: currentProf.color }}>{currentProf.name.charAt(0)}</div>
                             <div style={styles.userInfo}>
-                                <div style={styles.userName}>{user.email.split('@')[0]}</div>
-                                <div style={styles.userRole}>Administrador</div>
+                                <div style={styles.userName}>{currentProf.role}</div>
+                                <div style={styles.userRole}>Perfil Activo</div>
                             </div>
                         </div>
                     </div>
@@ -126,13 +136,13 @@ const SaaSApp = ({ user, onLogout }) => {
 
                 {/* Content Area */}
                 <div style={styles.content}>
-                    {currentTab === 'dashboard' && <Dashboard stats={getStats()} />}
-                    {currentTab === 'agenda' && <Agenda onOpenPatient={setSelectedPatient} />}
-                    {currentTab === 'patients' && <Clients onOpenPatient={setSelectedPatient} />}
+                    {currentTab === 'dashboard' && <Dashboard stats={getStats()} profId={currentProf.id} />}
+                    {currentTab === 'agenda' && <Agenda onOpenPatient={setSelectedPatient} initialProfId={currentProf.id} />}
+                    {currentTab === 'patients' && <Clients onOpenPatient={setSelectedPatient} currentProfId={currentProf.id} />}
                     {currentTab === 'marketing' && <CampaignsManager />}
                     {currentTab === 'finances' && <Finances />}
                     {currentTab === 'professionals' && <Professionals />}
-                    {currentTab === 'config' && <Config />}
+                    {currentTab === 'config' && <Config currentProfId={currentProf.id} />}
                 </div>
 
                 {/* Overlays */}
@@ -145,32 +155,33 @@ const SaaSApp = ({ user, onLogout }) => {
 };
 
 const styles = {
-    container: { display: 'flex', height: '100vh', width: '100vw', background: '#f1f5f9', color: '#1e293b' },
-    sidebar: { width: '280px', background: '#1e293b', display: 'flex', flexDirection: 'column', padding: '30px 20px', border: 'none', borderRadius: '0 32px 32px 0', zIndex: 10 },
-    logo: { display: 'flex', alignItems: 'center', gap: '12px', padding: '0 15px', marginBottom: '50px' },
-    logoText: { fontSize: '1.5rem', fontWeight: '900', color: 'var(--primary-light)' },
-    nav: { display: 'flex', flexDirection: 'column', gap: '8px', flex: 1 },
-    navItem: { display: 'flex', alignItems: 'center', gap: '15px', padding: '14px 20px', borderRadius: '16px', border: 'none', cursor: 'pointer', textAlign: 'left', fontSize: '0.95rem', fontWeight: '600', transition: 'all 0.3s ease', position: 'relative' },
+    container: { display: 'flex', height: '100vh', width: '100vw', background: '#f8fafc', color: '#1e293b', overflow: 'hidden' },
+    sidebar: { width: '280px', background: '#1e293b', display: 'flex', flexDirection: 'column', padding: '30px 20px', border: 'none', borderRadius: '0', zIndex: 100, boxShadow: '10px 0 30px rgba(0,0,0,0.05)' },
+    logo: { display: 'flex', alignItems: 'center', gap: '15px', padding: '0 10px', marginBottom: '50px' },
+    logoText: { fontSize: '1.6rem', fontWeight: '900', color: 'var(--primary-light)', letterSpacing: '-0.5px' },
+    nav: { display: 'flex', flexDirection: 'column', gap: '6px', flex: 1 },
+    navItem: { display: 'flex', alignItems: 'center', gap: '12px', padding: '14px 18px', borderRadius: '14px', border: 'none', cursor: 'pointer', textAlign: 'left', fontSize: '0.95rem', fontWeight: '600', transition: 'all 0.3s ease', position: 'relative', width: '100%', background: 'transparent' },
     navLabel: { flex: 1 },
-    activeIndicator: { width: '4px', height: '20px', background: '#fff', borderRadius: '10px', position: 'absolute', right: '15px' },
-    sidebarFooter: { paddingTop: '20px', borderTop: '1px solid rgba(255,255,255,0.05)' },
-    logoutBtn: { display: 'flex', alignItems: 'center', gap: '15px', width: '100%', padding: '14px 20px', background: 'transparent', border: 'none', color: '#ef4444', fontWeight: '700', cursor: 'pointer', fontSize: '0.95rem' },
-    main: { flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden' },
-    header: { height: '80px', padding: '0 40px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: 'rgba(255,255,255,0.5)', backdropFilter: 'blur(10px)', borderBottom: '1px solid #e2e8f0' },
-    breadcrumb: { fontSize: '0.9rem', fontWeight: '600' },
+    activeIndicator: { width: '4px', height: '20px', background: '#fff', borderRadius: '10px', position: 'absolute', right: '12px' },
+    sidebarFooter: { paddingTop: '20px', borderTop: '1px solid rgba(255,255,255,0.08)' },
+    logoutBtn: { display: 'flex', alignItems: 'center', gap: '12px', width: '100%', padding: '14px 18px', background: 'transparent', border: 'none', color: '#f87171', fontWeight: '700', cursor: 'pointer', fontSize: '0.95rem', borderRadius: '12px', transition: 'background 0.2s' },
+    main: { flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden', background: '#f8fafc' },
+    header: { height: '80px', padding: '0 40px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: '#fff', borderBottom: '1.5px solid #f1f5f9', zIndex: 50 },
+    breadcrumb: { fontSize: '0.9rem', fontWeight: '600', display: 'flex', alignItems: 'center' },
     headerActions: { display: 'flex', alignItems: 'center', gap: '25px' },
-    searchBar: { display: 'flex', alignItems: 'center', gap: '12px', background: '#fff', padding: '10px 20px', borderRadius: '14px', border: '1.5px solid #e2e8f0', width: '300px' },
-    searchInput: { border: 'none', outline: 'none', width: '100%', fontSize: '0.9rem', fontWeight: '600' },
-    iconBtn: { width: '42px', height: '42px', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#fff', borderRadius: '12px', border: '1.5px solid #e2e8f0', cursor: 'pointer', color: '#64748b' },
-    userProfile: { display: 'flex', alignItems: 'center', gap: '15px', padding: '5px', borderRadius: '12px', cursor: 'pointer' },
-    userAvatar: { width: '40px', height: '40px', background: 'var(--primary-gradient)', color: '#fff', borderRadius: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: '900', fontSize: '1.2rem' },
+    searchBar: { display: 'flex', alignItems: 'center', gap: '12px', background: '#f8fafc', padding: '10px 20px', borderRadius: '14px', border: '1.5px solid #e2e8f0', width: '380px', transition: 'all 0.2s ease' },
+    searchInput: { border: 'none', background: 'none', outline: 'none', width: '100%', fontSize: '0.9rem', fontWeight: '600', color: '#1e293b' },
+    iconBtn: { width: '42px', height: '42px', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#fff', borderRadius: '12px', border: '1.5px solid #e2e8f0', cursor: 'pointer', color: '#64748b', transition: 'all 0.2s' },
+    userProfile: { display: 'flex', alignItems: 'center', gap: '14px', padding: '6px 12px', borderRadius: '14px', cursor: 'pointer', background: '#f8fafc', border: '1px solid transparent', transition: 'all 0.2s' },
+    userAvatar: { width: '38px', height: '38px', background: 'var(--primary-gradient)', color: '#fff', borderRadius: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: '900', fontSize: '1.1rem' },
     userInfo: { display: 'flex', flexDirection: 'column' },
     userName: { fontSize: '0.9rem', fontWeight: '800', color: '#1e293b' },
     userRole: { fontSize: '0.75rem', color: '#94a3b8', fontWeight: '600' },
-    content: { flex: 1, overflowY: 'auto', padding: '0' },
-    searchResults: { position: 'absolute', top: '60px', left: 0, right: 0, background: '#fff', borderRadius: '16px', boxShadow: '0 20px 25px -5px rgba(0,0,0,0.1), 0 10px 10px -5px rgba(0,0,0,0.04)', border: '1.5px solid #e2e8f0', zIndex: 1000, overflow: 'hidden', maxHeight: '400px', overflowY: 'auto' },
-    searchResultItem: { padding: '12px 20px', display: 'flex', alignItems: 'center', gap: '15px', cursor: 'pointer', transition: 'background 0.2s', borderBottom: '1px solid #f1f5f9' },
-    miniAvatar: { width: '32px', height: '32px', borderRadius: '8px', background: 'var(--primary-gradient)', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.8rem', fontWeight: '900' }
+    content: { flex: 1, overflowY: 'auto', paddingBottom: '40px' },
+    searchResults: { position: 'absolute', top: '60px', left: 0, right: 0, background: '#fff', borderRadius: '16px', boxShadow: '0 25px 50px -12px rgba(0,0,0,0.15)', border: '1.5px solid #e2e8f0', zIndex: 1000, overflow: 'hidden', maxHeight: '400px' },
+    searchResultItem: { padding: '12px 20px', display: 'flex', alignItems: 'center', gap: '15px', cursor: 'pointer', borderBottom: '1px solid #f1f5f9', transition: 'background 0.2s' },
+    miniAvatar: { width: '32px', height: '32px', borderRadius: '8px', background: 'var(--primary-gradient)', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.85rem', fontWeight: '900' },
+    contextSelect: { background: 'none', border: 'none', outline: 'none', fontSize: '0.9rem', fontWeight: '800', cursor: 'pointer', color: 'var(--primary)', marginRight: '10px' }
 };
 
 export default SaaSApp;

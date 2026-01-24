@@ -2,16 +2,14 @@ import React from 'react';
 
 const TopNav = ({ currentTab, setTab }) => {
     const menuItems = [
-        { id: 'agenda', label: 'Agenda', icon: '🗓️' },
+        { id: 'agenda', label: 'Agenda', icon: '📅' },
         { id: 'clients', label: 'Pacientes', icon: '👥' },
         { id: 'professionals', label: 'Profesionales', icon: '👨‍⚕️' },
         { id: 'campaigns', label: 'Campañas', icon: '📧' },
-        { id: 'crm', label: 'CRM', icon: '❤️' },
+        { id: 'crm', label: 'CRM', icon: '💚' },
         { id: 'finanzas', label: 'Finanzas', icon: '💰' },
         { id: 'stats', label: 'Estadísticas', icon: '📊' },
-        { id: 'config', label: 'Configuración', icon: '⚙️' },
-        { id: 'support', label: 'Soporte', icon: '💬' },
-        { id: 'tutorial', label: 'Tutoriales', icon: '❓' },
+        { id: 'config', label: 'Config', icon: '⚙️' },
     ];
 
     return (
@@ -19,16 +17,11 @@ const TopNav = ({ currentTab, setTab }) => {
             <div style={styles.left}>
                 <div style={styles.logo}>
                     <div style={styles.logoIcon}>
-                        <span style={{ fontSize: '1.4rem' }}>🗓️</span>
-                        <div style={styles.plusBadge}>+</div>
+                        📅
                     </div>
-                    <div style={{ display: 'flex', flexDirection: 'column', lineHeight: '1' }}>
-                        <span style={{ fontSize: '1.4rem', fontWeight: '900', letterSpacing: '-0.5px', background: 'var(--primary-gradient)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
-                            Agenda
-                        </span>
-                        <span style={{ fontSize: '1.4rem', fontWeight: '900', color: 'var(--secondary)' }}>
-                            Plus
-                        </span>
+                    <div style={styles.logoText}>
+                        <div style={styles.brandName}>Agenda Plus</div>
+                        <div style={styles.brandTagline}>by Automatiza Sur</div>
                     </div>
                 </div>
             </div>
@@ -40,8 +33,8 @@ const TopNav = ({ currentTab, setTab }) => {
                         onClick={() => setTab(item.id)}
                         style={{
                             ...styles.navItem,
-                            color: currentTab === item.id ? 'var(--primary)' : '#94a3b8',
-                            background: currentTab === item.id ? '#f1f5f9' : 'transparent',
+                            color: currentTab === item.id ? 'var(--primary)' : '#64748b',
+                            background: currentTab === item.id ? 'rgba(0, 158, 157, 0.08)' : 'transparent',
                         }}
                     >
                         <div style={{ fontSize: '1.2rem' }}>{item.icon}</div>
@@ -62,18 +55,104 @@ const TopNav = ({ currentTab, setTab }) => {
 };
 
 const styles = {
-    container: { height: '85px', display: 'flex', alignItems: 'center', padding: '0 40px', position: 'sticky', top: 0, zIndex: 1000, borderBottom: '1px solid rgba(0,0,0,0.05)' },
-    left: { marginRight: '60px' },
+    container: {
+        height: '70px',
+        display: 'flex',
+        alignItems: 'center',
+        padding: '0 30px',
+        position: 'sticky',
+        top: 0,
+        zIndex: 1000,
+        borderBottom: '1px solid rgba(0,0,0,0.06)',
+        background: 'rgba(255,255,255,0.95)',
+        backdropFilter: 'blur(10px)'
+    },
+    left: { marginRight: '40px' },
     logo: { display: 'flex', alignItems: 'center', gap: '12px', cursor: 'pointer' },
-    logoIcon: { position: 'relative', width: '45px', height: '45px', background: 'white', borderRadius: '14px', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 10px 20px rgba(0,0,0,0.08)' },
-    plusBadge: { position: 'absolute', top: '-5px', right: '-5px', background: 'var(--primary)', color: 'white', width: '20px', height: '20px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '14px', fontWeight: '900', border: '2px solid white' },
-    center: { flex: 1, display: 'flex', gap: '15px', height: '100%', alignItems: 'center' },
-    navItem: { display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', transition: '0.3s', minWidth: '85px', height: '60px', borderRadius: '16px', position: 'relative', cursor: 'pointer' },
-    activeDot: { position: 'absolute', bottom: '8px', width: '4px', height: '4px', background: 'var(--primary)', borderRadius: '50%' },
-    right: { display: 'flex', alignItems: 'center', gap: '25px' },
-    searchPrompt: { fontSize: '0.75rem', color: '#94a3b8', background: '#f8fafc', padding: '8px 15px', borderRadius: '12px', border: '1px solid #e2e8f0', cursor: 'pointer' },
-    userSection: { display: 'flex', alignItems: 'center', gap: '15px' },
-    avatar: { width: '42px', height: '42px', background: 'var(--primary-gradient)', color: 'white', borderRadius: '14px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: '900', fontSize: '1.1rem' },
+    logoIcon: {
+        width: '42px',
+        height: '42px',
+        background: 'linear-gradient(135deg, #009E9D 0%, #00C9C8 100%)',
+        borderRadius: '12px',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        fontSize: '1.5rem',
+        boxShadow: '0 4px 12px rgba(0, 158, 157, 0.25)'
+    },
+    logoText: {
+        display: 'flex',
+        flexDirection: 'column',
+        lineHeight: '1.2'
+    },
+    brandName: {
+        fontSize: '1.1rem',
+        fontWeight: '900',
+        color: '#1a2a2a',
+        letterSpacing: '-0.3px'
+    },
+    brandTagline: {
+        fontSize: '0.7rem',
+        fontWeight: '600',
+        color: '#94a3b8',
+        textTransform: 'uppercase',
+        letterSpacing: '0.5px'
+    },
+    center: {
+        flex: 1,
+        display: 'flex',
+        gap: '8px',
+        height: '100%',
+        alignItems: 'center',
+        overflowX: 'auto',
+        overflowY: 'hidden'
+    },
+    navItem: {
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        transition: '0.2s',
+        minWidth: '75px',
+        height: '55px',
+        borderRadius: '12px',
+        position: 'relative',
+        cursor: 'pointer',
+        flexShrink: 0
+    },
+    activeDot: {
+        position: 'absolute',
+        bottom: '6px',
+        width: '4px',
+        height: '4px',
+        background: 'var(--primary)',
+        borderRadius: '50%'
+    },
+    right: { display: 'flex', alignItems: 'center', gap: '20px', marginLeft: '20px' },
+    searchPrompt: {
+        fontSize: '0.7rem',
+        color: '#94a3b8',
+        background: '#f8fafc',
+        padding: '6px 12px',
+        borderRadius: '8px',
+        border: '1px solid #e2e8f0',
+        cursor: 'pointer',
+        whiteSpace: 'nowrap'
+    },
+    userSection: { display: 'flex', alignItems: 'center', gap: '12px' },
+    avatar: {
+        width: '38px',
+        height: '38px',
+        background: 'linear-gradient(135deg, #009E9D 0%, #00C9C8 100%)',
+        color: 'white',
+        borderRadius: '10px',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        fontWeight: '800',
+        fontSize: '1rem',
+        boxShadow: '0 2px 8px rgba(0, 158, 157, 0.2)'
+    },
 };
 
 export default TopNav;

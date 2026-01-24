@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 
 // Professionals Data (Expanded)
 const initialProfessionals = [
@@ -47,6 +47,39 @@ const initialProfessionals = [
         consultationPrice: 40000,
         commission: 70,
         active: true
+    },
+    {
+        id: 3,
+        name: 'Klgo. Roberto Díaz',
+        role: 'Kinesiología',
+        specialty: 'Rehabilitación Deportiva',
+        email: 'roberto.diaz@cmdelvalle.cl',
+        phone: '+56912345003',
+        color: '#3b82f6',
+        schedule: {
+            monday: { start: '08:00', end: '20:00', enabled: true },
+            wednesday: { start: '08:00', end: '20:00', enabled: true },
+            friday: { start: '08:00', end: '20:00', enabled: true }
+        },
+        consultationPrice: 25000,
+        commission: 50,
+        active: true
+    },
+    {
+        id: 4,
+        name: 'Nut. Elena Ruz',
+        role: 'Nutrición',
+        specialty: 'Nutrición Clínica y Deportiva',
+        email: 'elena.ruz@cmdelvalle.cl',
+        phone: '+56912345004',
+        color: '#ec4899',
+        schedule: {
+            tuesday: { start: '09:00', end: '18:00', enabled: true },
+            thursday: { start: '09:00', end: '18:00', enabled: true }
+        },
+        consultationPrice: 30000,
+        commission: 65,
+        active: true
     }
 ];
 
@@ -88,7 +121,8 @@ const initialPatients = [
         ],
         debts: [],
         status: 'Activo',
-        createdAt: '2025-12-01'
+        createdAt: '2025-12-01',
+        ownerProfId: 1 // Linked to Dra. Nataly Malaspina
     }
 ];
 
@@ -107,16 +141,39 @@ const initialAppointments = [
 ];
 
 export const useSaaSStore = () => {
+    // Persistence Helpers
+    const getStoredData = (key, initial) => {
+        const saved = localStorage.getItem(`agenda_plus_${key}`);
+        try {
+            return saved ? JSON.parse(saved) : initial;
+        } catch (e) {
+            return initial;
+        }
+    };
+
     const [professionals, setProfessionals] = useState(initialProfessionals);
-    const [patients, setPatients] = useState(initialPatients);
-    const [appointments, setAppointments] = useState(initialAppointments);
+    const [patients, setPatients] = useState(() => getStoredData('patients', initialPatients));
+    const [appointments, setAppointments] = useState(() => getStoredData('appointments', initialAppointments));
     const [notifications, setNotifications] = useState([]);
     const [campaigns, setCampaigns] = useState([]);
-    const [finances, setFinances] = useState({
+    const [finances, setFinances] = useState(() => getStoredData('finances', {
         transactions: [],
         boxes: [{ id: 1, name: 'Caja Central', status: 'closed', balance: 0 }],
         boxHistory: []
-    });
+    }));
+
+    // Auto-save effects
+    useEffect(() => {
+        localStorage.setItem('agenda_plus_patients', JSON.stringify(patients));
+    }, [patients]);
+
+    useEffect(() => {
+        localStorage.setItem('agenda_plus_appointments', JSON.stringify(appointments));
+    }, [appointments]);
+
+    useEffect(() => {
+        localStorage.setItem('agenda_plus_finances', JSON.stringify(finances));
+    }, [finances]);
 
     const openBox = useCallback((boxId, initialAmount = 0) => {
         setFinances(prev => ({
@@ -227,6 +284,22 @@ export const useSaaSStore = () => {
         }));
     }, []);
 
+    const bulkImportPatients = useCallback((newPatients, profId) => {
+        const formattedPatients = newPatients.map((p, idx) => ({
+            ...p,
+            id: `imported-${Date.now()}-${idx}`,
+            history: p.history || [],
+            recetas: p.recetas || [],
+            documents: p.documents || [],
+            debts: p.debts || [],
+            status: 'Activo',
+            createdAt: p.createdAt || new Date().toISOString(),
+            ownerProfId: profId // CRITICAL: Link patient to the specific professional
+        }));
+        setPatients(prev => [...prev, ...formattedPatients]);
+        return formattedPatients.length;
+    }, []);
+
     const addTransaction = useCallback((patientId, transaction) => {
         const newTrans = { id: Date.now().toString(), date: new Date().toISOString(), ...transaction };
         setFinances(prev => ({
@@ -301,6 +374,7 @@ export const useSaaSStore = () => {
         openBox,
         closeBox,
         addPatient,
-        addTransaction
+        addTransaction,
+        bulkImportPatients
     };
 };
