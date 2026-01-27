@@ -25,14 +25,20 @@ const localizer = dateFnsLocalizer({
 // Custom Resource Header (Circular Avatar + Name)
 const ResourceHeader = ({ label, resource }) => {
     return (
-        <div className="flex flex-col items-center justify-center py-2">
-            <div
-                className="w-12 h-12 rounded-full flex items-center justify-center text-white font-bold text-lg shadow-md mb-2 overflow-hidden border-2 border-white ring-1 ring-gray-100"
-                style={{ backgroundColor: resource?.color || '#3b82f6' }}
-            >
-                {label ? label.substring(0, 2).toUpperCase() : '??'}
-            </div>
-            <span className="text-xs font-bold text-gray-700 uppercase tracking-wide">{label}</span>
+        <div className="flex flex-col items-center justify-center py-2 group cursor-pointer">
+            {resource?.avatar ? (
+                <div className="w-14 h-14 rounded-full shadow-md mb-2 overflow-hidden border-2 border-white ring-1 ring-slate-200 group-hover:ring-pink-400 group-hover:scale-105 transition-all">
+                    <img src={resource.avatar} alt={label} className="w-full h-full object-cover" />
+                </div>
+            ) : (
+                <div
+                    className="w-14 h-14 rounded-full flex items-center justify-center text-white font-bold text-lg shadow-md mb-2 overflow-hidden border-2 border-white ring-1 ring-slate-200 group-hover:scale-105 transition-all"
+                    style={{ backgroundColor: resource?.color || '#3b82f6' }}
+                >
+                    {label ? label.substring(0, 2).toUpperCase() : '??'}
+                </div>
+            )}
+            <span className="text-xs font-bold text-slate-700 uppercase tracking-wide group-hover:text-pink-500 transition-colors">{label}</span>
         </div>
     );
 };
@@ -41,7 +47,7 @@ const CalendarView = () => {
     const { stylists, appointments } = useSalonStore();
     const [date, setDate] = useState(new Date(2026, 0, 24));
     const [view, setView] = useState(Views.DAY);
-    const [step, setStep] = useState(10); // Default to 10 min slots
+    const [step, setStep] = useState(15); // Default to 15 min slots for clarity
     const [showBookingModal, setShowBookingModal] = useState(false);
     const [selectedSlot, setSelectedSlot] = useState(null);
     const [currentTimePosition, setCurrentTimePosition] = useState('0%');
@@ -50,8 +56,8 @@ const CalendarView = () => {
     useEffect(() => {
         const calculatePosition = () => {
             const now = new Date();
-            const startHour = 8;
-            const endHour = 22;
+            const startHour = 9; // Updated start
+            const endHour = 21;  // Updated end
             const totalMinutes = (endHour - startHour) * 60;
             const currentMinutes = (now.getHours() * 60 + now.getMinutes()) - (startHour * 60);
 
@@ -82,7 +88,8 @@ const CalendarView = () => {
     const resources = stylists.map(s => ({
         id: s.id,
         title: s.name,
-        color: s.color
+        color: s.color,
+        avatar: s.avatar // Pass avatar
     }));
 
     // Custom Event Component
@@ -90,6 +97,10 @@ const CalendarView = () => {
         <div className="h-full w-full p-1 flex flex-col justify-center">
             <div className="font-bold text-xs truncate">{event.clientName}</div>
             <div className="text-xs opacity-90 truncate">{event.title}</div>
+            <div className="absolute top-1 right-1">
+                {event.status === 'attended' && <span title="Atendido">✅</span>}
+                {event.status === 'no_show' && <span title="Ausente">❌</span>}
+            </div>
         </div>
     );
 
@@ -165,9 +176,9 @@ const CalendarView = () => {
                             setSelectedSlot({ start: new Date(), resourceId: null });
                             setShowBookingModal(true);
                         }}
-                        className="flex items-center gap-1 bg-white border border-gray-300 text-gray-700 px-4 py-1.5 rounded-full font-medium shadow-sm hover:bg-gray-50 transition-all ml-2"
+                        className="flex items-center gap-2 bg-gradient-to-r from-pink-500 to-rose-500 hover:from-pink-600 hover:to-rose-600 text-white px-5 py-2 rounded-full font-bold shadow-md hover:shadow-lg transition-all ml-2 transform hover:-translate-y-0.5"
                     >
-                        Crear <Plus size={16} />
+                        Agendar <Plus size={18} strokeWidth={3} />
                     </button>
 
                     <div className="h-6 w-[1px] bg-gray-300 mx-2"></div>
@@ -179,14 +190,14 @@ const CalendarView = () => {
                 </div>
             </div>
 
-            {/* Main Calendar Area - Clean & Borderless look */}
-            <div className="flex-1 bg-white overflow-hidden relative">
+            {/* Main Calendar Area - Clean & Borderless look with Scroll */}
+            <div className="flex-1 bg-white overflow-y-auto relative">
                 <Calendar
                     localizer={localizer}
                     events={events}
                     startAccessor="start"
                     endAccessor="end"
-                    style={{ height: '100%' }}
+                    style={{ minHeight: '1200px' }}
                     date={date}
                     onNavigate={date => setDate(date)}
                     view={view}
@@ -202,8 +213,8 @@ const CalendarView = () => {
 
                     step={step}
                     timeslots={60 / step}
-                    min={new Date(0, 0, 0, 8, 0, 0)}
-                    max={new Date(0, 0, 0, 22, 0, 0)}
+                    min={new Date(0, 0, 0, 9, 0, 0)} // Start 9 AM
+                    max={new Date(0, 0, 0, 21, 0, 0)} // End 9 PM
 
                     culture='es'
                     messages={{

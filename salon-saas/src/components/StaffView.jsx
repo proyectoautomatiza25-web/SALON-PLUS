@@ -68,12 +68,18 @@ const StaffView = () => {
                             <div className="absolute top-0 left-0 w-full h-1" style={{ backgroundColor: stylist.color }}></div>
 
                             <div className="flex items-start gap-4 mb-4">
-                                <div
-                                    className="w-16 h-16 rounded-full flex items-center justify-center text-white font-bold text-xl shadow-md border-4 border-white"
-                                    style={{ backgroundColor: stylist.color }}
-                                >
-                                    {stylist.name.substring(0, 2).toUpperCase()}
-                                </div>
+                                {stylist.avatar ? (
+                                    <div className="w-16 h-16 rounded-full flex items-center justify-center shadow-md border-4 border-white overflow-hidden bg-white shrink-0">
+                                        <img src={stylist.avatar} alt={stylist.name} className="w-full h-full object-cover" />
+                                    </div>
+                                ) : (
+                                    <div
+                                        className="w-16 h-16 rounded-full flex items-center justify-center text-white font-bold text-xl shadow-md border-4 border-white shrink-0"
+                                        style={{ backgroundColor: stylist.color }}
+                                    >
+                                        {stylist.name.substring(0, 2).toUpperCase()}
+                                    </div>
+                                )}
                                 <div>
                                     <h3 className="font-bold text-slate-800 text-lg">{stylist.name}</h3>
                                     <p className="text-slate-500 text-sm font-medium">{stylist.specialty}</p>

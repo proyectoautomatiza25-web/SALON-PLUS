@@ -5,7 +5,7 @@ import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
 
 const BookingModal = ({ isOpen, onClose, initialData }) => {
-    const { clients, stylists, services, addAppointment, updateAppointment, removeAppointment } = useSalonStore();
+    const { clients, stylists, services, addAppointment, updateAppointment, removeAppointment, updateAppointmentStatus } = useSalonStore();
 
     // Form State
     const [formData, setFormData] = useState({
@@ -15,7 +15,8 @@ const BookingModal = ({ isOpen, onClose, initialData }) => {
         serviceId: '',
         date: '',
         time: '',
-        notes: ''
+        notes: '',
+        status: 'pending'
     });
 
     // Populate form with initial data when modal opens
@@ -39,11 +40,20 @@ const BookingModal = ({ isOpen, onClose, initialData }) => {
                 serviceId: foundServiceId || '',
                 date: initialData.start ? format(initialData.start, 'yyyy-MM-dd') : '',
                 time: initialData.start ? format(initialData.start, 'HH:mm') : '',
-                notes: initialData.notes || ''
+                notes: initialData.notes || '',
+                status: initialData.status || 'pending'
             });
         }
     }, [isOpen, initialData, services, clients]);
 
+    const handleStatusChange = (newStatus) => {
+        if (formData.id) {
+            updateAppointmentStatus(formData.id, newStatus);
+            onClose();
+        }
+    };
+
+    // ... handleSubmit ...
     const handleSubmit = (e) => {
         e.preventDefault();
 
@@ -65,7 +75,7 @@ const BookingModal = ({ isOpen, onClose, initialData }) => {
             title: service.name,
             start: startDateTime,
             end: endDateTime,
-            status: 'confirmed',
+            status: formData.status, // Preserve or utilize status
             price: service.price,
             notes: formData.notes
         };
@@ -107,6 +117,21 @@ const BookingModal = ({ isOpen, onClose, initialData }) => {
                         <X size={20} />
                     </button>
                 </div>
+
+                {/* Status Toolbar (Only Editing) */}
+                {isEditing && (
+                    <div className="bg-slate-50 px-6 pb-4 border-b border-slate-100 flex gap-2 justify-center">
+                        <button type="button" onClick={() => handleStatusChange('attended')} className={`px-3 py-1 rounded-full text-xs font-bold border transition-colors ${formData.status === 'attended' ? 'bg-green-600 text-white border-green-600' : 'bg-white text-green-700 border-green-200 hover:bg-green-50'}`}>
+                            ✅ Atendido
+                        </button>
+                        <button type="button" onClick={() => handleStatusChange('no_show')} className={`px-3 py-1 rounded-full text-xs font-bold border transition-colors ${formData.status === 'no_show' ? 'bg-red-600 text-white border-red-600' : 'bg-white text-red-700 border-red-200 hover:bg-red-50'}`}>
+                            ❌ Ausente
+                        </button>
+                        <button type="button" onClick={() => handleStatusChange('confirmed')} className={`px-3 py-1 rounded-full text-xs font-bold border transition-colors ${formData.status === 'confirmed' ? 'bg-blue-600 text-white border-blue-600' : 'bg-white text-blue-700 border-blue-200 hover:bg-blue-50'}`}>
+                            📅 Confirmado
+                        </button>
+                    </div>
+                )}
 
                 <form onSubmit={handleSubmit} className="p-6 space-y-5">
 

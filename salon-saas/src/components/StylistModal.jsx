@@ -16,7 +16,8 @@ const StylistModal = ({ isOpen, onClose, initialData }) => {
         name: '',
         specialty: '',
         color: '#fcd34d',
-        active: true
+        active: true,
+        avatar: null
     });
 
     useEffect(() => {
@@ -27,7 +28,8 @@ const StylistModal = ({ isOpen, onClose, initialData }) => {
                     name: initialData.name || '',
                     specialty: initialData.specialty || '',
                     color: initialData.color || '#fcd34d',
-                    active: initialData.active !== undefined ? initialData.active : true
+                    active: initialData.active !== undefined ? initialData.active : true,
+                    avatar: initialData.avatar || null
                 });
             } else {
                 setFormData({
@@ -35,11 +37,23 @@ const StylistModal = ({ isOpen, onClose, initialData }) => {
                     name: '',
                     specialty: '',
                     color: colorOptions[Math.floor(Math.random() * colorOptions.length)],
-                    active: true
+                    active: true,
+                    avatar: null
                 });
             }
         }
     }, [isOpen, initialData]);
+
+    const handleAvatarChange = (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                setFormData(prev => ({ ...prev, avatar: reader.result }));
+            };
+            reader.readAsDataURL(file);
+        }
+    };
 
     const handleSubmit = (e) => {
         e.preventDefault();
@@ -49,7 +63,8 @@ const StylistModal = ({ isOpen, onClose, initialData }) => {
             name: formData.name,
             specialty: formData.specialty,
             color: formData.color,
-            active: formData.active
+            active: formData.active,
+            avatar: formData.avatar
         };
 
         if (formData.id) {
@@ -85,6 +100,22 @@ const StylistModal = ({ isOpen, onClose, initialData }) => {
                 </div>
 
                 <form onSubmit={handleSubmit} className="p-6 space-y-5">
+
+                    {/* AVATAR UPLOAD */}
+                    <div className="flex flex-col items-center gap-2 mb-4">
+                        <label className="relative w-24 h-24 rounded-full border-2 border-dashed border-gray-300 flex items-center justify-center cursor-pointer hover:border-primary transition-colors overflow-hidden group bg-slate-50">
+                            {formData.avatar ? (
+                                <img src={formData.avatar} alt="Avatar" className="w-full h-full object-cover" />
+                            ) : (
+                                <User size={32} className="text-gray-400" />
+                            )}
+                            <input type="file" className="hidden" accept="image/*" onChange={handleAvatarChange} />
+                            <div className="absolute inset-0 bg-black/30 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                                <span className="text-white text-xs font-bold">Cambiar</span>
+                            </div>
+                        </label>
+                        <span className="text-xs text-gray-400 font-medium">Foto de Perfil</span>
+                    </div>
 
                     {/* Name */}
                     <div>

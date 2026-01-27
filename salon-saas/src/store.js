@@ -2,7 +2,27 @@ import { create } from 'zustand';
 
 export const useSalonStore = create((set, get) => ({
     // --- Estado del Negocio ---
-    businessName: 'Salon Plus by Automatiza Sur',
+    // --- Estado del Negocio ---
+    businessName: 'Salon Plus',
+    businessLogo: null,
+
+    updateBusinessName: (name) => set(() => ({ businessName: name })),
+    updateBusinessLogo: (logo) => set(() => ({ businessLogo: logo })),
+
+    // --- Autenticación ---
+    auth: {
+        isAuthenticated: false,
+        userEmail: null,
+    },
+
+    login: (email) => set(() => ({
+        auth: { isAuthenticated: true, userEmail: email },
+        businessName: 'Salon Demo' // Placeholder
+    })),
+
+    logout: () => set(() => ({
+        auth: { isAuthenticated: false, userEmail: null }
+    })),
 
     // --- Estilistas / Profesionales ---
     stylists: [
@@ -149,5 +169,43 @@ export const useSalonStore = create((set, get) => ({
         ATTENDED: 'attended',
         NO_SHOW: 'no_show',
         CANCELLED: 'cancelled'
-    }
+    },
+
+    // --- Demo & Subscription Logic ---
+    subscription: {
+        planType: 'demo', // 'demo', 'basic', 'pro'
+        trialStart: new Date().toISOString(),
+        trialEnd: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(), // 7 days from now
+        active: false
+    },
+
+    // Computed Helpers (Getters equivalent in Zustand often just derived in component, but we can add helper actions)
+    getTrialStatus: () => {
+        const state = get();
+        const { planType, trialEnd, active } = state.subscription;
+        const now = new Date();
+        const end = new Date(trialEnd);
+
+        const isExpired = planType === 'demo' && !active && now > end;
+        const daysLeft = Math.ceil((end - now) / (1000 * 60 * 60 * 24));
+        const isOnTrial = planType === 'demo' && !active && !isExpired;
+
+        return { isOnTrial, isExpired, daysLeft, isPaying: active };
+    },
+
+    activateSubscription: (plan) => set((state) => ({
+        subscription: {
+            ...state.subscription,
+            planType: plan,
+            active: true
+        }
+    })),
+
+    // Debug Helper: Expire demo immediately
+    expireDemo: () => set((state) => ({
+        subscription: {
+            ...state.subscription,
+            trialEnd: new Date(Date.now() - 1000).toISOString() // Past date
+        }
+    }))
 }));

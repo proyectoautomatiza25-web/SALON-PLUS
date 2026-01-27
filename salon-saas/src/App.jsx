@@ -8,11 +8,31 @@ import SalonProfileView from './components/SalonProfileView';
 import DashboardView from './components/DashboardView';
 import ReportsView from './components/ReportsView';
 import AppointmentsListView from './components/AppointmentsListView';
+import BillingExpiredView from './components/BillingExpiredView';
+import LandingPage from './components/LandingPage';
+import { useSalonStore } from './store';
+import { Calendar, Users, ShoppingBag, PieChart, Menu, Bell, Clock, AlertTriangle } from 'lucide-react';
 import SalonLogo from './components/SalonLogo';
-import { Calendar, Users, ShoppingBag, PieChart, Menu, Bell } from 'lucide-react';
 
 function App() {
   const [activeTab, setActiveTab] = useState('home');
+  const { subscription, expireDemo, auth } = useSalonStore();
+
+  // 1. Auth Check
+  if (!auth.isAuthenticated) {
+    return <LandingPage />;
+  }
+
+  // 2. Trial Status Check
+  const now = new Date();
+  const trialEnd = new Date(subscription.trialEnd);
+  const isExpired = subscription.planType === 'demo' && !subscription.active && now > trialEnd;
+  const daysLeft = Math.ceil((trialEnd - now) / (1000 * 60 * 60 * 24));
+  const isOnTrial = subscription.planType === 'demo' && !subscription.active && !isExpired;
+
+  if (isExpired) {
+    return <BillingExpiredView />;
+  }
 
   // Salonist-like menu items (Español)
   const menuItems = [
@@ -60,6 +80,17 @@ function App() {
 
       {/* --- Main Content Area --- */}
       <main className="flex-1 flex flex-col min-w-0 bg-slate-50 relative">
+
+        {/* TRIAL BANNER */}
+        {isOnTrial && (
+          <div className="bg-indigo-600 text-white text-sm py-1 px-4 flex justify-between items-center z-20">
+            <div className="flex items-center gap-2">
+              <Clock size={14} />
+              <span className="font-medium">Modo Demo: Quedan {daysLeft} días de prueba gratuita.</span>
+            </div>
+            <button onClick={expireDemo} className="text-indigo-200 hover:text-white text-xs underline">Simular Vencimiento</button>
+          </div>
+        )}
 
         {/* Top Header */}
         <header className="h-16 bg-white border-b border-gray-100 flex items-center justify-between px-6 z-10 shadow-sm">

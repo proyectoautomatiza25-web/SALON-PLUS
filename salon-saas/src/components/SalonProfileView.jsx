@@ -3,9 +3,9 @@ import { useSalonStore } from '../store';
 import { Save, MapPin, Phone, Mail, Globe, Clock, Camera } from 'lucide-react';
 
 const SalonProfileView = () => {
-    const { businessName } = useSalonStore();
+    const { businessName, updateBusinessName, businessLogo, updateBusinessLogo } = useSalonStore();
 
-    // Local state for form (in a real app, this would sync to store/backend)
+    // Local state for form
     const [profile, setProfile] = useState({
         name: businessName,
         address: 'Av. Providencia 1234, Santiago',
@@ -20,12 +20,27 @@ const SalonProfileView = () => {
         }
     });
 
+    const [logoPreview, setLogoPreview] = useState(businessLogo);
+
     const handleChange = (e) => {
         setProfile({ ...profile, [e.target.name]: e.target.value });
     };
 
+    const handleLogoChange = (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                setLogoPreview(reader.result);
+            };
+            reader.readAsDataURL(file);
+        }
+    };
+
     const handleSave = (e) => {
         e.preventDefault();
+        updateBusinessName(profile.name);
+        if (logoPreview) updateBusinessLogo(logoPreview);
         alert('Perfil del Salón actualizado exitosamente.');
     };
 
@@ -54,9 +69,19 @@ const SalonProfileView = () => {
                         <div className="flex gap-8 items-start">
                             {/* Logo Upload Simulation */}
                             <div className="flex flex-col items-center gap-3">
-                                <div className="w-32 h-32 bg-white rounded-2xl border-2 border-dashed border-gray-300 flex items-center justify-center text-gray-400 hover:border-primary hover:text-primary transition-colors cursor-pointer group">
-                                    <Camera size={32} className="group-hover:scale-110 transition-transform" />
-                                </div>
+                                <label className="relative w-32 h-32 bg-white rounded-2xl border-2 border-dashed border-gray-300 flex items-center justify-center text-gray-400 hover:border-primary hover:text-primary transition-colors cursor-pointer group overflow-hidden">
+                                    {logoPreview ? (
+                                        <img src={logoPreview} alt="Logo Preview" className="w-full h-full object-cover" />
+                                    ) : (
+                                        <Camera size={32} className="group-hover:scale-110 transition-transform" />
+                                    )}
+                                    <input type="file" className="hidden" accept="image/*" onChange={handleLogoChange} />
+                                    {logoPreview && (
+                                        <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                                            <Camera size={24} className="text-white" />
+                                        </div>
+                                    )}
+                                </label>
                                 <span className="text-xs font-semibold text-gray-500">Logo del Salón</span>
                             </div>
 
