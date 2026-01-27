@@ -16,6 +16,10 @@ class UserLogin(UserBase):
 class User(UserBase):
     id: str
     is_active: bool
+    plan_type: str = "demo"
+    trial_end_at: Optional[datetime] = None
+    subscription_active: bool = False
+    
     class Config:
         from_attributes = True
 

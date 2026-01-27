@@ -2,7 +2,7 @@ import uuid
 from sqlalchemy import Column, String, Boolean, Integer, Numeric, DateTime, ForeignKey, Text
 from sqlalchemy.orm import relationship
 from sqlalchemy.dialects.postgresql import UUID
-from datetime import datetime
+from datetime import datetime, timedelta
 from .database import Base
 
 # --- FASE 1: FUDO CORE ---
@@ -128,6 +128,14 @@ class User(Base):
     business_name = Column(String, nullable=True)
     business_logo = Column(Text, nullable=True) # Base64
     created_at = Column(DateTime, default=datetime.utcnow)
+
+    # Subscription Fields
+    plan_type = Column(String, default="demo") # 'demo', 'basic', 'pro'
+    trial_start_at = Column(DateTime, default=datetime.utcnow)
+    trial_end_at = Column(DateTime, default=lambda: datetime.utcnow() + timedelta(days=7))
+    subscription_active = Column(Boolean, default=False)
+    stripe_customer_id = Column(String, nullable=True)
+    stripe_subscription_id = Column(String, nullable=True)
 
     # Relationships (SaaS)
     stylists = relationship("Stylist", back_populates="owner")
