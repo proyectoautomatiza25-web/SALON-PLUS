@@ -1,10 +1,15 @@
-FROM python:3.9
+# Use official Python runtime
+FROM python:3.10-slim
 
-WORKDIR /app
+# Set working directory
+WORKDIR /code
 
-COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
+# Install dependencies
+COPY ./requirements.txt /code/requirements.txt
+RUN pip install --no-cache-dir --upgrade -r /code/requirements.txt
 
-COPY . .
+# Copy application code
+COPY ./app /code/app
 
-CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
+# Start the server (Using PORT environment variable compatible with Railway/Render)
+CMD ["sh", "-c", "uvicorn app.main:app --host 0.0.0.0 --port ${PORT:-8000}"]
