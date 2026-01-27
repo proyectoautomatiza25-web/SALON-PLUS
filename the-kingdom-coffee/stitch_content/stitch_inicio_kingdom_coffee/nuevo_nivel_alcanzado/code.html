@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+
+<html class="light" lang="es"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#f2b90d",
+                        "background-light": "#f8f8f5",
+                        "background-dark": "#221e10",
+                    },
+                    fontFamily: {
+                        "display": ["Plus Jakarta Sans", "sans-serif"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                },
+            },
+        }
+    </script>
+<style>
+        body {
+            font-family: "Plus Jakarta Sans", sans-serif;
+        }
+        .confetti-overlay {
+            background-image: radial-gradient(circle, #f2b90d 1px, transparent 1px);
+            background-size: 20px 20px;
+            opacity: 0.15;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark font-display text-[#1c180d] dark:text-white">
+<div class="relative flex h-auto min-h-screen w-full flex-col max-w-[430px] mx-auto overflow-x-hidden border-x border-gray-100 dark:border-zinc-800 shadow-2xl">
+<!-- TopAppBar -->
+<div class="flex items-center bg-background-light dark:bg-background-dark p-4 pb-2 justify-between sticky top-0 z-10">
+<div class="text-[#1c180d] dark:text-white flex size-12 shrink-0 items-center justify-start">
+<span class="material-symbols-outlined cursor-pointer">close</span>
+</div>
+<h2 class="text-[#1c180d] dark:text-white text-lg font-bold leading-tight tracking-[-0.015em] flex-1 text-center pr-12">Programa de Lealtad</h2>
+</div>
+<!-- Content Area -->
+<div class="flex flex-col flex-1 px-4 relative overflow-hidden">
+<!-- Subtle Confetti Background -->
+<div class="absolute inset-0 confetti-overlay pointer-events-none"></div>
+<!-- HeaderImage / Celebration Illustration -->
+<div class="pt-6 relative">
+<div class="@container">
+<div class="@[480px]:px-4 @[480px]:py-3">
+<div class="w-full bg-center bg-no-repeat bg-contain flex flex-col justify-end overflow-hidden min-h-[280px] relative" data-alt="Elegante ilustración de una taza de café dorada con una corona" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuBLcKfeAkF1oouQaXKk0NGd5K0PT6ffGMYSt0WPGDUAXL-pmld31agU_iRNC3gjtw__EXnW1I_FexL1hRtV8Ea-LUY5CHVjA5HmV0GX7kp4WfgY85SIo2SzskIS-dz4CHe8d2824tsiJRxzQACFKWOLN5WTb9X8s4NZpVKqQv5LIt1EZCerAZTdzOVYz6JLl--oPAFbkNmQxUJeJnLWPAVOvIPdXUzj-8u_Ccg3vmLS4325_fxx0mju1rLLqjcRKkp1dOQKQKKgF2a-"); filter: drop-shadow(0 10px 15px rgba(242, 185, 13, 0.3));'>
+</div>
+</div>
+</div>
+</div>
+<!-- HeadlineText -->
+<h1 class="text-[#1c180d] dark:text-primary tracking-tight text-[36px] font-extrabold leading-tight text-center pb-2 pt-8">¡Felicidades!</h1>
+<!-- TitleText -->
+<div class="flex flex-col items-center">
+<span class="bg-primary/20 text-[#1c180d] dark:text-primary px-4 py-1 rounded-full text-xs font-bold uppercase tracking-widest mb-2">Nuevo Rango</span>
+<h1 class="text-[#1c180d] dark:text-white text-[24px] font-bold leading-tight tracking-tight text-center pb-6">Has alcanzado el <br/><span class="text-primary italic">Nivel Grano de Oro</span></h1>
+</div>
+<!-- Benefits Section -->
+<div class="bg-white dark:bg-zinc-900/50 rounded-xl p-6 border border-primary/10 shadow-sm mb-12 relative z-10">
+<h3 class="text-[#1c180d] dark:text-white text-lg font-bold leading-tight tracking-[-0.015em] pb-4">Tus nuevos beneficios:</h3>
+<div class="space-y-4">
+<!-- Benefit 1 -->
+<div class="flex items-center gap-4">
+<div class="size-10 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-primary">bolt</span>
+</div>
+<p class="text-sm font-medium leading-tight">Todos tus cafés incluyen shot extra gratis.</p>
+</div>
+<!-- Benefit 2 -->
+<div class="flex items-center gap-4">
+<div class="size-10 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-primary">star</span>
+</div>
+<p class="text-sm font-medium leading-tight">Acceso prioritario a lanzamientos exclusivos.</p>
+</div>
+<!-- Benefit 3 -->
+<div class="flex items-center gap-4">
+<div class="size-10 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-primary">percent</span>
+</div>
+<p class="text-sm font-medium leading-tight">Descuento del 15% en granos seleccionados.</p>
+</div>
+</div>
+</div>
+<!-- Spacer for bottom button -->
+<div class="h-24"></div>
+</div>
+<!-- Sticky Bottom Button -->
+<div class="fixed bottom-0 left-0 right-0 p-4 max-w-[430px] mx-auto bg-gradient-to-t from-background-light dark:from-background-dark via-background-light dark:via-background-dark to-transparent">
+<button class="w-full bg-primary hover:bg-primary/90 text-background-dark font-bold py-4 rounded-xl shadow-lg transition-transform active:scale-[0.98]">
+                ¡Genial!
+            </button>
+</div>
+</div>
+</body></html>

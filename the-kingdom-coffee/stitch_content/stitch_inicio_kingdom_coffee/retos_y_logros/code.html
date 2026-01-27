@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+
+<html class="light" lang="es"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "primary": "#d46211",
+              "background-light": "#f8f7f6",
+              "background-dark": "#221810",
+            },
+            fontFamily: {
+              "display": ["Plus Jakarta Sans", "sans-serif"]
+            },
+            borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+          },
+        },
+      }
+    </script>
+<style>
+        body {
+            font-family: "Plus Jakarta Sans", sans-serif;
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .fill-icon {
+            font-variation-settings: 'FILL' 1;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark text-[#1b130d] dark:text-white min-h-screen">
+<div class="relative flex h-auto min-h-screen w-full flex-col group/design-root overflow-x-hidden">
+<!-- TopAppBar -->
+<div class="flex items-center bg-background-light dark:bg-background-dark p-4 pb-2 justify-between sticky top-0 z-10">
+<div class="text-[#1b130d] dark:text-white flex size-12 shrink-0 items-center">
+<span class="material-symbols-outlined cursor-pointer">arrow_back_ios</span>
+</div>
+<h2 class="text-[#1b130d] dark:text-white text-lg font-bold leading-tight tracking-[-0.015em] flex-1 text-center">Retos Kingdom</h2>
+<div class="flex w-12 items-center justify-end">
+<button class="flex max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-12 bg-transparent text-[#1b130d] dark:text-white gap-2 text-base font-bold leading-normal tracking-[0.015em] min-w-0 p-0">
+<span class="material-symbols-outlined">help_outline</span>
+</button>
+</div>
+</div>
+<!-- Stats Section -->
+<div class="flex flex-wrap gap-4 p-4">
+<div class="flex min-w-[158px] flex-1 flex-col gap-2 rounded-xl p-6 bg-primary/10 border border-primary/20">
+<div class="flex items-center justify-between">
+<p class="text-[#1b130d] dark:text-white text-sm font-medium leading-normal">Puntos Acumulados</p>
+<span class="material-symbols-outlined text-primary fill-icon">stars</span>
+</div>
+<p class="text-primary tracking-light text-3xl font-bold leading-tight">1,250 pts</p>
+</div>
+</div>
+<!-- Tabs -->
+<div class="pb-3 sticky top-[60px] bg-background-light dark:bg-background-dark z-10">
+<div class="flex border-b border-[#e7d9cf] dark:border-white/10 px-4 gap-8">
+<a class="flex flex-col items-center justify-center border-b-[3px] border-b-primary text-primary pb-[13px] pt-4" href="#">
+<p class="text-sm font-bold leading-normal tracking-[0.015em]">Activos</p>
+</a>
+<a class="flex flex-col items-center justify-center border-b-[3px] border-b-transparent text-[#9a6c4c] dark:text-white/60 pb-[13px] pt-4" href="#">
+<p class="text-sm font-bold leading-normal tracking-[0.015em]">Completados</p>
+</a>
+<a class="flex flex-col items-center justify-center border-b-[3px] border-b-transparent text-[#9a6c4c] dark:text-white/60 pb-[13px] pt-4" href="#">
+<p class="text-sm font-bold leading-normal tracking-[0.015em]">Expirados</p>
+</a>
+</div>
+</div>
+<!-- SectionHeader -->
+<div class="flex items-center justify-between px-4 pb-3 pt-5">
+<h2 class="text-[#1b130d] dark:text-white text-[22px] font-bold leading-tight tracking-[-0.015em]">Desafíos del Mes</h2>
+<span class="text-primary text-sm font-bold">Junio 2024</span>
+</div>
+<!-- Challenge Cards Container -->
+<div class="flex flex-col gap-4 p-4">
+<!-- Card 1: Trifecta Semanal -->
+<div class="@container">
+<div class="flex flex-col items-stretch justify-start rounded-xl shadow-sm border border-[#e7d9cf] dark:border-white/10 bg-white dark:bg-background-dark overflow-hidden">
+<div class="w-full h-32 bg-center bg-no-repeat bg-cover relative" data-alt="Barista preparing coffee in a busy shop" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuAfSYKUB90IQxAF5DVq0LbVPcHgRhHBor1QCO7FvyDt9FtJ9OwU_h3BTA5D_IN4FsIzk0F5v3NmUmvMv4gMXX1Xn5Tn4TPCO4K81nkSn7LBdg5MPIlrfNvrG8oDxGJVH_dafhLYOPcJS1Zv1Ko5W4-VF61ZN-X3J0Kjm3BOP8_AqKaaxnwVVYejpnrLqJ9TQuwEKllbijrgffehMSqMdpC4bx7HUgxQnhwY5JB1yDFNxIXRApWs_F6ZLwEm1iSMpqcH1RLlUgQHNXIm");'>
+<div class="absolute top-2 right-2 bg-primary text-white text-xs font-bold px-3 py-1 rounded-full">
+                            Faltan 3 días
+                        </div>
+</div>
+<div class="flex w-full grow flex-col items-stretch justify-center gap-3 p-4">
+<div class="flex justify-between items-start">
+<div class="flex flex-col gap-1">
+<p class="text-[#1b130d] dark:text-white text-lg font-bold leading-tight tracking-[-0.015em]">Trifecta Semanal</p>
+<p class="text-[#9a6c4c] dark:text-white/70 text-sm font-normal leading-normal">Visítanos 3 veces esta semana para ganar puntos.</p>
+</div>
+<div class="bg-primary/10 text-primary font-bold px-2 py-1 rounded text-sm shrink-0">
+                                +50 pts
+                            </div>
+</div>
+<!-- Progress Bar -->
+<div class="flex flex-col gap-1.5">
+<div class="flex justify-between text-xs font-bold text-[#1b130d] dark:text-white/80">
+<span>Progreso</span>
+<span>2 / 3 visitas</span>
+</div>
+<div class="w-full bg-[#e7d9cf] dark:bg-white/10 h-2.5 rounded-full overflow-hidden">
+<div class="bg-primary h-full w-[66%]"></div>
+</div>
+</div>
+<div class="flex items-center justify-between mt-1">
+<div class="flex -space-x-2">
+<div class="w-6 h-6 rounded-full border-2 border-white dark:border-background-dark bg-primary flex items-center justify-center">
+<span class="material-symbols-outlined text-[14px] text-white fill-icon">check</span>
+</div>
+<div class="w-6 h-6 rounded-full border-2 border-white dark:border-background-dark bg-primary flex items-center justify-center">
+<span class="material-symbols-outlined text-[14px] text-white fill-icon">check</span>
+</div>
+<div class="w-6 h-6 rounded-full border-2 border-white dark:border-background-dark bg-[#e7d9cf] dark:bg-white/20 flex items-center justify-center">
+<span class="material-symbols-outlined text-[14px] text-white/40">coffee</span>
+</div>
+</div>
+<button class="flex min-w-[100px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-9 px-4 bg-primary text-white text-sm font-bold leading-normal shadow-md">
+<span class="truncate">Ver detalles</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+<!-- Card 2: Maestro del Filtrado -->
+<div class="@container">
+<div class="flex flex-col items-stretch justify-start rounded-xl shadow-sm border border-[#e7d9cf] dark:border-white/10 bg-white dark:bg-background-dark overflow-hidden">
+<div class="w-full h-32 bg-center bg-no-repeat bg-cover relative" data-alt="Person pouring water over V60 coffee dripper" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuAWKUJOkzgXVeSoKZ3Dn4w7db9dgR9AiC3T9kk7BcY3FTLEZoAjNl9GLVxADBjO9QaVW_thVzoZg0StWs_EIfNE_qcIZQGEizYaG1D3V5_8s-z6RwdwAnhRqz-QJLX35w48IbAZAGpKT1ffusWWdgcIWOEqSI98P1P_JdBCxdaqd76AeYrokU9pfdUuM_cz1wHq7eqImk85_UKGKXIdx242K4B2p99bItfN7aQX3UHplYjLPeY8eZrE7olAxJBZh2NDp_Usw13UA5dy");'>
+<div class="absolute top-2 right-2 bg-primary text-white text-xs font-bold px-3 py-1 rounded-full">
+                            Mensual
+                        </div>
+</div>
+<div class="flex w-full grow flex-col items-stretch justify-center gap-3 p-4">
+<div class="flex justify-between items-start">
+<div class="flex flex-col gap-1">
+<p class="text-[#1b130d] dark:text-white text-lg font-bold leading-tight tracking-[-0.015em]">Maestro del Filtrado</p>
+<p class="text-[#9a6c4c] dark:text-white/70 text-sm font-normal leading-normal">Prueba un método de filtrado V60 o Chemex.</p>
+</div>
+<div class="bg-primary/10 text-primary font-bold px-2 py-1 rounded text-sm shrink-0">
+                                +100 pts
+                            </div>
+</div>
+<!-- Progress Bar (Empty state) -->
+<div class="flex flex-col gap-1.5">
+<div class="flex justify-between text-xs font-bold text-[#1b130d] dark:text-white/80">
+<span>Progreso</span>
+<span>0 / 1 método</span>
+</div>
+<div class="w-full bg-[#e7d9cf] dark:bg-white/10 h-2.5 rounded-full overflow-hidden">
+<div class="bg-primary h-full w-[0%]"></div>
+</div>
+</div>
+<div class="flex items-center justify-end mt-1">
+<button class="flex min-w-[100px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-9 px-4 bg-primary text-white text-sm font-bold leading-normal shadow-md">
+<span class="truncate">Ver métodos</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+<!-- Card 3: Madrugador -->
+<div class="@container">
+<div class="flex flex-col items-stretch justify-start rounded-xl shadow-sm border border-[#e7d9cf] dark:border-white/10 bg-white dark:bg-background-dark overflow-hidden opacity-90">
+<div class="w-full h-32 bg-center bg-no-repeat bg-cover relative" data-alt="Sunrise view through a cafe window" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuBMj-e90FywQShI7KjISBgru08WOiDjfZO7tIgR-HGg9nobd65mBH-piGR-ek5Vc5zvH8FZ5FDgucUeUdVDu5mDUKAoAwwYG76xgwKVRpC66XXTGXiQ6Ip47DJYEB-Du6iYUD7qRxfcR1l4mOfYIs1VZz9li-VqFt6QX2Wg_WTmlmeWzslIW-g15Bi7IwSpFE3zUkYphHQaLww2voEF-5Hit0zJGroH1rQBI7bWyTyLrXRwVvi-9msMfUWCwCzHc6X7QRAD5dysgUs-");'>
+<div class="absolute inset-0 bg-black/20"></div>
+<div class="absolute top-2 right-2 bg-primary text-white text-xs font-bold px-3 py-1 rounded-full">
+                            Daily
+                        </div>
+</div>
+<div class="flex w-full grow flex-col items-stretch justify-center gap-3 p-4">
+<div class="flex justify-between items-start">
+<div class="flex flex-col gap-1">
+<p class="text-[#1b130d] dark:text-white text-lg font-bold leading-tight tracking-[-0.015em]">Madrugador</p>
+<p class="text-[#9a6c4c] dark:text-white/70 text-sm font-normal leading-normal">Compra un café antes de las 9:00 AM.</p>
+</div>
+<div class="bg-primary/10 text-primary font-bold px-2 py-1 rounded text-sm shrink-0">
+                                +30 pts
+                            </div>
+</div>
+<!-- Progress Bar -->
+<div class="flex flex-col gap-1.5">
+<div class="flex justify-between text-xs font-bold text-emerald-600 dark:text-emerald-400">
+<span class="flex items-center gap-1"><span class="material-symbols-outlined text-xs fill-icon">check_circle</span> Completado</span>
+<span>1 / 1</span>
+</div>
+<div class="w-full bg-emerald-100 dark:bg-emerald-900/30 h-2.5 rounded-full overflow-hidden">
+<div class="bg-emerald-500 h-full w-full"></div>
+</div>
+</div>
+<div class="flex items-center justify-between mt-1">
+<p class="text-xs text-[#9a6c4c] dark:text-white/50 italic">¡Vuelve mañana!</p>
+<button class="flex min-w-[100px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-9 px-4 bg-emerald-500 text-white text-sm font-bold leading-normal shadow-sm">
+<span class="truncate">Canjeado</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="h-20 bg-transparent"></div>
+<!-- Navigation Simulation (Floating) -->
+<div class="fixed bottom-6 left-1/2 -translate-x-1/2 w-[90%] max-w-[400px] bg-white dark:bg-background-dark shadow-2xl rounded-full px-6 py-3 flex items-center justify-between border border-[#e7d9cf] dark:border-white/10">
+<div class="flex flex-col items-center gap-1 text-[#9a6c4c] dark:text-white/60">
+<span class="material-symbols-outlined">home</span>
+<span class="text-[10px] font-bold">Inicio</span>
+</div>
+<div class="flex flex-col items-center gap-1 text-primary">
+<span class="material-symbols-outlined fill-icon">emoji_events</span>
+<span class="text-[10px] font-bold">Retos</span>
+</div>
+<div class="flex flex-col items-center gap-1 text-[#9a6c4c] dark:text-white/60">
+<span class="material-symbols-outlined">coffee</span>
+<span class="text-[10px] font-bold">Menu</span>
+</div>
+<div class="flex flex-col items-center gap-1 text-[#9a6c4c] dark:text-white/60">
+<span class="material-symbols-outlined">person</span>
+<span class="text-[10px] font-bold">Perfil</span>
+</div>
+</div>
+</div>
+</body></html>

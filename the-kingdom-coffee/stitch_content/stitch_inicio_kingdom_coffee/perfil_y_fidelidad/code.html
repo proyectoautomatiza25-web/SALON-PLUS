@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+
+<html class="light" lang="es"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Perfil y Fidelidad - Kingdom Coffee</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#d46211",
+                        "background-light": "#fcfaf8",
+                        "background-dark": "#221810",
+                    },
+                    fontFamily: {
+                        "display": ["Plus Jakarta Sans", "sans-serif"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.5rem",
+                        "lg": "1rem",
+                        "xl": "1.5rem",
+                        "full": "9999px"
+                    },
+                },
+            },
+        }
+    </script>
+<style>
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .hide-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .hide-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark text-[#1b130d] dark:text-white transition-colors duration-200">
+<div class="relative flex min-h-screen w-full flex-col max-w-[480px] mx-auto overflow-x-hidden border-x border-gray-100 dark:border-zinc-800 shadow-sm">
+<!-- TopAppBar -->
+<div class="flex items-center bg-background-light dark:bg-background-dark p-4 pb-2 justify-between sticky top-0 z-50">
+<div class="text-[#1b130d] dark:text-white flex size-12 shrink-0 items-center">
+<span class="material-symbols-outlined cursor-pointer">arrow_back_ios</span>
+</div>
+<h2 class="text-[#1b130d] dark:text-white text-lg font-bold leading-tight tracking-[-0.015em] flex-1 text-center">Mi Perfil</h2>
+<div class="flex w-12 items-center justify-end">
+<button class="flex max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-xl h-12 bg-transparent text-[#1b130d] dark:text-white gap-2 text-base font-bold leading-normal">
+<span class="material-symbols-outlined">settings</span>
+</button>
+</div>
+</div>
+<!-- ProfileHeader -->
+<div class="flex p-4 @container">
+<div class="flex w-full flex-col gap-4 items-center">
+<div class="flex gap-4 flex-col items-center">
+<div class="relative">
+<div class="bg-center bg-no-repeat aspect-square bg-cover rounded-full min-h-32 w-32 border-4 border-white dark:border-zinc-800 shadow-md" data-alt="Candid portrait of a smiling coffee lover" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuABZr85bS4LiwsSf5JQ21EeDQemUR7gTLnQgPDuAXWCNc0Rd2kwWBXybtTbI6035-4BdWDEqxIgTvOUl9iJ9J8otxeFl2gu7PwCA3fyBa89nFoaEub5s8jfSA_c5NMbhSDMnYf19cByQROxntX1pwmXFgFVzeAEp0rcRgCjwU6fDGwtDb5ujzSuD-Gwp4DFJjTHXIg9T-c7YglAd_xu_2UigbfomuPyGdI1ISDHBgVOEXZinwaJijAl3AsN63BBbD-YNYzbk_oaPIYq");'>
+</div>
+<div class="absolute bottom-1 right-1 bg-primary text-white p-1.5 rounded-full border-2 border-white dark:border-zinc-800">
+<span class="material-symbols-outlined text-[16px] block">verified</span>
+</div>
+</div>
+<div class="flex flex-col items-center justify-center">
+<p class="text-[#1b130d] dark:text-white text-[22px] font-bold leading-tight tracking-[-0.015em] text-center">Carlos Ruiz</p>
+<p class="text-primary text-base font-semibold leading-normal text-center">Gold Member</p>
+<p class="text-[#9a6c4c] dark:text-zinc-400 text-sm font-normal leading-normal text-center">Miembro desde Octubre 2023</p>
+</div>
+</div>
+</div>
+</div>
+<!-- Loyalty Card (Cosecha tus puntos) -->
+<div class="px-4 py-2 @container">
+<div class="flex flex-col items-stretch justify-start rounded-xl shadow-lg bg-white dark:bg-zinc-900 border border-gray-100 dark:border-zinc-800 overflow-hidden">
+<div class="p-5 flex flex-col gap-4">
+<div class="flex justify-between items-center">
+<p class="text-[#1b130d] dark:text-white text-lg font-bold leading-tight tracking-[-0.015em]">Cosecha tus puntos</p>
+<span class="text-primary text-xs font-bold px-2 py-1 bg-primary/10 rounded-full">7 / 10 GRANOS</span>
+</div>
+<!-- Stamp Grid -->
+<div class="grid grid-cols-5 gap-3 py-2">
+<!-- Filled Stamps -->
+<div class="aspect-square rounded-full bg-primary/10 border-2 border-primary flex items-center justify-center">
+<span class="material-symbols-outlined text-primary fill-1">coffee</span>
+</div>
+<div class="aspect-square rounded-full bg-primary/10 border-2 border-primary flex items-center justify-center">
+<span class="material-symbols-outlined text-primary fill-1">coffee</span>
+</div>
+<div class="aspect-square rounded-full bg-primary/10 border-2 border-primary flex items-center justify-center">
+<span class="material-symbols-outlined text-primary fill-1">coffee</span>
+</div>
+<div class="aspect-square rounded-full bg-primary/10 border-2 border-primary flex items-center justify-center">
+<span class="material-symbols-outlined text-primary fill-1">coffee</span>
+</div>
+<div class="aspect-square rounded-full bg-primary/10 border-2 border-primary flex items-center justify-center">
+<span class="material-symbols-outlined text-primary fill-1">coffee</span>
+</div>
+<div class="aspect-square rounded-full bg-primary/10 border-2 border-primary flex items-center justify-center">
+<span class="material-symbols-outlined text-primary fill-1">coffee</span>
+</div>
+<div class="aspect-square rounded-full bg-primary/10 border-2 border-primary flex items-center justify-center">
+<span class="material-symbols-outlined text-primary fill-1">coffee</span>
+</div>
+<!-- Empty Stamps -->
+<div class="aspect-square rounded-full bg-gray-50 dark:bg-zinc-800 border-2 border-dashed border-gray-300 dark:border-zinc-700 flex items-center justify-center">
+<span class="material-symbols-outlined text-gray-300 dark:text-zinc-600">add</span>
+</div>
+<div class="aspect-square rounded-full bg-gray-50 dark:bg-zinc-800 border-2 border-dashed border-gray-300 dark:border-zinc-700 flex items-center justify-center">
+<span class="material-symbols-outlined text-gray-300 dark:text-zinc-600">add</span>
+</div>
+<div class="aspect-square rounded-full bg-gray-50 dark:bg-zinc-800 border-2 border-dashed border-gray-300 dark:border-zinc-700 flex items-center justify-center">
+<span class="material-symbols-outlined text-gray-300 dark:text-zinc-600">local_cafe</span>
+</div>
+</div>
+<div class="flex items-center gap-3 justify-between mt-2">
+<div class="flex flex-col gap-0.5">
+<p class="text-[#9a6c4c] dark:text-zinc-400 text-sm font-medium">¡Casi listo!</p>
+<p class="text-[#1b130d] dark:text-zinc-300 text-xs font-normal">Faltan 3 granos para tu café gratis.</p>
+</div>
+<button class="flex min-w-[100px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-9 px-4 bg-primary text-white text-sm font-bold shadow-md shadow-primary/20">
+<span>Ver premios</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+<!-- SectionHeader: Favorites -->
+<div class="px-4 pb-2 pt-6">
+<div class="flex justify-between items-end">
+<h2 class="text-[#1b130d] dark:text-white text-[20px] font-bold leading-tight tracking-[-0.015em]">Mis Favoritos</h2>
+<button class="text-primary text-sm font-semibold">Ver todos</button>
+</div>
+</div>
+<!-- Carousel: Favorites -->
+<div class="flex overflow-x-auto hide-scrollbar">
+<div class="flex items-stretch p-4 gap-4">
+<div class="flex h-full flex-1 flex-col gap-3 rounded-xl min-w-44 bg-white dark:bg-zinc-900 p-3 shadow-sm border border-gray-100 dark:border-zinc-800">
+<div class="w-full bg-center bg-no-repeat aspect-square bg-cover rounded-lg relative" data-alt="Beautifully crafted Flat White with heart latte art" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuBsYt_82b8HxmeTU89Ep23eOUSDa48zGhCRpiOP1VoxBmzOODRw_rWsb_bg_saJ3LHLRM8xWra1x86UpANjGyU0_pSeat-oh1xH-Qgdp5jRvWcdwbeh1aQ3CjCBQqZ_QiI3GEhspcFtm7k4LndWw3aB8qY1IAAAzY5p7We5I49ZC466yaMqp85f-zu43CYSAfKwkoOZIOT18Rng-rcyAUoEK8I6_6Eou6c40Eyq-wz0s_dEBb8vkt9R4FWa5qSUFH6J-PzX9i3XZz61");'>
+<button class="absolute top-2 right-2 bg-white/90 dark:bg-zinc-900/90 p-1.5 rounded-full shadow-sm">
+<span class="material-symbols-outlined text-red-500 text-[18px] fill-1">favorite</span>
+</button>
+</div>
+<div class="flex flex-col gap-1">
+<p class="text-[#1b130d] dark:text-white text-base font-bold leading-tight">Flat White</p>
+<p class="text-[#9a6c4c] dark:text-zinc-400 text-sm font-medium">Leche de Avena</p>
+<div class="flex items-center justify-between mt-1">
+<p class="text-primary font-bold">$4.500</p>
+<button class="bg-primary/10 text-primary p-1 rounded-full">
+<span class="material-symbols-outlined text-[20px]">add_shopping_cart</span>
+</button>
+</div>
+</div>
+</div>
+<div class="flex h-full flex-1 flex-col gap-3 rounded-xl min-w-44 bg-white dark:bg-zinc-900 p-3 shadow-sm border border-gray-100 dark:border-zinc-800">
+<div class="w-full bg-center bg-no-repeat aspect-square bg-cover rounded-lg relative" data-alt="Glass of refreshing cold brew coffee with ice" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuCuTFoQIcyU2aQ7yBDKJKbHOyqudN7QCiGa7TF1veMeuhNhNGVXALLj8K1NB_9-_Ctyest56Nbx965fhWu0qaZuf8WZP7JCkWdNWpHxRNafR1HU71EV0shEowfLu5b575draTneP8Ce8S0qelixiqYGzihMcCIP76dsch_8DJyrrkMziMlt4HUP9QvWdWGliEcbwCLG1etrap2b9W8OReFl_jmui_fbc4qDSFmhi31GOyegIYRFC9LYZuwZTTiFM8yXM5j7ebUxFuY5");'>
+<button class="absolute top-2 right-2 bg-white/90 dark:bg-zinc-900/90 p-1.5 rounded-full shadow-sm">
+<span class="material-symbols-outlined text-red-500 text-[18px] fill-1">favorite</span>
+</button>
+</div>
+<div class="flex flex-col gap-1">
+<p class="text-[#1b130d] dark:text-white text-base font-bold leading-tight">Cold Brew</p>
+<p class="text-[#9a6c4c] dark:text-zinc-400 text-sm font-medium">Single Origin</p>
+<div class="flex items-center justify-between mt-1">
+<p class="text-primary font-bold">$3.800</p>
+<button class="bg-primary/10 text-primary p-1 rounded-full">
+<span class="material-symbols-outlined text-[20px]">add_shopping_cart</span>
+</button>
+</div>
+</div>
+</div>
+<div class="flex h-full flex-1 flex-col gap-3 rounded-xl min-w-44 bg-white dark:bg-zinc-900 p-3 shadow-sm border border-gray-100 dark:border-zinc-800">
+<div class="w-full bg-center bg-no-repeat aspect-square bg-cover rounded-lg relative" data-alt="Avocado toast with seeds and poached egg" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuAFqqdP9UPyWBcBrzXFAo3pfqYn20yv61k9WNCh7_OlE_wrwG3K0V7ipTaVglM2Xvsf5Mw-JrZrk61WamcWojq0AH56x2lQ7_aqA58G7xGp4g37mRDHDAri5ZayZ5eVgtkhn_FHH38FM4h_uBnncxz6TdMO1vijOMrpwalTcasxeXVRHrkAq3iCaJ0xMfl9uD_mnCoEDmKoow_nwzBFG4rP-XU7oYSkw2RmtpcgJIdjzM7B8kRR5OZ_BiauWrp30FnRMtRQexNad3Vb");'>
+<button class="absolute top-2 right-2 bg-white/90 dark:bg-zinc-900/90 p-1.5 rounded-full shadow-sm">
+<span class="material-symbols-outlined text-red-500 text-[18px] fill-1">favorite</span>
+</button>
+</div>
+<div class="flex flex-col gap-1">
+<p class="text-[#1b130d] dark:text-white text-base font-bold leading-tight">Toast Palta</p>
+<p class="text-[#9a6c4c] dark:text-zinc-400 text-sm font-medium">Pan Masa Madre</p>
+<div class="flex items-center justify-between mt-1">
+<p class="text-primary font-bold">$5.200</p>
+<button class="bg-primary/10 text-primary p-1 rounded-full">
+<span class="material-symbols-outlined text-[20px]">add_shopping_cart</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Account Options -->
+<div class="px-4 py-6 flex flex-col gap-1">
+<h2 class="text-[#1b130d] dark:text-white text-sm font-bold uppercase tracking-widest px-1 pb-3 text-zinc-400">Cuenta</h2>
+<button class="flex items-center gap-4 p-4 bg-white dark:bg-zinc-900 rounded-xl mb-2 border border-gray-100 dark:border-zinc-800 shadow-sm active:bg-gray-50 dark:active:bg-zinc-800 transition-colors">
+<div class="bg-primary/10 p-2 rounded-lg text-primary">
+<span class="material-symbols-outlined">person</span>
+</div>
+<div class="flex-1 text-left">
+<p class="text-[#1b130d] dark:text-white font-bold text-base leading-tight">Configuración de cuenta</p>
+<p class="text-zinc-500 text-xs">Información personal y seguridad</p>
+</div>
+<span class="material-symbols-outlined text-zinc-400">chevron_right</span>
+</button>
+<button class="flex items-center gap-4 p-4 bg-white dark:bg-zinc-900 rounded-xl mb-2 border border-gray-100 dark:border-zinc-800 shadow-sm active:bg-gray-50 dark:active:bg-zinc-800 transition-colors">
+<div class="bg-primary/10 p-2 rounded-lg text-primary">
+<span class="material-symbols-outlined">payments</span>
+</div>
+<div class="flex-1 text-left">
+<p class="text-[#1b130d] dark:text-white font-bold text-base leading-tight">Métodos de pago</p>
+<p class="text-zinc-500 text-xs">Visa **** 4242</p>
+</div>
+<span class="material-symbols-outlined text-zinc-400">chevron_right</span>
+</button>
+<button class="flex items-center gap-4 p-4 bg-white dark:bg-zinc-900 rounded-xl mb-2 border border-gray-100 dark:border-zinc-800 shadow-sm active:bg-gray-50 dark:active:bg-zinc-800 transition-colors">
+<div class="bg-primary/10 p-2 rounded-lg text-primary">
+<span class="material-symbols-outlined">history</span>
+</div>
+<div class="flex-1 text-left">
+<p class="text-[#1b130d] dark:text-white font-bold text-base leading-tight">Historial de pedidos</p>
+<p class="text-zinc-500 text-xs">Ver tus compras anteriores</p>
+</div>
+<span class="material-symbols-outlined text-zinc-400">chevron_right</span>
+</button>
+<button class="flex items-center justify-center gap-2 p-4 mt-4 text-red-500 font-bold text-base hover:bg-red-50 dark:hover:bg-red-500/10 rounded-xl transition-colors">
+<span class="material-symbols-outlined">logout</span>
+                Cerrar sesión
+            </button>
+</div>
+<!-- Spacer for Bottom -->
+<div class="h-20"></div>
+<!-- Navigation Bar Mock (Fixed Bottom) -->
+<div class="fixed bottom-0 left-0 right-0 bg-white/80 dark:bg-zinc-900/80 backdrop-blur-md border-t border-gray-100 dark:border-zinc-800 flex justify-around items-center py-3 px-6 max-w-[480px] mx-auto z-50">
+<div class="flex flex-col items-center gap-1 text-zinc-400">
+<span class="material-symbols-outlined">home</span>
+<span class="text-[10px] font-bold">Inicio</span>
+</div>
+<div class="flex flex-col items-center gap-1 text-zinc-400">
+<span class="material-symbols-outlined">local_cafe</span>
+<span class="text-[10px] font-bold">Menu</span>
+</div>
+<div class="flex flex-col items-center gap-1 text-zinc-400">
+<span class="material-symbols-outlined">map</span>
+<span class="text-[10px] font-bold">Tiendas</span>
+</div>
+<div class="flex flex-col items-center gap-1 text-primary">
+<span class="material-symbols-outlined fill-1">person</span>
+<span class="text-[10px] font-bold">Perfil</span>
+</div>
+</div>
+</div>
+</body></html>

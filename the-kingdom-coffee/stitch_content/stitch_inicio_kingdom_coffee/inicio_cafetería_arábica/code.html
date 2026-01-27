@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+
+<html class="light" lang="es"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Inicio Cafetería Arábica</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#d46211",
+                        "background-light": "#f8f7f6",
+                        "background-dark": "#221810",
+                    },
+                    fontFamily: {
+                        "display": ["Plus Jakarta Sans", "sans-serif"]
+                    },
+                    borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark font-display text-[#1b130d] dark:text-[#f8f7f6] antialiased">
+<div class="relative flex min-h-screen w-full flex-col max-w-[430px] mx-auto bg-background-light dark:bg-background-dark shadow-2xl pb-24">
+<!-- TopAppBar -->
+<div class="flex items-center p-4 pb-2 justify-between sticky top-0 bg-background-light/80 dark:bg-background-dark/80 backdrop-blur-md z-50">
+<div class="flex items-center gap-3">
+<div class="size-10 shrink-0 bg-center bg-no-repeat aspect-square bg-cover rounded-full border-2 border-primary/20" data-alt="Perfil del usuario sonriendo en la cafetería" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuD-NUwR-l4ygjsvbNJCgjFQwsAHO_YoyHuF40Xo_Bkwq1w2oAJ7TiPwmNv_tpkV_yGf435M-3nPbS3v0Fwyr3YSuwV4KbuyVKxTZa4MASiFlS0Rw788RmzILi6BxszIjvxwV2NAZP4-W3_o748qxTKepDErecFT9P9Dy-p_ChNODNSJFB490Xmjqzg7IJS4_2PWpnOJ3E4VI0Wxv_LrnZQGkJbaU29lyD4rSxhDkvIxDTplUxcstytF-_gWo0MNWJnrxbrGEITrQllB");'>
+</div>
+<div>
+<p class="text-xs text-[#9a6c4c] dark:text-[#d46211] font-medium leading-none">Buenos días</p>
+<h2 class="text-[#1b130d] dark:text-white text-lg font-bold leading-tight tracking-[-0.015em]">¡Hola, Juan!</h2>
+</div>
+</div>
+<div class="flex gap-2">
+<button class="flex size-10 cursor-pointer items-center justify-center rounded-full bg-white dark:bg-[#33251a] shadow-sm text-[#1b130d] dark:text-white">
+<span class="material-symbols-outlined text-[24px]">notifications</span>
+</button>
+</div>
+</div>
+<!-- SearchBar -->
+<div class="px-4 py-3">
+<label class="flex flex-col min-w-40 h-12 w-full">
+<div class="flex w-full flex-1 items-stretch rounded-xl h-full shadow-sm">
+<div class="text-[#9a6c4c] flex border-none bg-white dark:bg-[#33251a] items-center justify-center pl-4 rounded-l-xl">
+<span class="material-symbols-outlined">search</span>
+</div>
+<input class="form-input flex w-full min-w-0 flex-1 border-none bg-white dark:bg-[#33251a] text-[#1b130d] dark:text-white focus:ring-0 h-full placeholder:text-[#9a6c4c] px-4 rounded-r-xl text-base font-normal leading-normal" placeholder="Busca tu café favorito..." value=""/>
+</div>
+</label>
+</div>
+<!-- Promotional Carousel -->
+<div class="flex overflow-x-auto no-scrollbar">
+<div class="flex items-stretch px-4 py-2 gap-4">
+<div class="flex h-full flex-col gap-3 rounded-xl min-w-[280px] group">
+<div class="w-full bg-center bg-no-repeat aspect-[16/8] bg-cover rounded-xl flex flex-col justify-end p-4 relative overflow-hidden" data-alt="Taza de cappuccino con arte latte y oferta 2x1" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuA_7hsaYhRRz0IBzViuKG5QMpF-LIgQsdq1qBBLfOO88xtN2x42Z6F5OAGKdp8lhoh2Xd8cNkcr7TuJo06nofRo4vsOxs4DBnz40P1RHtfofGOaRtkZZ80R1a6XXKYQsJtyQ9t4Ihs6q1JDLDsumV0Vd6InmEQjjfjTp1ADmrykNLA4aSgRFAI2-YHM_KgVPBVZ54dIdejIbNMdowneKBodjtlBGVctt1CqjUdh9zX_pyk7aCDFQKjHd6cB7TQIly-yOIMmZN1eDXd1");'>
+<div class="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent"></div>
+<div class="relative">
+<span class="bg-primary text-white text-[10px] font-bold px-2 py-1 rounded-full uppercase tracking-wider">Promoción</span>
+<p class="text-white text-lg font-bold leading-tight mt-1">2x1 en Cappuccino</p>
+<p class="text-white/80 text-xs font-normal">Válido todos los lunes de este mes</p>
+</div>
+</div>
+</div>
+<div class="flex h-full flex-col gap-3 rounded-xl min-w-[280px]">
+<div class="w-full bg-center bg-no-repeat aspect-[16/8] bg-cover rounded-xl flex flex-col justify-end p-4 relative overflow-hidden" data-alt="Croissant recién horneado sobre una mesa de madera" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuBU-4lhis5LH89rrbQ8v4w_si1-tERjzn_es3RGp1D9is_2WjdhLEAOU3XjeUgXzJglXI64jZCIWXbRy8R6JNCN5Ar-PDXcuTnDOdY_C3-2AwYoH1RH71mAIqvPKaywexg3Z0lrSXMNXasVHMNRh8axG_hUGArtaTtbOowNGqVYpHj6e3ybW4iXypYFwybPMC3F1SZNI6xA5V_ruwbevbBVjVKvPiWxlHfv7L6hbRbt6YSpRF37Vr16qUVDH4OG_cVFnFXxjsM_ipFI");'>
+<div class="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent"></div>
+<div class="relative">
+<span class="bg-primary text-white text-[10px] font-bold px-2 py-1 rounded-full uppercase tracking-wider">Nuevo</span>
+<p class="text-white text-lg font-bold leading-tight mt-1">Croissant de Almendras</p>
+<p class="text-white/80 text-xs font-normal">Pruébalo recién horneado hoy</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- SectionHeader: Categorías -->
+<div class="flex items-center justify-between px-4 pt-6 pb-2">
+<h3 class="text-[#1b130d] dark:text-white text-lg font-bold leading-tight tracking-[-0.015em]">Categorías</h3>
+<button class="text-primary text-sm font-semibold">Ver todas</button>
+</div>
+<!-- Chips -->
+<div class="flex gap-3 px-4 py-2 overflow-x-auto no-scrollbar">
+<div class="flex h-10 shrink-0 items-center justify-center gap-x-2 rounded-xl bg-primary px-5 shadow-md shadow-primary/20">
+<span class="material-symbols-outlined text-white text-lg">coffee</span>
+<p class="text-white text-sm font-semibold leading-normal">Café</p>
+</div>
+<div class="flex h-10 shrink-0 items-center justify-center gap-x-2 rounded-xl bg-white dark:bg-[#33251a] px-5 border border-[#f3ece7] dark:border-transparent">
+<span class="material-symbols-outlined text-[#9a6c4c] text-lg">bakery_dining</span>
+<p class="text-[#1b130d] dark:text-white text-sm font-medium leading-normal">Repostería</p>
+</div>
+<div class="flex h-10 shrink-0 items-center justify-center gap-x-2 rounded-xl bg-white dark:bg-[#33251a] px-5 border border-[#f3ece7] dark:border-transparent">
+<span class="material-symbols-outlined text-[#9a6c4c] text-lg">breakfast_dining</span>
+<p class="text-[#1b130d] dark:text-white text-sm font-medium leading-normal">Desayunos</p>
+</div>
+<div class="flex h-10 shrink-0 items-center justify-center gap-x-2 rounded-xl bg-white dark:bg-[#33251a] px-5 border border-[#f3ece7] dark:border-transparent">
+<span class="material-symbols-outlined text-[#9a6c4c] text-lg">icecream</span>
+<p class="text-[#1b130d] dark:text-white text-sm font-medium leading-normal">Bebidas Frías</p>
+</div>
+</div>
+<!-- SectionHeader: Lo más vendido -->
+<div class="px-4 pt-6 pb-4">
+<h3 class="text-[#1b130d] dark:text-white text-lg font-bold leading-tight tracking-[-0.015em]">Lo más vendido</h3>
+</div>
+<!-- Product Cards Grid -->
+<div class="grid grid-cols-2 gap-4 px-4">
+<!-- Product Card 1 -->
+<div class="bg-white dark:bg-[#33251a] rounded-2xl p-3 shadow-sm flex flex-col gap-3">
+<div class="w-full aspect-square bg-center bg-cover rounded-xl relative" data-alt="Un latte de vainilla cremoso en taza blanca" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuCcBbyp2lMbSoE2txNECdH_pT-90gi0QnokTfrhDknsders1YEEY96_HCM5_U-qpYzNvHwnWdLCqyMeZg5-CWplsECBnnoBVHJuv_Npbw_uTdoTeBr2LmiZAdfzaLKnoIaINPU4pzmwBg0TDEJPnT8gFKqO61DE7E676RhpElXrjg93pvN8ZTT77-wQicCG-0HzeXG8P_7X4HoR-2v3Z3oPZ_KdulcM7p2WQvd3AxE3A7TFgIRWUUbyiYV0lIYlxa8qWpG6djXxhtOx");'>
+<button class="absolute top-2 right-2 bg-white/80 dark:bg-black/40 backdrop-blur-md size-8 rounded-full flex items-center justify-center text-primary">
+<span class="material-symbols-outlined text-[20px] fill-current">favorite</span>
+</button>
+</div>
+<div>
+<h4 class="text-[#1b130d] dark:text-white text-sm font-bold leading-tight">Latte de Vainilla</h4>
+<p class="text-[#9a6c4c] text-xs font-normal mt-1">Con leche de almendras</p>
+</div>
+<div class="flex items-center justify-between mt-auto">
+<span class="text-primary text-base font-bold">$4.50</span>
+<button class="bg-primary size-8 rounded-lg flex items-center justify-center text-white">
+<span class="material-symbols-outlined text-[20px]">add</span>
+</button>
+</div>
+</div>
+<!-- Product Card 2 -->
+<div class="bg-white dark:bg-[#33251a] rounded-2xl p-3 shadow-sm flex flex-col gap-3">
+<div class="w-full aspect-square bg-center bg-cover rounded-xl relative" data-alt="Espresso doble intenso con crema dorada" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuDhq7KlmlFF7x0WSsfIH2IjwnAnPhuC_6D9dYu2Z9CAS9vigCry-3rc2hPlM5kcm2u6psEensmo1UO5EXEEq62yTkvFu5-RKWDsRgwRPiQ1hkMOMxt0De6u3hz37AYk3ibRMjeu47s9VNrDFKsNy8v5TrRT920tiWDyB6oGzub-BI2WZbQmgnP1Q3n6QXmsqUq9-en37JUqvfE8gCH4aC1NH-dog4RTQJ7IQirpv5-xtAAE9UZzN8diupB1I7ULIfcWU0X6ytvmxRUI");'>
+<button class="absolute top-2 right-2 bg-white/80 dark:bg-black/40 backdrop-blur-md size-8 rounded-full flex items-center justify-center text-[#9a6c4c]">
+<span class="material-symbols-outlined text-[20px]">favorite</span>
+</button>
+</div>
+<div>
+<h4 class="text-[#1b130d] dark:text-white text-sm font-bold leading-tight">Espresso Doble</h4>
+<p class="text-[#9a6c4c] text-xs font-normal mt-1">Tostado Arábica oscuro</p>
+</div>
+<div class="flex items-center justify-between mt-auto">
+<span class="text-primary text-base font-bold">$2.50</span>
+<button class="bg-primary size-8 rounded-lg flex items-center justify-center text-white">
+<span class="material-symbols-outlined text-[20px]">add</span>
+</button>
+</div>
+</div>
+<!-- Product Card 3 -->
+<div class="bg-white dark:bg-[#33251a] rounded-2xl p-3 shadow-sm flex flex-col gap-3">
+<div class="w-full aspect-square bg-center bg-cover rounded-xl relative" data-alt="Muffin de arándanos fresco con migas" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuC2g6e-2EHxvqlHF8xeQ9Kuc2p_uyMK2Dsq-i23hWKDPSc9tL8NfjCPfsOM5QkTBMN7H39mrvjixnqCg8rZl8DyMlm_d2cD4y_gZExJKobP3hQP80zBKp7ddShd-2ASsmmq-tuKO_xs580axc-ckKe5hSAjTsRFcCWKvxQVK3w3wrv_PdS38YVhG9eFUa4ZknoYiVSht8PW0d-3Y5rhiPKIPQ-NJXc5LioVo8nafjE0e1jFT7TGu2piq_4QD-g_GmnazXixKiow93Sj");'>
+<button class="absolute top-2 right-2 bg-white/80 dark:bg-black/40 backdrop-blur-md size-8 rounded-full flex items-center justify-center text-[#9a6c4c]">
+<span class="material-symbols-outlined text-[20px]">favorite</span>
+</button>
+</div>
+<div>
+<h4 class="text-[#1b130d] dark:text-white text-sm font-bold leading-tight">Muffin Arándanos</h4>
+<p class="text-[#9a6c4c] text-xs font-normal mt-1">Recién horneado</p>
+</div>
+<div class="flex items-center justify-between mt-auto">
+<span class="text-primary text-base font-bold">$3.00</span>
+<button class="bg-primary size-8 rounded-lg flex items-center justify-center text-white">
+<span class="material-symbols-outlined text-[20px]">add</span>
+</button>
+</div>
+</div>
+<!-- Product Card 4 -->
+<div class="bg-white dark:bg-[#33251a] rounded-2xl p-3 shadow-sm flex flex-col gap-3">
+<div class="w-full aspect-square bg-center bg-cover rounded-xl relative" data-alt="Café frío en vaso alto con hielos" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuDgOlP2tcvb29uXWVmxNSEGY57fEfSO2V83lpySpe76wYV9NW_pbstbGj-KcUIQhSdH4ZpQbxi24zwqS3xfwDQivkhBagHLKpmdJjGBg-1XC1emudx2uydIEPBr8aYUIEaLC4jE4-E8XgllkL7XU18H6hupDbV0eFqRtvMJD1d9Nve__xauzrw6LJt9XlgDXPTPfA1lSu1C-SlFjYDsrop_B_7rcCP2ZKVzGCm7ULPbqXSYDbX_GDXTBNvBSSghTvaGqQ8AQnKABqI9");'>
+<button class="absolute top-2 right-2 bg-white/80 dark:bg-black/40 backdrop-blur-md size-8 rounded-full flex items-center justify-center text-primary">
+<span class="material-symbols-outlined text-[20px] fill-current">favorite</span>
+</button>
+</div>
+<div>
+<h4 class="text-[#1b130d] dark:text-white text-sm font-bold leading-tight">Iced Americano</h4>
+<p class="text-[#9a6c4c] text-xs font-normal mt-1">Refrescante y fuerte</p>
+</div>
+<div class="flex items-center justify-between mt-auto">
+<span class="text-primary text-base font-bold">$3.75</span>
+<button class="bg-primary size-8 rounded-lg flex items-center justify-center text-white">
+<span class="material-symbols-outlined text-[20px]">add</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Bottom Navigation Bar (iOS Style) -->
+<div class="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[430px] bg-white/90 dark:bg-[#221810]/95 backdrop-blur-lg border-t border-[#f3ece7] dark:border-[#3d2b1d] px-6 py-3 pb-8 flex justify-between items-center z-[60]">
+<div class="flex flex-col items-center gap-1 text-primary">
+<span class="material-symbols-outlined fill-current">home</span>
+<span class="text-[10px] font-bold">Inicio</span>
+</div>
+<div class="flex flex-col items-center gap-1 text-[#9a6c4c]">
+<span class="material-symbols-outlined">shopping_bag</span>
+<span class="text-[10px] font-medium">Pedidos</span>
+</div>
+<div class="flex flex-col items-center gap-1 text-[#9a6c4c]">
+<span class="material-symbols-outlined">favorite</span>
+<span class="text-[10px] font-medium">Favoritos</span>
+</div>
+<div class="flex flex-col items-center gap-1 text-[#9a6c4c]">
+<span class="material-symbols-outlined">person</span>
+<span class="text-[10px] font-medium">Perfil</span>
+</div>
+</div>
+</div>
+</body></html>

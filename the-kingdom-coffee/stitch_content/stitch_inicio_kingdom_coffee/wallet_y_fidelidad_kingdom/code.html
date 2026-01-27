@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+
+<html class="light" lang="es"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Wallet y Fidelidad Kingdom</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#f2b90d",
+                        "background-light": "#f8f8f5",
+                        "background-dark": "#221e10",
+                        "coffee-dark": "#1c180d",
+                        "coffee-gold": "#9c8749",
+                    },
+                    fontFamily: {
+                        "display": ["Manrope", "sans-serif"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.5rem",
+                        "lg": "1rem",
+                        "xl": "1.5rem",
+                        "full": "9999px"
+                    },
+                },
+            },
+        }
+    </script>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark font-display text-coffee-dark dark:text-white transition-colors duration-300">
+<div class="relative flex h-auto min-h-screen w-full flex-col max-w-[480px] mx-auto overflow-x-hidden shadow-2xl">
+<!-- TopAppBar -->
+<div class="flex items-center bg-background-light dark:bg-background-dark p-4 pb-2 justify-between sticky top-0 z-10">
+<div class="flex size-12 shrink-0 items-center">
+<div class="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-10 border-2 border-primary" data-alt="User profile picture or avatar" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuD7e-apjWMUGdHIZvbiJqPbYrkfvllr1gjYp7pPD5Hyp1T9EO2nxx_sg1T-SLpMv5_BCOdibWxcP_iJGhyNHg4cJBQ_E2EFWH51XPHDkMWYC3SGoVLizrwi3npF6o1OZ8MNymq59BYiQWXLDkW25jqZ6xm3RDis9JvRz0oPxMs33e0tzskcIiHiacwm62rqTxFr8CJpRS4sS-QcFisAM9-XD024lqyRCZg9iQR2yHFznhaozu8Llz5G3Kb5NFo1U79qWJEZZDxTW6GA");'>
+</div>
+</div>
+<div class="flex flex-col flex-1 px-3">
+<p class="text-xs font-medium text-coffee-gold uppercase tracking-wider">Hola, Alex</p>
+<h2 class="text-coffee-dark dark:text-white text-lg font-bold leading-tight tracking-[-0.015em]">Kingdom Wallet</h2>
+</div>
+<div class="flex w-12 items-center justify-end">
+<button class="flex cursor-pointer items-center justify-center rounded-xl h-10 w-10 bg-white/50 dark:bg-white/10 text-coffee-dark dark:text-white">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+</div>
+</div>
+<!-- Wallet Card Section -->
+<div class="p-4 @container">
+<div class="flex flex-col items-stretch justify-start rounded-xl @xl:flex-row @xl:items-start shadow-lg bg-white dark:bg-zinc-800/50 overflow-hidden border border-zinc-100 dark:border-zinc-700">
+<div class="w-full bg-center bg-no-repeat aspect-[16/7] bg-cover relative overflow-hidden" data-alt="Premium coffee shop background with gold accents" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuCZKPZvvdRMGCgYWgjLJrtFokPWj1J32dlqCj856MhtEUdX9nxafv6vu8bIdXfQuxBrpgmWmdtTweTP_3wNfI0eul0rEJdGpkzd6EH41e_MnzFdHv0CGs9p_2kFupwmnNSwHqV_Yqnmazf1gwRYngfEInVySuO7KeNkpSlnChWaGdEAd60L6WCh9nJrdZqH5tpVWmKnH3P4LHPVH2-WtKQ1EXewIzKyd7yp4PXpSJn9ZfP0sw6cxseI0Sm4g8aPoYeZDz7ybS1A2Pcl");'>
+<div class="absolute inset-0 bg-gradient-to-t from-coffee-dark/80 to-transparent"></div>
+<div class="absolute bottom-4 left-4">
+<span class="text-white/70 text-[10px] font-bold tracking-[0.2em] uppercase">Kingdom Member Platinum</span>
+</div>
+</div>
+<div class="flex w-full min-w-72 grow flex-col items-stretch justify-center gap-1 py-5 px-5">
+<p class="text-coffee-gold text-xs font-bold uppercase tracking-widest">Saldo Disponible</p>
+<div class="flex items-baseline gap-1">
+<span class="text-coffee-dark dark:text-white text-3xl font-extrabold tracking-tighter">$45.50</span>
+<span class="text-coffee-gold text-sm font-medium">USD</span>
+</div>
+<div class="flex items-center gap-3 justify-between mt-3">
+<p class="text-coffee-gold text-sm font-medium leading-normal flex items-center gap-1">
+<span class="material-symbols-outlined text-sm">stars</span>
+                            2,450 puntos
+                        </p>
+<button class="flex min-w-[100px] cursor-pointer items-center justify-center rounded-lg h-10 px-4 bg-primary text-coffee-dark text-sm font-bold shadow-md hover:opacity-90 transition-opacity">
+<span class="truncate">Recargar</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+<!-- Loyalty Progress Section -->
+<div class="px-4 mt-2">
+<div class="bg-white dark:bg-zinc-800/30 rounded-xl p-4 border border-zinc-100 dark:border-zinc-700">
+<div class="flex items-center justify-between mb-4">
+<h3 class="text-coffee-dark dark:text-white text-md font-bold leading-tight">Nivel Grano de Bronce</h3>
+<span class="bg-primary/20 text-coffee-gold text-[10px] px-2 py-1 rounded-full font-bold uppercase">Socio Activo</span>
+</div>
+<div class="flex flex-col gap-3">
+<div class="flex gap-6 justify-between items-end">
+<p class="text-coffee-dark dark:text-zinc-300 text-sm font-medium leading-normal">Hacia: <span class="text-primary font-bold">Grano de Oro</span></p>
+<p class="text-coffee-dark dark:text-zinc-400 text-xs font-bold leading-normal">750 / 1000 pts</p>
+</div>
+<div class="rounded-full bg-zinc-200 dark:bg-zinc-700 h-2.5 overflow-hidden">
+<div class="h-full rounded-full bg-primary shadow-[0_0_8px_rgba(242,185,13,0.5)]" style="width: 75%;"></div>
+</div>
+<p class="text-coffee-gold text-xs font-medium leading-normal italic">¡Solo te faltan 250 puntos para el siguiente nivel!</p>
+</div>
+</div>
+</div>
+<!-- Scan Section (Main Action) -->
+<div class="mt-8 mb-4 flex flex-col items-center">
+<h3 class="text-coffee-dark dark:text-white tracking-tight text-xl font-extrabold px-4 text-center pb-2">Pagar y Acumular</h3>
+<p class="text-coffee-gold text-sm text-center mb-6">Muestra este código al barista en caja</p>
+<div class="bg-white p-6 rounded-2xl shadow-xl border-4 border-primary relative">
+<div class="bg-white rounded-lg p-2">
+<!-- Placeholder for QR Code using Material Symbols and standard layout -->
+<div class="w-48 h-48 bg-zinc-50 flex items-center justify-center relative border border-zinc-100">
+<span class="material-symbols-outlined text-[160px] text-coffee-dark opacity-90">qr_code_2</span>
+<div class="absolute inset-0 flex items-center justify-center">
+<div class="bg-white p-2 rounded-lg shadow-sm">
+<span class="material-symbols-outlined text-primary text-3xl font-bold">coffee</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Decorative scan corners -->
+<div class="absolute -top-1 -left-1 w-6 h-6 border-t-4 border-l-4 border-coffee-dark"></div>
+<div class="absolute -top-1 -right-1 w-6 h-6 border-t-4 border-r-4 border-coffee-dark"></div>
+<div class="absolute -bottom-1 -left-1 w-6 h-6 border-b-4 border-l-4 border-coffee-dark"></div>
+<div class="absolute -bottom-1 -right-1 w-6 h-6 border-b-4 border-r-4 border-coffee-dark"></div>
+</div>
+<button class="mt-8 flex items-center gap-2 text-coffee-dark dark:text-white font-bold text-sm bg-white dark:bg-zinc-800 px-6 py-3 rounded-full shadow-md border border-zinc-100 dark:border-zinc-700">
+<span class="material-symbols-outlined text-primary">history</span>
+                Ver historial de transacciones
+            </button>
+</div>
+<!-- Quick Actions Grid -->
+<div class="px-4 py-6 grid grid-cols-3 gap-4">
+<div class="flex flex-col items-center gap-2">
+<div class="size-14 rounded-2xl bg-primary/10 flex items-center justify-center text-primary border border-primary/20">
+<span class="material-symbols-outlined text-2xl">redeem</span>
+</div>
+<span class="text-[11px] font-bold text-coffee-gold uppercase">Canjear</span>
+</div>
+<div class="flex flex-col items-center gap-2">
+<div class="size-14 rounded-2xl bg-primary/10 flex items-center justify-center text-primary border border-primary/20">
+<span class="material-symbols-outlined text-2xl">local_cafe</span>
+</div>
+<span class="text-[11px] font-bold text-coffee-gold uppercase">Menú</span>
+</div>
+<div class="flex flex-col items-center gap-2">
+<div class="size-14 rounded-2xl bg-primary/10 flex items-center justify-center text-primary border border-primary/20">
+<span class="material-symbols-outlined text-2xl">location_on</span>
+</div>
+<span class="text-[11px] font-bold text-coffee-gold uppercase">Tiendas</span>
+</div>
+</div>
+<!-- Bottom Navigation Spacer -->
+<div class="h-24"></div>
+<!-- Bottom Tab Bar -->
+<div class="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[480px] bg-white/95 dark:bg-zinc-900/95 backdrop-blur-md border-t border-zinc-200 dark:border-zinc-800 px-6 py-3 flex justify-between items-center z-50">
+<div class="flex flex-col items-center gap-1">
+<span class="material-symbols-outlined text-coffee-gold">home</span>
+<span class="text-[10px] font-bold text-coffee-gold">Inicio</span>
+</div>
+<div class="flex flex-col items-center gap-1 text-primary">
+<span class="material-symbols-outlined fill-1">account_balance_wallet</span>
+<span class="text-[10px] font-bold">Wallet</span>
+</div>
+<div class="flex flex-col items-center gap-1 text-zinc-400">
+<span class="material-symbols-outlined">shopping_bag</span>
+<span class="text-[10px] font-bold">Tienda</span>
+</div>
+<div class="flex flex-col items-center gap-1 text-zinc-400">
+<span class="material-symbols-outlined">person</span>
+<span class="text-[10px] font-bold">Perfil</span>
+</div>
+</div>
+</div>
+</body></html>

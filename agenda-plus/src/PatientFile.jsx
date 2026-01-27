@@ -532,7 +532,7 @@ const PatientFile = ({ patient, onClose }) => {
 
 const styles = {
     overlay: { position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(0,0,0,0.5)', zIndex: 100, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '40px' },
-    modal: { background: '#f8fafc', width: '100%', maxWidth: '1000px', height: '90vh', borderRadius: '24px', display: 'flex', flexDirection: 'column', overflow: 'hidden' },
+
     header: { padding: '30px 40px', background: '#fff', borderBottom: '1.5px solid #e2e8f0', display: 'flex', justifyContent: 'space-between', alignItems: 'center' },
     patientInfo: { display: 'flex', gap: '20px', alignItems: 'center' },
     bigAvatar: { width: '60px', height: '60px', borderRadius: '18px', background: 'var(--primary-gradient)', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.8rem', fontWeight: '900' },

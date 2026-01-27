@@ -16,7 +16,14 @@ import SalonLogo from './components/SalonLogo';
 
 function App() {
   const [activeTab, setActiveTab] = useState('home');
-  const { subscription, expireDemo, auth } = useSalonStore();
+  const { subscription, expireDemo, auth, fetchInitialData } = useSalonStore();
+
+  // Load Data from Backend
+  React.useEffect(() => {
+    if (auth.isAuthenticated && auth.token) {
+      fetchInitialData();
+    }
+  }, [auth.isAuthenticated, auth.token, fetchInitialData]);
 
   // 1. Auth Check
   if (!auth.isAuthenticated) {

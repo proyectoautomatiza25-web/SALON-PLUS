@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+
+<html class="light" lang="es"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Mi Carrito Kingdom</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#d46211",
+                        "background-light": "#f8f7f6",
+                        "background-dark": "#221810",
+                    },
+                    fontFamily: {
+                        "display": ["Plus Jakarta Sans", "sans-serif"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        body {
+            -webkit-tap-highlight-color: transparent;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark font-display text-[#1b130d] dark:text-[#f8f7f6] antialiased">
+<div class="relative flex min-h-screen w-full flex-col max-w-[430px] mx-auto bg-background-light dark:bg-background-dark overflow-x-hidden shadow-2xl">
+<!-- TopAppBar -->
+<nav class="sticky top-0 z-10 flex items-center bg-background-light/80 dark:bg-background-dark/80 backdrop-blur-md p-4 pb-2 justify-between">
+<button class="text-[#1b130d] dark:text-[#f8f7f6] flex size-12 shrink-0 items-center justify-start focus:outline-none">
+<span class="material-symbols-outlined">arrow_back_ios</span>
+</button>
+<h2 class="text-[#1b130d] dark:text-[#f8f7f6] text-lg font-bold leading-tight tracking-tight flex-1 text-center">Mi Carrito</h2>
+<div class="size-12 shrink-0 flex items-center justify-end">
+<span class="material-symbols-outlined text-primary">shopping_bag</span>
+</div>
+</nav>
+<main class="flex-1 flex flex-col pt-4">
+<!-- SectionHeader -->
+<div class="px-4 pb-4">
+<h3 class="text-[#1b130d] dark:text-[#f8f7f6] text-xl font-bold leading-tight tracking-tight">Tu Pedido</h3>
+<p class="text-[#9a6c4c] dark:text-primary/70 text-sm font-normal">Cafetería de Especialidad Kingdom</p>
+</div>
+<!-- Items List -->
+<div class="flex flex-col gap-1">
+<!-- ListItem: Flat White -->
+<div class="flex items-center gap-4 bg-white dark:bg-[#2d2118] mx-4 p-4 rounded-xl shadow-sm border border-[#f3ece7] dark:border-white/5">
+<div class="bg-center bg-no-repeat aspect-square bg-cover rounded-lg size-20 shrink-0" data-alt="A cup of flat white coffee with latte art" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuBo56_M4VKnWg5U4A8zLP7MxD16_k7KyH7-aPtSZ0YmY0C0ZQFuHAv-EffdzfZOtTHk_fnowhGcKhip0mZyFZJS0NbkRgsy2OY90kK33867NTzaZD1JLVLRrnRRg31vS4dZkhffEkTB7i5KUpRurPwzLOy0clbtpxY0pcEnm-tQr3iW2BERenEklbXoAdmg5d9cqq0EOGhjnh_8cQY3YBzrWnTt6qInoDXPdifoYY_DjNfBF3k10nq8bc36Z3cuon1zRwjUDm8URJi7");'>
+</div>
+<div class="flex flex-col flex-1 justify-center">
+<div class="flex justify-between items-start">
+<p class="text-[#1b130d] dark:text-white text-base font-semibold leading-tight line-clamp-1">Flat White</p>
+<button class="text-[#9a6c4c] dark:text-primary/60 hover:text-red-500 transition-colors">
+<span class="material-symbols-outlined text-[20px]">delete</span>
+</button>
+</div>
+<p class="text-[#9a6c4c] dark:text-primary/70 text-xs font-normal leading-normal mt-1">Leche de Almendra</p>
+<div class="flex items-center justify-between mt-3">
+<div class="flex items-center gap-3 bg-[#f3ece7] dark:bg-[#3d2e24] px-3 py-1.5 rounded-full">
+<button class="text-[#1b130d] dark:text-white flex items-center justify-center focus:outline-none">
+<span class="material-symbols-outlined text-[18px]">remove</span>
+</button>
+<span class="text-[#1b130d] dark:text-white text-sm font-bold w-4 text-center">1</span>
+<button class="text-[#1b130d] dark:text-white flex items-center justify-center focus:outline-none">
+<span class="material-symbols-outlined text-[18px]">add</span>
+</button>
+</div>
+<p class="text-[#1b130d] dark:text-white font-bold">$4.50</p>
+</div>
+</div>
+</div>
+<!-- ListItem: Cheesecake -->
+<div class="flex items-center gap-4 bg-white dark:bg-[#2d2118] mx-4 p-4 rounded-xl shadow-sm border border-[#f3ece7] dark:border-white/5 mt-2">
+<div class="bg-center bg-no-repeat aspect-square bg-cover rounded-lg size-20 shrink-0" data-alt="Raspberry cheesecake slice with fruit topping" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuCooJKCF8fzad7oaf9n00xvyQDWEH59e7YDCMGH6LhPUjBmA70iZBsbA7YD3C0LpasP9NgOekuZ9hvrDR_12UErv9Q7oQUL3MSkvnOXIj8W0ABVDGaRKc9uYhX_RLZYqep3B_JMWmSBoZQ2TQwPqXf8xrn65zBZGGOzxvVTbi6O4Gr5aX7yoId4mnt3Ao5rtnbPhakZ7uLEwLaH2vZkEEGIY3LBs826a8c2eUAa3knzEW5oFFEN6u9_QZQIRIwhAqKSOFWy2UgoBgaj");'>
+</div>
+<div class="flex flex-col flex-1 justify-center">
+<div class="flex justify-between items-start">
+<p class="text-[#1b130d] dark:text-white text-base font-semibold leading-tight line-clamp-1">Cheesecake de Frambuesa</p>
+<button class="text-[#9a6c4c] dark:text-primary/60 hover:text-red-500 transition-colors">
+<span class="material-symbols-outlined text-[20px]">delete</span>
+</button>
+</div>
+<p class="text-[#9a6c4c] dark:text-primary/70 text-xs font-normal leading-normal mt-1">Individual</p>
+<div class="flex items-center justify-between mt-3">
+<div class="flex items-center gap-3 bg-[#f3ece7] dark:bg-[#3d2e24] px-3 py-1.5 rounded-full">
+<button class="text-[#1b130d] dark:text-white flex items-center justify-center focus:outline-none">
+<span class="material-symbols-outlined text-[18px]">remove</span>
+</button>
+<span class="text-[#1b130d] dark:text-white text-sm font-bold w-4 text-center">1</span>
+<button class="text-[#1b130d] dark:text-white flex items-center justify-center focus:outline-none">
+<span class="material-symbols-outlined text-[18px]">add</span>
+</button>
+</div>
+<p class="text-[#1b130d] dark:text-white font-bold">$6.50</p>
+</div>
+</div>
+</div>
+</div>
+<!-- Promotion Section (Custom Addition for "Aire" and Sophistication) -->
+<div class="px-6 py-10 text-center">
+<p class="text-[#9a6c4c] dark:text-primary/60 text-xs tracking-[0.2em] uppercase mb-2">Kingdom Experience</p>
+<p class="text-[#1b130d] dark:text-[#f8f7f6] text-sm italic opacity-80">"El café perfecto es un viaje, no un destino."</p>
+</div>
+</main>
+<!-- Summary and Button -->
+<footer class="bg-white dark:bg-[#2d2118] rounded-t-[2.5rem] shadow-[0_-10px_30px_-15px_rgba(0,0,0,0.1)] p-6 pt-8 mt-auto border-t border-[#f3ece7] dark:border-white/5">
+<h3 class="text-[#1b130d] dark:text-[#f8f7f6] text-lg font-bold leading-tight tracking-tight mb-4">Resumen de pedido</h3>
+<!-- DescriptionList -->
+<div class="space-y-3 mb-6">
+<div class="flex justify-between items-center">
+<p class="text-[#9a6c4c] dark:text-primary/70 text-sm font-normal">Subtotal</p>
+<p class="text-[#1b130d] dark:text-white text-sm font-medium">$11.00</p>
+</div>
+<div class="flex justify-between items-center">
+<p class="text-[#9a6c4c] dark:text-primary/70 text-sm font-normal">Propina sugerida (15%)</p>
+<p class="text-[#1b130d] dark:text-white text-sm font-medium">$1.65</p>
+</div>
+<div class="h-[1px] bg-[#f3ece7] dark:bg-white/10 my-2"></div>
+<div class="flex justify-between items-center">
+<p class="text-[#1b130d] dark:text-white text-lg font-bold">Total</p>
+<p class="text-primary text-xl font-bold">$12.65</p>
+</div>
+</div>
+<!-- Confirmation Button -->
+<button class="w-full bg-primary text-white font-bold py-4 rounded-xl shadow-lg shadow-primary/30 active:scale-[0.98] transition-all flex items-center justify-center gap-2">
+<span>Confirmar Pedido</span>
+<span class="material-symbols-outlined">arrow_forward</span>
+</button>
+<!-- Safe Area Bottom padding -->
+<div class="h-6"></div>
+</footer>
+</div>
+</body></html>

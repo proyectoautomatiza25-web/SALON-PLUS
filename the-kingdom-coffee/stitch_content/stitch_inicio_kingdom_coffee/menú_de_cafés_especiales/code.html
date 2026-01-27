@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+
+<html class="light" lang="es"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#d46211",
+                        "background-light": "#f8f7f6",
+                        "background-dark": "#221810",
+                    },
+                    fontFamily: {
+                        "display": ["Plus Jakarta Sans", "sans-serif"]
+                    },
+                    borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .active-fill {
+            font-variation-settings: 'FILL' 1;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark font-display text-[#1b130d] dark:text-white antialiased">
+<div class="relative flex min-h-screen w-full flex-col overflow-x-hidden">
+<!-- TopAppBar (iOS Style) -->
+<header class="sticky top-0 z-50 flex items-center bg-background-light/80 dark:bg-background-dark/80 backdrop-blur-md px-4 py-3 justify-between border-b border-[#f3ece7] dark:border-[#3a2c20]">
+<div class="flex size-10 items-center justify-start cursor-pointer">
+<span class="material-symbols-outlined text-2xl">arrow_back_ios</span>
+</div>
+<h1 class="text-lg font-bold leading-tight tracking-tight flex-1 text-center">Cafés</h1>
+<div class="flex size-10 items-center justify-end relative cursor-pointer">
+<span class="material-symbols-outlined text-2xl">shopping_cart</span>
+<span class="absolute top-1 right-0 flex h-4 w-4 items-center justify-center rounded-full bg-primary text-[10px] font-bold text-white">2</span>
+</div>
+</header>
+<!-- Search Bar -->
+<div class="px-4 pt-4 pb-2">
+<div class="flex items-center gap-3 rounded-xl bg-[#f3ece7] dark:bg-[#3a2c20] px-4 py-2">
+<span class="material-symbols-outlined text-[#9a6c4c] text-xl">search</span>
+<input class="bg-transparent border-none focus:ring-0 text-sm w-full placeholder-[#9a6c4c]" placeholder="Buscar café..." type="text"/>
+</div>
+</div>
+<!-- Horizontal Chips -->
+<div class="flex gap-3 px-4 py-3 overflow-x-auto no-scrollbar">
+<div class="flex h-9 shrink-0 items-center justify-center gap-x-2 rounded-full bg-primary px-5 shadow-sm">
+<p class="text-white text-sm font-semibold">Calientes</p>
+</div>
+<div class="flex h-9 shrink-0 items-center justify-center gap-x-2 rounded-full bg-[#f3ece7] dark:bg-[#3a2c20] px-5">
+<p class="text-[#1b130d] dark:text-[#f3ece7] text-sm font-medium">Fríos</p>
+</div>
+<div class="flex h-9 shrink-0 items-center justify-center gap-x-2 rounded-full bg-[#f3ece7] dark:bg-[#3a2c20] px-5">
+<p class="text-[#1b130d] dark:text-[#f3ece7] text-sm font-medium">Especialidades</p>
+</div>
+<div class="flex h-9 shrink-0 items-center justify-center gap-x-2 rounded-full bg-[#f3ece7] dark:bg-[#3a2c20] px-5">
+<p class="text-[#1b130d] dark:text-[#f3ece7] text-sm font-medium">Temporada</p>
+</div>
+</div>
+<!-- Product List -->
+<main class="flex flex-col gap-1 px-4 pb-24">
+<!-- ListItem 1 -->
+<div class="flex items-center gap-4 py-4 border-b border-[#f3ece7]/60 dark:border-[#3a2c20]/60 justify-between">
+<div class="flex items-center gap-4 flex-1">
+<div class="bg-center bg-no-repeat aspect-square bg-cover rounded-xl size-20 shrink-0 shadow-sm" data-alt="A beautiful latte macchiato with layered milk and coffee" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuDJG8ADUib6GuAeBQSqYREB2oBaUjWc5dVtkwHxe5Fze_Rw9MXTbvkyXg-eCkJVnS5XNUSEg-wskmXyV8rrOUN7tLqDftEirF7KHevAsuHEWUNvXdftyUJdwOPyvLzVBzvv_yQraoYy6IzIJ_yYgywQMlfHuVd_Duj8lg4XzviGLEpPAEGrlT4YpeotbDNv0opSbXBbn1ZUDMxvyZEW3ajUb__i-uPp9yCYfwFcNd-y0Hedn4-EXTTbTsXdupBTf5It9Dnp2DRbYREk");'></div>
+<div class="flex flex-col justify-center gap-0.5">
+<p class="text-base font-bold leading-tight">Latte Macchiato</p>
+<p class="text-[#9a6c4c] dark:text-[#c4a48c] text-xs font-normal leading-snug line-clamp-2">Leche cremosa con un toque de espresso intenso y espuma suave.</p>
+<p class="text-primary text-sm font-bold mt-1">$4.50</p>
+</div>
+</div>
+<div class="shrink-0">
+<button class="flex size-10 items-center justify-center rounded-full bg-primary text-white shadow-md active:scale-95 transition-transform">
+<span class="material-symbols-outlined text-2xl">add</span>
+</button>
+</div>
+</div>
+<!-- ListItem 2 -->
+<div class="flex items-center gap-4 py-4 border-b border-[#f3ece7]/60 dark:border-[#3a2c20]/60 justify-between">
+<div class="flex items-center gap-4 flex-1">
+<div class="bg-center bg-no-repeat aspect-square bg-cover rounded-xl size-20 shrink-0 shadow-sm" data-alt="A classic dark americano in a white cup" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuAjY1ZjEVmwP_hJzoJYFsveHkKu1Q8LV5PcU1jhxlRL_LLPzQygmyPalwf5kveH942LB3gvh4HJj0HUB09ypQPIpYDvVFVze4SZEGjU4jJDdRrvJvtr8qQhupfOPlxzoVSwE2xmNb9bH4jR_szhHEylBPNSkti1KP-D8QXW0wR-IxP5ymZTLjphZ5WuNfPupBKIu6txxNwJv5Ao9G1p6E-8YU11YdeTDwTVjfdiEXVjStw6khBhlIaveyKmKVtmwYOvnVO3H6T4gEDc");'></div>
+<div class="flex flex-col justify-center gap-0.5">
+<p class="text-base font-bold leading-tight">Espresso Americano</p>
+<p class="text-[#9a6c4c] dark:text-[#c4a48c] text-xs font-normal leading-snug line-clamp-2">Doble carga de café arábica con agua filtrada caliente.</p>
+<p class="text-primary text-sm font-bold mt-1">$3.00</p>
+</div>
+</div>
+<div class="shrink-0">
+<button class="flex size-10 items-center justify-center rounded-full bg-primary text-white shadow-md active:scale-95 transition-transform">
+<span class="material-symbols-outlined text-2xl">add</span>
+</button>
+</div>
+</div>
+<!-- ListItem 3 -->
+<div class="flex items-center gap-4 py-4 border-b border-[#f3ece7]/60 dark:border-[#3a2c20]/60 justify-between">
+<div class="flex items-center gap-4 flex-1">
+<div class="bg-center bg-no-repeat aspect-square bg-cover rounded-xl size-20 shrink-0 shadow-sm" data-alt="Vanilla cappuccino with rich foam" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuAT7KlbkdbOgFv0DO4WbSWVaN0iYQbcfgX-u0xNJ-1-4ynp3nsHLAIHmo2H8O_qtDwdYQHr4_rQYKtxwSVR3YqxSzJp39CXH2JRmGFIKVJjLCDgEnjBZzE_f2QqB1Sx5vDWk7BJnwqoTRBk0KztSbo1sUlqbxeOf0GdJuInt-_HWD90r_Rewfx7mN_aSxHYs8TqQQ1t4lk7blOjP-E5yKau__zJioqK0JMSMii4goFqkvuyd6iwLmwjlVH09EX3xCsDgJp_A7yqvchs");'></div>
+<div class="flex flex-col justify-center gap-0.5">
+<p class="text-base font-bold leading-tight">Capuchino de Vainilla</p>
+<p class="text-[#9a6c4c] dark:text-[#c4a48c] text-xs font-normal leading-snug line-clamp-2">Espuma densa con esencia natural de vainilla y canela espolvoreada.</p>
+<p class="text-primary text-sm font-bold mt-1">$4.75</p>
+</div>
+</div>
+<div class="shrink-0">
+<button class="flex size-10 items-center justify-center rounded-full bg-primary text-white shadow-md active:scale-95 transition-transform">
+<span class="material-symbols-outlined text-2xl">add</span>
+</button>
+</div>
+</div>
+<!-- ListItem 4 -->
+<div class="flex items-center gap-4 py-4 border-b border-[#f3ece7]/60 dark:border-[#3a2c20]/60 justify-between">
+<div class="flex items-center gap-4 flex-1">
+<div class="bg-center bg-no-repeat aspect-square bg-cover rounded-xl size-20 shrink-0 shadow-sm" data-alt="Mocha coffee with chocolate syrup" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuAhXS376lo-Jrm0T3Z5UhDhLGfusXXuQ7F0zN3oRMf6gVz0QTbDurtQrXJMSsUCnBgPL11S8YKDGCJC39q4AmRnZZ-JWsA3ULM_08yGEHqvqf9hIMDjsqvLUIEnysDvq3XL6VXzFS6tDlLYQ0SmvVyQ2Tnlu2cGW7YYJVJeJxUpdw5yv_pNbWNzE4SwSrxSvk0TT6qoskaZpI-w_7nTXKGqCGVT07w1JkzopBJfKmhnAo17ACc7uWOBJP0SFvna5G_bQYzA-lJtj567");'></div>
+<div class="flex flex-col justify-center gap-0.5">
+<p class="text-base font-bold leading-tight">Moca Especial</p>
+<p class="text-[#9a6c4c] dark:text-[#c4a48c] text-xs font-normal leading-snug line-clamp-2">Combinación de chocolate negro, espresso y leche vaporizada.</p>
+<p class="text-primary text-sm font-bold mt-1">$5.25</p>
+</div>
+</div>
+<div class="shrink-0">
+<button class="flex size-10 items-center justify-center rounded-full bg-primary text-white shadow-md active:scale-95 transition-transform">
+<span class="material-symbols-outlined text-2xl">add</span>
+</button>
+</div>
+</div>
+<!-- ListItem 5 -->
+<div class="flex items-center gap-4 py-4 border-b border-[#f3ece7]/60 dark:border-[#3a2c20]/60 justify-between">
+<div class="flex items-center gap-4 flex-1">
+<div class="bg-center bg-no-repeat aspect-square bg-cover rounded-xl size-20 shrink-0 shadow-sm" data-alt="Flat white in a ceramic cup" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuBsxFo_bOgs3cSCI1PKysZFtC_9HvhSJE_FJH0JIoGq3g2z-0sDqiKqr6slDaUIRUbU6EIv64jeggA6kfCUqEQ5oqFf-Ge-CJ5dxX8u9n7CaLp3dECf2lvFdwpJP0S9voXRC8BwmLsckWiOJ2Y_RT-QUpihtmYHs9kTlEA_COAboSmf9RwfpdwCIYie-XL7cw-wNLkDKI0cDTMDVTunniGUc5l1z7G8DhWpM3q-tOtis3E5k4cfKfgZNJC3b4W3-3xKhRZzb9lv8MTR");'></div>
+<div class="flex flex-col justify-center gap-0.5">
+<p class="text-base font-bold leading-tight">Flat White</p>
+<p class="text-[#9a6c4c] dark:text-[#c4a48c] text-xs font-normal leading-snug line-clamp-2">Doble espresso con una capa fina de leche micro-espumada.</p>
+<p class="text-primary text-sm font-bold mt-1">$4.25</p>
+</div>
+</div>
+<div class="shrink-0">
+<button class="flex size-10 items-center justify-center rounded-full bg-primary text-white shadow-md active:scale-95 transition-transform">
+<span class="material-symbols-outlined text-2xl">add</span>
+</button>
+</div>
+</div>
+</main>
+<!-- Floating Cart Bar (iOS Native Style) -->
+<div class="fixed bottom-6 left-1/2 -translate-x-1/2 w-[90%] max-w-md">
+<button class="flex w-full items-center justify-between bg-[#1b130d] dark:bg-primary px-6 py-4 rounded-full shadow-2xl active:scale-95 transition-all">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-white text-2xl">shopping_bag</span>
+<span class="text-white font-bold text-sm">Ver Carrito</span>
+<span class="text-white/60 text-xs font-medium ml-1">2 productos</span>
+</div>
+<span class="text-white font-bold">$7.50</span>
+</button>
+</div>
+</div>
+<style>
+        /* Hide scrollbar for Chrome, Safari and Opera */
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        /* Hide scrollbar for IE, Edge and Firefox */
+        .no-scrollbar {
+            -ms-overflow-style: none;  /* IE and Edge */
+            scrollbar-width: none;  /* Firefox */
+        }
+    </style>
+</body></html>

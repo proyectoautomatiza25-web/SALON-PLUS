@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+
+<html class="light" lang="es"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#d46211",
+                        "background-light": "#f8f7f6",
+                        "background-dark": "#221810",
+                    },
+                    fontFamily: {
+                        "display": ["Plus Jakarta Sans"]
+                    },
+                    borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark font-display text-[#1b130d] dark:text-[#f8f7f6]">
+<div class="relative flex h-auto min-h-screen w-full flex-col group/design-root overflow-x-hidden">
+<!-- Top Navigation Bar -->
+<div class="flex items-center bg-background-light dark:bg-background-dark p-4 pb-2 justify-between sticky top-0 z-50">
+<div class="text-[#1b130d] dark:text-white flex size-12 shrink-0 items-center">
+<span class="material-symbols-outlined">arrow_back_ios</span>
+</div>
+<h2 class="text-[#1b130d] dark:text-white text-lg font-bold leading-tight tracking-[-0.015em] flex-1 text-center">Kingdom Coffee</h2>
+<div class="flex w-12 items-center justify-end">
+<button class="flex max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-12 bg-transparent text-[#1b130d] dark:text-white gap-2 text-base font-bold leading-normal tracking-[0.015em] min-w-0 p-0">
+<span class="material-symbols-outlined">shopping_bag</span>
+</button>
+</div>
+</div>
+<!-- Header Image Section -->
+<div class="@container">
+<div class="@[480px]:px-4 @[480px]:py-3">
+<div class="w-full bg-center bg-no-repeat bg-cover flex flex-col justify-end overflow-hidden bg-[#fcfaf8] @[480px]:rounded-lg min-h-[180px] relative" data-alt="Cerca de granos de café tostados y filtro artesanal" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuByJfWppFX2IPeMqFOwo97Jgmzx0hRyD2ntJ7yi8RwJQ73bMvkm47XVL7bAGCIwLPJsB63UVY9g07msNUJuqR0vkx3QZL6a2yQlSGMIFlB_u0_mHoAgjMyYOEm8aTuF1fnHfJNfZZtAOQAPq1FLA19MBDoU58g-AApr0SASZBzZ9bcAMj9Ud7lZ2SEqO80M5j-baE3c60Sw5SBGpTSip3VPHD2Ydq-OnzXe7qysEmRDoUZGtbJKoM7tvLXMMtp1worDE5T6zwkkE4Su");'>
+<div class="absolute inset-0 bg-black/30"></div>
+<div class="relative p-6">
+<h1 class="text-white text-3xl font-bold tracking-tight">Cafetería</h1>
+<p class="text-white/80 text-sm font-medium">Especialidad y Origen</p>
+</div>
+</div>
+</div>
+</div>
+<!-- Search Bar -->
+<div class="px-4 py-4">
+<label class="flex flex-col min-w-40 h-12 w-full">
+<div class="flex w-full flex-1 items-stretch rounded-xl h-full shadow-sm">
+<div class="text-[#9a6c4c] flex border-none bg-white dark:bg-[#2d2118] items-center justify-center pl-4 rounded-l-xl" data-icon="MagnifyingGlass">
+<span class="material-symbols-outlined text-primary">search</span>
+</div>
+<input class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-r-xl text-[#1b130d] dark:text-white focus:outline-0 focus:ring-0 border-none bg-white dark:bg-[#2d2118] h-full placeholder:text-[#9a6c4c] px-4 pl-2 text-base font-normal leading-normal" placeholder="Buscar café o notas de cata..." value=""/>
+</div>
+</label>
+</div>
+<!-- Section Header -->
+<div class="flex items-center justify-between px-4 pt-4 pb-2">
+<h2 class="text-[#1b130d] dark:text-white text-[22px] font-bold leading-tight tracking-[-0.015em]">Nuestra Barra</h2>
+<span class="text-primary text-sm font-semibold">Ver todos</span>
+</div>
+<!-- Product List -->
+<div class="flex flex-col gap-1 px-2">
+<!-- Item: Espresso -->
+<div class="flex items-center gap-4 bg-white dark:bg-[#2d2118] mx-2 my-1 rounded-xl px-4 min-h-[88px] py-3 justify-between shadow-sm">
+<div class="flex items-center gap-4">
+<div class="bg-center bg-no-repeat aspect-square bg-cover rounded-lg size-16" data-alt="Taza pequeña de café espresso con crema dorada" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuAUEC__CBWsGIUUt9sN9F9Yfkw7vNFegpMb-e_EUDQqiRWX8jg3VGsICUpBmUImFFO0sylOYAIhc021MCWk1Qh54mQtyWG6VCTmS9Xf-6zF_XoWGkQRWh-Fk9BX2F_RC8I2pa5yJbQ57qpXvni0TQaVi19oAjxW1htogeFF9XoGAFtRDxsVKvuCJuU7v8y1rJaGfI8j8Lm9eAA7IFfYC2jhrRz-EYEA4MZa9Z8cnwkb_iY4sUCvwjH14qobmbVGYxjy_q0k3VhKNFJW");'></div>
+<div class="flex flex-col justify-center">
+<p class="text-[#1b130d] dark:text-white text-base font-bold leading-normal line-clamp-1">Espresso</p>
+<p class="text-[#9a6c4c] dark:text-[#c0a08a] text-xs font-normal leading-tight line-clamp-2 mt-0.5">Doble carga, notas de chocolate amargo y avellanas</p>
+</div>
+</div>
+<div class="flex flex-col items-end gap-2 shrink-0">
+<span class="text-[#1b130d] dark:text-white font-bold text-sm">$2.200</span>
+<button class="flex size-8 cursor-pointer items-center justify-center rounded-lg bg-primary text-white">
+<span class="material-symbols-outlined text-[20px]">add</span>
+</button>
+</div>
+</div>
+<!-- Item: Americano -->
+<div class="flex items-center gap-4 bg-white dark:bg-[#2d2118] mx-2 my-1 rounded-xl px-4 min-h-[88px] py-3 justify-between shadow-sm">
+<div class="flex items-center gap-4">
+<div class="bg-center bg-no-repeat aspect-square bg-cover rounded-lg size-16" data-alt="Café americano caliente en taza blanca" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuCKG_UuHr0ZL4H0OB81zixIgHCMxlpFuAdrpkZjdzp-Nkyxcglh8HCa6cSgqDOCYzB3ys1ZFVMYl68ZA3wOYT_i5SQ1ULoZQ3veADTw5xQvBvwm04AXFaK1ciX4e1mvWYYHX8KlEitNtWd9J-2WVfGjgELZetDNXr0-mmmFv3nkCCF4_kOjpB1DMb4MLDjWaV-C5sM3tdCQqLlT0pMt8ELUsF3ERJJlRv3MCgPEOOmfr_LPYoT2lz3suP0smbjWA-0cBsJ9UDUMmKsA");'></div>
+<div class="flex flex-col justify-center">
+<p class="text-[#1b130d] dark:text-white text-base font-bold leading-normal line-clamp-1">Americano</p>
+<p class="text-[#9a6c4c] dark:text-[#c0a08a] text-xs font-normal leading-tight line-clamp-2 mt-0.5">Espresso diluido en agua caliente, cuerpo ligero</p>
+</div>
+</div>
+<div class="flex flex-col items-end gap-2 shrink-0">
+<span class="text-[#1b130d] dark:text-white font-bold text-sm">$2.500</span>
+<button class="flex size-8 cursor-pointer items-center justify-center rounded-lg bg-primary text-white">
+<span class="material-symbols-outlined text-[20px]">add</span>
+</button>
+</div>
+</div>
+<!-- Item: Cappuccino -->
+<div class="flex items-center gap-4 bg-white dark:bg-[#2d2118] mx-2 my-1 rounded-xl px-4 min-h-[88px] py-3 justify-between shadow-sm">
+<div class="flex items-center gap-4">
+<div class="bg-center bg-no-repeat aspect-square bg-cover rounded-lg size-16" data-alt="Cappuccino con arte latte de corazón" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuDuy8x5OpuzJ3Dhn3tQGMMd7xc1QVB0ZcI8Pa2O57vdI1DrpMg-SBbZguBNVmF8wNQc682g_uIqgrGd-s1SMK80tBeM6UlfWuVzqa1AjLwzqjeWPMsh0SJdedGRsoz4cjJ7PfM7J1RawcciSlEi3YfzsotNftY9ere1AbK7OZSv49CraErzTqpMelcusbKi9HE3QnR2YBH3XA6_PkfS3Fet-BZ3qJmp8DOZLNra4GSGSKRnxTHtirA6IDguf6xAatkExqtADgHEzC8s");'></div>
+<div class="flex flex-col justify-center">
+<p class="text-[#1b130d] dark:text-white text-base font-bold leading-normal line-clamp-1">Cappuccino</p>
+<p class="text-[#9a6c4c] dark:text-[#c0a08a] text-xs font-normal leading-tight line-clamp-2 mt-0.5">Tercios iguales de espresso, leche y espuma sedosa</p>
+</div>
+</div>
+<div class="flex flex-col items-end gap-2 shrink-0">
+<span class="text-[#1b130d] dark:text-white font-bold text-sm">$3.100</span>
+<button class="flex size-8 cursor-pointer items-center justify-center rounded-lg bg-primary text-white">
+<span class="material-symbols-outlined text-[20px]">add</span>
+</button>
+</div>
+</div>
+<!-- Item: Flat White -->
+<div class="flex items-center gap-4 bg-white dark:bg-[#2d2118] mx-2 my-1 rounded-xl px-4 min-h-[88px] py-3 justify-between shadow-sm border-2 border-primary/20">
+<div class="flex items-center gap-4">
+<div class="bg-center bg-no-repeat aspect-square bg-cover rounded-lg size-16" data-alt="Flat white cremoso en taza pequeña" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuCFdQS7hJK9wTe5hPvrNlLVE6rknYMVXJ7P7DaphsrffXHyJURFVsX1h7fhaH4HQe3lIUJk8krZXwt_2PyUgX8mUK826cfJEPqEKZ1x0xaSmhTAKxMp7Mc9rzUv2MjWsBIdRq2M9hub4S1JAhZS1W1PLPVClRghvb68HBgt6906i2G6k8JJgkM8nLSmF8tJn_-WhgZyGlSjkI7YOFU7L2Xjg7byb5t-8siZ2zuOAX2irNexG-5r71XptyZa4iLb2OVSNwEsWlygYZrW");'></div>
+<div class="flex flex-col justify-center">
+<div class="flex items-center gap-2">
+<p class="text-[#1b130d] dark:text-white text-base font-bold leading-normal line-clamp-1">Flat White</p>
+<span class="bg-primary/10 text-primary text-[10px] px-1.5 py-0.5 rounded font-bold uppercase">Popular</span>
+</div>
+<p class="text-[#9a6c4c] dark:text-[#c0a08a] text-xs font-normal leading-tight line-clamp-2 mt-0.5">Doble ristretto con microespuma muy fina</p>
+</div>
+</div>
+<div class="flex flex-col items-end gap-2 shrink-0">
+<span class="text-[#1b130d] dark:text-white font-bold text-sm">$3.300</span>
+<button class="flex size-8 cursor-pointer items-center justify-center rounded-lg bg-primary text-white">
+<span class="material-symbols-outlined text-[20px]">add</span>
+</button>
+</div>
+</div>
+<!-- Item: Filtrados -->
+<div class="flex items-center gap-4 bg-white dark:bg-[#2d2118] mx-2 my-1 rounded-xl px-4 min-h-[88px] py-3 justify-between shadow-sm">
+<div class="flex items-center gap-4">
+<div class="bg-center bg-no-repeat aspect-square bg-cover rounded-lg size-16" data-alt="Extracción de café por método V60" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuDmfbC6nwXJ5-fGcs-CGFbihP2DN0yIa3brf2CKvLe9xu9irxI9fshyVFkp9tpSIM7IolnaANkxpE5unUTC-K5NFx9YV__fnJlsKEaoMBMxDkijfz7qnpeBAl6tCI5XUQv35by_3Crgf17D6FmORr9mii-yk8eDJBIV4uord3khEk4ILz7T4_vNKH-tSUjkRD-_ZWoOX8gWrSbPbJHCdd584ENokPs5Ol3lPJZInipgtjPGhVf7GKSjGiuRHjBWCIkRzBjNEB_6SHI0");'></div>
+<div class="flex flex-col justify-center">
+<p class="text-[#1b130d] dark:text-white text-base font-bold leading-normal line-clamp-1">Filtrados (V60 / Chemex)</p>
+<p class="text-[#9a6c4c] dark:text-[#c0a08a] text-xs font-normal leading-tight line-clamp-2 mt-0.5">Origen único, notas cítricas y florales claras</p>
+</div>
+</div>
+<div class="flex flex-col items-end gap-2 shrink-0">
+<span class="text-[#1b130d] dark:text-white font-bold text-sm">$3.800</span>
+<button class="flex size-8 cursor-pointer items-center justify-center rounded-lg bg-primary text-white">
+<span class="material-symbols-outlined text-[20px]">add</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Bottom Tab Bar (iOS style) -->
+<div class="h-20 shrink-0"></div>
+<div class="fixed bottom-0 w-full bg-white/80 dark:bg-[#1b130d]/90 backdrop-blur-md border-t border-gray-200 dark:border-white/10 px-6 py-3 flex justify-between items-center z-50">
+<div class="flex flex-col items-center gap-1 text-primary">
+<span class="material-symbols-outlined">restaurant_menu</span>
+<span class="text-[10px] font-bold">Menú</span>
+</div>
+<div class="flex flex-col items-center gap-1 text-[#9a6c4c] opacity-60">
+<span class="material-symbols-outlined">favorite</span>
+<span class="text-[10px] font-bold">Favoritos</span>
+</div>
+<div class="flex flex-col items-center gap-1 text-[#9a6c4c] opacity-60">
+<span class="material-symbols-outlined">receipt_long</span>
+<span class="text-[10px] font-bold">Pedidos</span>
+</div>
+<div class="flex flex-col items-center gap-1 text-[#9a6c4c] opacity-60">
+<span class="material-symbols-outlined">person</span>
+<span class="text-[10px] font-bold">Perfil</span>
+</div>
+</div>
+</div>
+</body></html>

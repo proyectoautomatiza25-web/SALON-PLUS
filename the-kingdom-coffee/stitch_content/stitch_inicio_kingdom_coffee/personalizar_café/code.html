@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+
+<html class="light" lang="es"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght@400&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#d46211",
+                        "background-light": "#f8f7f6",
+                        "background-dark": "#221810",
+                    },
+                    fontFamily: {
+                        "display": ["Plus Jakarta Sans", "sans-serif"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                },
+            },
+        }
+    </script>
+<style>
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark text-[#1b130d] dark:text-white min-h-screen">
+<div class="relative flex h-auto min-h-screen w-full max-w-[480px] mx-auto flex-col bg-background-light dark:bg-background-dark overflow-x-hidden shadow-2xl">
+<!-- TopAppBar -->
+<div class="sticky top-0 z-50 flex items-center bg-background-light/80 dark:bg-background-dark/80 backdrop-blur-md p-4 pb-2 justify-between border-b border-gray-100 dark:border-gray-800">
+<div class="text-[#1b130d] dark:text-white flex size-12 shrink-0 items-center cursor-pointer">
+<span class="material-symbols-outlined">arrow_back_ios</span>
+</div>
+<h2 class="text-[#1b130d] dark:text-white text-lg font-bold leading-tight tracking-[-0.015em] flex-1 text-center pr-12">Personalizar</h2>
+</div>
+<!-- Header Image -->
+<div class="@container">
+<div class="@[480px]:px-4 @[480px]:py-3">
+<div class="w-full bg-center bg-no-repeat bg-cover flex flex-col justify-end overflow-hidden bg-gray-200 dark:bg-gray-800 @[480px]:rounded-lg min-h-80" data-alt="Close up of a specialty flat white coffee with heart latte art" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuDUaDU72RV8G8EU9Wb9zWDf5pSwmsEcIoSlf7Sf3YxeDSCoHuue86phFocK6-0MboehvXLyyfJSd4oeph4MVx1zomjMK0MF1S7vSKKPKwg2bLrY2_DI0RME501piYPdwA5BYP9JMtHPs_DgBIe7p9h3PCbYE5MMcrOhBrhctVaXQIsJuBST_dVGT-5nJyAgTsaOnwqxDsc7hw5WIRra3SvMmqpwtJ3P1FlIbO9qidOMyj7i97LMOaTkepCYFKJ1ogiYX5_se4xBbjRZ");'>
+</div>
+</div>
+</div>
+<!-- Product Info -->
+<div class="px-4">
+<h2 class="text-[#1b130d] dark:text-white tracking-light text-[28px] font-bold leading-tight pb-1 pt-5">Flat White</h2>
+<p class="text-[#1b130d]/70 dark:text-white/70 text-base font-normal leading-normal pb-6">Café de especialidad con una capa delgada de microespuma sedosa.</p>
+</div>
+<div class="h-px bg-gray-100 dark:bg-gray-800 mx-4"></div>
+<!-- Section: Tipo de Leche -->
+<div class="px-4 pb-4">
+<h3 class="text-[#1b130d] dark:text-white text-lg font-bold leading-tight tracking-[-0.015em] pb-4 pt-6">Tipo de Leche</h3>
+<div class="grid grid-cols-2 gap-3">
+<button class="flex items-center justify-center px-4 py-3 rounded-xl border-2 border-primary bg-primary/10 text-primary font-semibold">
+                    Entera
+                </button>
+<button class="flex items-center justify-center px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-700 hover:border-primary/50 text-[#1b130d] dark:text-white font-medium">
+                    Sin Lactosa
+                </button>
+<button class="flex items-center justify-center px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-700 hover:border-primary/50 text-[#1b130d] dark:text-white font-medium">
+                    Almendra
+                </button>
+<button class="flex items-center justify-center px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-700 hover:border-primary/50 text-[#1b130d] dark:text-white font-medium">
+                    Not Milk
+                </button>
+</div>
+</div>
+<!-- Section: Endulzante -->
+<div class="px-4 pb-4">
+<h3 class="text-[#1b130d] dark:text-white text-lg font-bold leading-tight tracking-[-0.015em] pb-4 pt-4">Endulzante</h3>
+<div class="flex flex-col gap-2">
+<label class="flex items-center justify-between p-4 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-white/5 cursor-pointer">
+<span class="font-medium">Sin azúcar</span>
+<div class="size-6 rounded-full border-2 border-primary flex items-center justify-center">
+<div class="size-3 rounded-full bg-primary"></div>
+</div>
+</label>
+<label class="flex items-center justify-between p-4 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-white/5 cursor-pointer">
+<span class="font-medium">Stevia</span>
+<div class="size-6 rounded-full border-2 border-gray-300 dark:border-gray-600"></div>
+</label>
+<label class="flex items-center justify-between p-4 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-white/5 cursor-pointer">
+<span class="font-medium">Azúcar rubia</span>
+<div class="size-6 rounded-full border-2 border-gray-300 dark:border-gray-600"></div>
+</label>
+</div>
+</div>
+<!-- Section: Extras -->
+<div class="px-4 pb-10">
+<h3 class="text-[#1b130d] dark:text-white text-lg font-bold leading-tight tracking-[-0.015em] pb-4 pt-4">Extras</h3>
+<div class="space-y-4">
+<div class="flex items-center justify-between">
+<div class="flex flex-col">
+<span class="font-medium">Cacao en polvo</span>
+<span class="text-sm text-gray-500">+$200</span>
+</div>
+<button class="size-6 rounded border-2 border-gray-300 dark:border-gray-600 flex items-center justify-center">
+<span class="material-symbols-outlined text-xs hidden">check</span>
+</button>
+</div>
+<div class="flex items-center justify-between">
+<div class="flex flex-col">
+<span class="font-medium">Canela</span>
+<span class="text-sm text-gray-500">Gratis</span>
+</div>
+<button class="size-6 rounded border-2 border-primary bg-primary flex items-center justify-center">
+<span class="material-symbols-outlined text-sm text-white font-bold leading-none">check</span>
+</button>
+</div>
+<div class="flex items-center justify-between">
+<div class="flex flex-col">
+<span class="font-medium">Extra shot espresso</span>
+<span class="text-sm text-gray-500">+$600</span>
+</div>
+<button class="size-6 rounded border-2 border-gray-300 dark:border-gray-600 flex items-center justify-center">
+<span class="material-symbols-outlined text-xs hidden">check</span>
+</button>
+</div>
+</div>
+</div>
+<div class="h-32 bg-background-light dark:bg-background-dark"></div>
+<!-- Sticky Footer Action -->
+<div class="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[480px] p-4 bg-background-light/95 dark:bg-background-dark/95 backdrop-blur-lg border-t border-gray-100 dark:border-gray-800 flex flex-col gap-4">
+<div class="flex items-center justify-between px-2">
+<span class="text-sm font-medium text-gray-500">Cantidad</span>
+<div class="flex items-center gap-4 bg-gray-100 dark:bg-gray-800 rounded-full px-4 py-2">
+<button class="material-symbols-outlined text-xl">remove</button>
+<span class="text-lg font-bold w-4 text-center">1</span>
+<button class="material-symbols-outlined text-xl">add</button>
+</div>
+</div>
+<button class="w-full bg-primary text-white font-bold py-4 rounded-xl shadow-lg shadow-primary/20 active:scale-[0.98] transition-transform">
+                Agregar por $3.200
+            </button>
+</div>
+</div>
+</body></html>

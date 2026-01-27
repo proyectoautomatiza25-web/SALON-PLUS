@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+
+<html class="light" lang="es"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#d46211",
+                        "background-light": "#f8f7f6",
+                        "background-dark": "#221810",
+                    },
+                    fontFamily: {
+                        "display": ["Plus Jakarta Sans", "sans-serif"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                },
+            },
+        }
+    </script>
+<style>
+        body {
+            font-family: "Plus Jakarta Sans", sans-serif;
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark text-[#1b130d] dark:text-white min-h-screen">
+<div class="relative flex h-auto min-h-screen w-full flex-col max-w-md mx-auto overflow-x-hidden">
+<!-- TopAppBar -->
+<div class="fixed top-0 z-10 flex w-full max-w-md items-center bg-transparent p-4 justify-between">
+<button class="flex size-10 shrink-0 items-center justify-center rounded-full bg-white/80 dark:bg-black/40 backdrop-blur-sm text-[#1b130d] dark:text-white shadow-sm">
+<span class="material-symbols-outlined">arrow_back</span>
+</button>
+<div class="flex gap-2">
+<button class="flex size-10 items-center justify-center rounded-full bg-white/80 dark:bg-black/40 backdrop-blur-sm text-[#1b130d] dark:text-white shadow-sm">
+<span class="material-symbols-outlined">favorite</span>
+</button>
+<button class="flex size-10 items-center justify-center rounded-full bg-white/80 dark:bg-black/40 backdrop-blur-sm text-[#1b130d] dark:text-white shadow-sm">
+<span class="material-symbols-outlined">share</span>
+</button>
+</div>
+</div>
+<!-- HeaderImage -->
+<div class="@container">
+<div class="@[480px]:px-0">
+<div class="w-full bg-center bg-no-repeat bg-cover flex flex-col justify-end overflow-hidden min-h-80" data-alt="Gourmet roast beef sandwich on artisanal sourdough bread" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuDZUiHdi67h4ByDaWjhO42qSh9VB-r4cgamBVj_6ZxOlRoVIG0g3bjM66c4mOggU8BR4iGqLrruo-XMA-aoFDwSGOQjKA-g-pyjmCrb9NYRVT9kvUtA-wj9KkwBVmFNOXz1WI4CPmOyTt0__PfZpONixPuxGi40PFe54nZ_ZRBRsPUXgAELw850APTAhnuN5l5fORe78ZpZkVU8qNJdyunEDCXU0SK29dnzDnOHKfuf3BlWOyWIY944lHUYkEHVR-iIS2rkjulUZLjE");'>
+</div>
+</div>
+</div>
+<div class="px-4 py-2">
+<!-- HeadlineText & Price -->
+<div class="flex justify-between items-start pt-6 pb-2">
+<h1 class="text-[#1b130d] dark:text-white tracking-tight text-3xl font-extrabold leading-tight">Sándwich Roast Beef</h1>
+<span class="text-primary text-xl font-bold pt-1">$8.500</span>
+</div>
+<!-- BodyText -->
+<p class="text-[#1b130d]/80 dark:text-white/80 text-base font-normal leading-relaxed pb-6">
+                Pan artesanal de masa madre tostado, finas láminas de roast beef premium, rúcula fresca baby y nuestro exclusivo aliño secreto de la casa.
+            </p>
+<div class="h-px w-full bg-gray-200 dark:bg-white/10 mb-2"></div>
+<!-- SectionHeader: Extras -->
+<h3 class="text-[#1b130d] dark:text-white text-lg font-bold leading-tight tracking-tight pb-4 pt-4">Personaliza tu sándwich</h3>
+<!-- Customization List -->
+<div class="space-y-4 pb-8">
+<label class="flex items-center justify-between cursor-pointer group">
+<div class="flex items-center gap-3">
+<input class="w-5 h-5 rounded border-gray-300 text-primary focus:ring-primary" type="checkbox"/>
+<span class="text-base font-medium">Palta Extra</span>
+</div>
+<span class="text-sm font-semibold text-[#1b130d]/60 dark:text-white/60">+$1.000</span>
+</label>
+<label class="flex items-center justify-between cursor-pointer group">
+<div class="flex items-center gap-3">
+<input class="w-5 h-5 rounded border-gray-300 text-primary focus:ring-primary" type="checkbox"/>
+<span class="text-base font-medium">Huevo Frito</span>
+</div>
+<span class="text-sm font-semibold text-[#1b130d]/60 dark:text-white/60">+$800</span>
+</label>
+<label class="flex items-center justify-between cursor-pointer group">
+<div class="flex items-center gap-3">
+<input class="w-5 h-5 rounded border-gray-300 text-primary focus:ring-primary" type="checkbox"/>
+<span class="text-base font-medium">Queso Mantecoso</span>
+</div>
+<span class="text-sm font-semibold text-[#1b130d]/60 dark:text-white/60">+$700</span>
+</label>
+</div>
+<div class="h-px w-full bg-gray-200 dark:bg-white/10 mb-6"></div>
+<!-- Quantity Selector -->
+<div class="flex items-center justify-between pb-32">
+<span class="text-lg font-bold">Cantidad</span>
+<div class="flex items-center gap-4 bg-gray-100 dark:bg-white/10 p-1 rounded-full px-2">
+<button class="flex size-8 items-center justify-center rounded-full bg-white dark:bg-background-dark shadow-sm text-primary">
+<span class="material-symbols-outlined text-xl">remove</span>
+</button>
+<span class="text-lg font-bold px-2">1</span>
+<button class="flex size-8 items-center justify-center rounded-full bg-primary text-white shadow-sm">
+<span class="material-symbols-outlined text-xl">add</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Sticky Bottom Bar -->
+<div class="fixed bottom-0 w-full max-w-md bg-white dark:bg-background-dark border-t border-gray-200 dark:border-white/10 p-4 pb-8">
+<div class="flex items-center gap-4">
+<div class="flex flex-col flex-1">
+<span class="text-xs text-[#1b130d]/50 dark:text-white/50 uppercase font-bold tracking-wider">Total</span>
+<span class="text-2xl font-extrabold text-[#1b130d] dark:text-white leading-none">$8.500</span>
+</div>
+<button class="flex-[2] bg-primary hover:bg-primary/90 text-white font-bold py-4 px-6 rounded-xl flex items-center justify-center gap-2 transition-colors">
+<span class="material-symbols-outlined">shopping_bag</span>
+<span>Añadir al Carrito</span>
+</button>
+</div>
+</div>
+</div>
+</body></html>

@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+
+<html class="light" lang="es"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Canjear Puntos - Kingdom Coffee</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#d46211",
+                        "background-light": "#f8f7f6",
+                        "background-dark": "#221810",
+                    },
+                    fontFamily: {
+                        "display": ["Plus Jakarta Sans", "sans-serif"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                },
+            },
+        }
+    </script>
+<style>
+        body {
+            font-family: "Plus Jakarta Sans", sans-serif;
+        }
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark text-[#1b130d] dark:text-[#f8f7f6] min-h-screen">
+<div class="relative flex h-auto min-h-screen w-full max-w-[480px] mx-auto flex-col bg-background-light dark:bg-background-dark overflow-x-hidden shadow-2xl">
+<!-- TopAppBar -->
+<header class="sticky top-0 z-50 flex items-center bg-background-light/95 dark:bg-background-dark/95 backdrop-blur-sm p-4 pb-2 justify-between">
+<div class="text-[#1b130d] dark:text-white flex size-12 shrink-0 items-center justify-start">
+<span class="material-symbols-outlined cursor-pointer">arrow_back_ios_new</span>
+</div>
+<h2 class="text-[#1b130d] dark:text-white text-lg font-bold leading-tight tracking-[-0.015em] flex-1 text-center font-display">Canjear Puntos</h2>
+<div class="flex w-12 items-center justify-end">
+<button class="flex cursor-pointer items-center justify-center rounded-lg h-12 bg-transparent text-[#1b130d] dark:text-white">
+<span class="material-symbols-outlined">history</span>
+</button>
+</div>
+</header>
+<!-- Stats Card -->
+<div class="px-4 py-2">
+<div class="flex flex-col gap-2 rounded-xl p-6 bg-primary/10 border border-primary/20 dark:bg-primary/20">
+<div class="flex items-center justify-between">
+<p class="text-[#1b130d] dark:text-white text-base font-medium font-display">Puntos Disponibles</p>
+<span class="material-symbols-outlined text-primary">loyalty</span>
+</div>
+<p class="text-primary tracking-tight text-3xl font-bold leading-tight font-display">150 pts</p>
+<div class="w-full bg-gray-200 dark:bg-gray-700 h-1.5 rounded-full mt-2 overflow-hidden">
+<div class="bg-primary h-full w-[75%] rounded-full"></div>
+</div>
+<p class="text-xs text-[#9a6c4c] dark:text-gray-400 mt-1">Estás a 50 pts de tu próximo nivel Gold</p>
+</div>
+</div>
+<!-- Chips / Filter Section -->
+<div class="flex gap-3 p-4 overflow-x-auto no-scrollbar">
+<div class="flex h-10 shrink-0 items-center justify-center gap-x-2 rounded-full bg-primary px-5 shadow-sm">
+<p class="text-white text-sm font-semibold leading-normal font-display">Todo</p>
+</div>
+<div class="flex h-10 shrink-0 items-center justify-center gap-x-2 rounded-full bg-white dark:bg-[#32241a] border border-[#e5e7eb] dark:border-[#4a3528] px-5">
+<p class="text-[#1b130d] dark:text-gray-300 text-sm font-medium leading-normal font-display">Bebidas</p>
+</div>
+<div class="flex h-10 shrink-0 items-center justify-center gap-x-2 rounded-full bg-white dark:bg-[#32241a] border border-[#e5e7eb] dark:border-[#4a3528] px-5">
+<p class="text-[#1b130d] dark:text-gray-300 text-sm font-medium leading-normal font-display">Repostería</p>
+</div>
+<div class="flex h-10 shrink-0 items-center justify-center gap-x-2 rounded-full bg-white dark:bg-[#32241a] border border-[#e5e7eb] dark:border-[#4a3528] px-5">
+<p class="text-[#1b130d] dark:text-gray-300 text-sm font-medium leading-normal font-display">Granos</p>
+</div>
+</div>
+<!-- SectionHeader -->
+<div class="flex items-center justify-between px-4 pt-4 pb-2">
+<h3 class="text-[#1b130d] dark:text-white text-xl font-bold leading-tight tracking-[-0.015em] font-display">Premios para ti</h3>
+<span class="text-primary text-sm font-semibold">Ver todos</span>
+</div>
+<!-- ImageGrid (Rewards Catalog) -->
+<div class="grid grid-cols-2 gap-4 p-4 mb-20">
+<!-- Item 1: Affordable -->
+<div class="flex flex-col gap-3 pb-4 bg-white dark:bg-[#32241a] rounded-xl overflow-hidden shadow-sm border border-gray-100 dark:border-gray-800">
+<div class="relative w-full aspect-square bg-cover bg-center" data-alt="Taza de cappuccino con arte latte" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuAf17bWwyl1Hos3yOq5AEx-MSjHb89XaAes2GrgrOAf5yXVLRdtX3_oFFgMBZaLbaDZB66CwLBdDxkaKJDeMVDRO4CdgW3CGnlYObav9HgDEyeFn2od4NBBoyVuFsjtneH6xVthlMUuPBfkb93XuBq8yYh5ozlysTu0aMdI5cN46SlB4bt4eNaEmuMoCgtWhTfj8yhl219Df3hsZuw_KsyuYFl5gHihbYvlrOuhYrYBoDH89LRs2dUdal-EaJTOmtZckhwvO8uHbWar");'>
+<div class="absolute top-2 right-2 bg-black/60 backdrop-blur-sm text-white px-2 py-1 rounded text-xs font-bold">
+                        50 pts
+                    </div>
+</div>
+<div class="px-3">
+<p class="text-[#1b130d] dark:text-white text-base font-bold font-display">Cappuccino</p>
+<p class="text-[#9a6c4c] dark:text-gray-400 text-xs font-normal mb-3">Taza mediana 12oz</p>
+<button class="w-full bg-primary hover:bg-primary/90 text-white font-bold py-2 rounded-lg text-sm transition-colors">
+                        Canjear
+                    </button>
+</div>
+</div>
+<!-- Item 2: Affordable -->
+<div class="flex flex-col gap-3 pb-4 bg-white dark:bg-[#32241a] rounded-xl overflow-hidden shadow-sm border border-gray-100 dark:border-gray-800">
+<div class="relative w-full aspect-square bg-cover bg-center" data-alt="Rebanada de cheesecake de fresa" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuAa8kv_Wdg9I1VpeMiVKLpfcF3Dr8fO4qb5i0JOPbzDzgSKVsSBcrw1fh3UHPHcmDAUeKhL3x1BVKo1XSHnH6vKT8qFNmjkckzGQnbBZFJfqBASB1OTXq-Mr0yaxwfOTI1O-wj_EDMolgKMYY8arIm7CYhb9MbL_ezcXv6OcPtMHxHb4JCJtCGJBZ4qPo5PScPlqvRG-nI-GWjFtTU65B-lYLFnKS6KAU1Px6bT-dfLrXACRm1_TqlFV28YMh7pcvWCFuABm3LSEG_B");'>
+<div class="absolute top-2 right-2 bg-black/60 backdrop-blur-sm text-white px-2 py-1 rounded text-xs font-bold">
+                        80 pts
+                    </div>
+</div>
+<div class="px-3">
+<p class="text-[#1b130d] dark:text-white text-base font-bold font-display">Cheesecake</p>
+<p class="text-[#9a6c4c] dark:text-gray-400 text-xs font-normal mb-3">Sabor New York</p>
+<button class="w-full bg-primary hover:bg-primary/90 text-white font-bold py-2 rounded-lg text-sm transition-colors">
+                        Canjear
+                    </button>
+</div>
+</div>
+<!-- Item 3: Affordable -->
+<div class="flex flex-col gap-3 pb-4 bg-white dark:bg-[#32241a] rounded-xl overflow-hidden shadow-sm border border-gray-100 dark:border-gray-800">
+<div class="relative w-full aspect-square bg-cover bg-center" data-alt="Vaso de cold brew con hielo" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuAbwBtP3VVKc0hRF9mJMja7u7TfZQ9SMkZqpeSGagl1r0fryb_41i7V081s4C1twfaAV-JMUAiQnWu5Dr-xbfVi8P4tI_eGWWTpwRon6q1TihzoCMW-Mju_A91NA8BANFATU5HVotvyDP_SJ4ZWqRgPTggzKAlhPrEs4hvbfQ2Stx3FfyHaPbm7dBxE8ooV7je1fwMvunQlZQfL7r1YSwcZRMpV0BVgr44Y9LbsUQkJ9JYFPGX7rrCEsbVCwDX2ORaoO3CNm6NdvtC3");'>
+<div class="absolute top-2 right-2 bg-black/60 backdrop-blur-sm text-white px-2 py-1 rounded text-xs font-bold">
+                        60 pts
+                    </div>
+</div>
+<div class="px-3">
+<p class="text-[#1b130d] dark:text-white text-base font-bold font-display">Cold Brew</p>
+<p class="text-[#9a6c4c] dark:text-gray-400 text-xs font-normal mb-3">Infusión de 24h</p>
+<button class="w-full bg-primary hover:bg-primary/90 text-white font-bold py-2 rounded-lg text-sm transition-colors">
+                        Canjear
+                    </button>
+</div>
+</div>
+<!-- Item 4: Expensive (Insufficient points) -->
+<div class="flex flex-col gap-3 pb-4 bg-white dark:bg-[#32241a] rounded-xl overflow-hidden shadow-sm border border-gray-100 dark:border-gray-800 opacity-80">
+<div class="relative w-full aspect-square bg-cover bg-center grayscale-[50%]" data-alt="Bolsa de café en grano premium" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuDWcg87GnMHsAnDsHybZerCQzNfmj-Gasx03e-udMZoJHwofeWiJzxLH33fmZ40URrppOtWXHtmHnndTCcc9D2safaSSozEKHvKsIPpR_C-4HvYwrFeQPjoJNHZiu3QAK3T7ltFX3_ymybT0R_Ra9QdJKTWO5DglFP7yJkGb5G2DoItUaRzmZqTZGZZbJqjqy4AAhybauDpawNCslV2IMRzJoR6T3DYY-iO0GYbntWdG4aLOHwrtxXEi7W9T7lfHGGX59neKIW9nw5f");'>
+<div class="absolute top-2 right-2 bg-black/60 backdrop-blur-sm text-white px-2 py-1 rounded text-xs font-bold">
+                        250 pts
+                    </div>
+<div class="absolute inset-0 bg-black/20 flex items-center justify-center">
+<span class="material-symbols-outlined text-white text-4xl">lock</span>
+</div>
+</div>
+<div class="px-3">
+<p class="text-[#1b130d] dark:text-white text-base font-bold font-display">Bolsa Blend 500g</p>
+<p class="text-[#9a6c4c] dark:text-gray-400 text-xs font-normal mb-3">Origen Selección</p>
+<button class="w-full bg-gray-200 dark:bg-gray-700 text-gray-500 dark:text-gray-400 font-bold py-2 rounded-lg text-sm cursor-not-allowed" disabled="">
+                        Faltan 100 pts
+                    </button>
+</div>
+</div>
+<!-- Item 5: Affordable -->
+<div class="flex flex-col gap-3 pb-4 bg-white dark:bg-[#32241a] rounded-xl overflow-hidden shadow-sm border border-gray-100 dark:border-gray-800">
+<div class="relative w-full aspect-square bg-cover bg-center" data-alt="Croissant dorado recién horneado" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuCCKf2xLva8q2KOFGKOPd_nfCdQlJU0k1PPhQtDAY20-33fOvByaBuwIdTLHB2v26MAh91UNhOpoIe1CwSzf37LeBITnNcaxDHby0nX69IMYP6tF9vgYyTgIKBHEPb3XtoUAYoK-sLUU03ZLZ-iyAm15I1yeT4n6j6ksP4LvUK7omMD6-aRqEA4EM7wnsv_p8nFyTTLSOugp8z5Q0lYmgHYxHyWStz0ZKk1xb8EsfLDR5UQSae3UbQ2RawiJ6LPcumURthgI5SA9dMf");'>
+<div class="absolute top-2 right-2 bg-black/60 backdrop-blur-sm text-white px-2 py-1 rounded text-xs font-bold">
+                        40 pts
+                    </div>
+</div>
+<div class="px-3">
+<p class="text-[#1b130d] dark:text-white text-base font-bold font-display">Croissant</p>
+<p class="text-[#9a6c4c] dark:text-gray-400 text-xs font-normal mb-3">Mantequilla artesanal</p>
+<button class="w-full bg-primary hover:bg-primary/90 text-white font-bold py-2 rounded-lg text-sm transition-colors">
+                        Canjear
+                    </button>
+</div>
+</div>
+<!-- Item 6: Expensive (Insufficient points) -->
+<div class="flex flex-col gap-3 pb-4 bg-white dark:bg-[#32241a] rounded-xl overflow-hidden shadow-sm border border-gray-100 dark:border-gray-800 opacity-80">
+<div class="relative w-full aspect-square bg-cover bg-center grayscale-[50%]" data-alt="Termo de café color naranja" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuD-cMi9PUBiMR5pfxJuW0SYZPzacPiCH1c9a207sqLn_2vtyJ5mLvyxTzAAsw3d0Njt56JMxaqpVvW_f88pieUmF3bBud_cvjpkCNAyn4xuJAzbVzDkPwiYyhGn-5zbBkFdSZL2sy-vdrjEF-JpMiPRxx3fv9nq2etqXDlZ511gJLDyBvIpupE9-YOU5ElFCstIk2jrM98Woh6bBBU-CVJe_zIZO2DvNDFU4WlrYLHMXC1nBp_0ovxQF6JncGb0J5uQdZdnJCwJKVpR");'>
+<div class="absolute top-2 right-2 bg-black/60 backdrop-blur-sm text-white px-2 py-1 rounded text-xs font-bold">
+                        400 pts
+                    </div>
+<div class="absolute inset-0 bg-black/20 flex items-center justify-center">
+<span class="material-symbols-outlined text-white text-4xl">lock</span>
+</div>
+</div>
+<div class="px-3">
+<p class="text-[#1b130d] dark:text-white text-base font-bold font-display">Termo Kingdom</p>
+<p class="text-[#9a6c4c] dark:text-gray-400 text-xs font-normal mb-3">Acero inoxidable</p>
+<button class="w-full bg-gray-200 dark:bg-gray-700 text-gray-500 dark:text-gray-400 font-bold py-2 rounded-lg text-sm cursor-not-allowed" disabled="">
+                        Faltan 250 pts
+                    </button>
+</div>
+</div>
+</div>
+<!-- Navigation Bar (iOS Style) -->
+<nav class="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[480px] bg-white/80 dark:bg-background-dark/80 backdrop-blur-lg border-t border-gray-200 dark:border-gray-800 flex justify-around items-center py-2 pb-6 px-4">
+<div class="flex flex-col items-center gap-1 text-gray-400">
+<span class="material-symbols-outlined">home</span>
+<span class="text-[10px] font-medium">Inicio</span>
+</div>
+<div class="flex flex-col items-center gap-1 text-gray-400">
+<span class="material-symbols-outlined">coffee</span>
+<span class="text-[10px] font-medium">Orden</span>
+</div>
+<div class="flex flex-col items-center gap-1 text-primary">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1">stars</span>
+<span class="text-[10px] font-bold">Premios</span>
+</div>
+<div class="flex flex-col items-center gap-1 text-gray-400">
+<span class="material-symbols-outlined">person</span>
+<span class="text-[10px] font-medium">Perfil</span>
+</div>
+</nav>
+<div class="h-10 bg-transparent"></div>
+</div>
+</body></html>

@@ -5,20 +5,55 @@ import { Scissors, Calendar, BarChart, CheckCircle, ArrowRight, User } from 'luc
 const LandingPage = () => {
     const { login } = useSalonStore();
     const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
     const [emailSent, setEmailSent] = useState(false);
     const [loading, setLoading] = useState(false);
+    const [error, setError] = useState('');
 
-    const handleLogin = (e) => {
+    const handleLogin = async (e) => {
         e.preventDefault();
-        if (email) {
+        setError('');
+        if (email && password) {
             setLoading(true);
-            // Simulate API call to send email
-            setTimeout(() => {
+            try {
+                const response = await fetch('/api/auth/register', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, password })
+                });
+
+                const data = await response.json();
+
+                if (!response.ok) {
+                    throw new Error(data.detail || 'Error en el registro');
+                }
+
+                // Success Register
                 setLoading(false);
                 setEmailSent(true);
-                // In a real app, the backend sends the email. 
-                // Here we simulate the "Magic Link" arrival via a toast or just changing UI.
-            }, 1500);
+
+                // Auto Login to get Token
+                const loginData = new URLSearchParams();
+                loginData.append('username', email);
+                loginData.append('password', password);
+
+                const loginRes = await fetch('/api/auth/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                    body: loginData
+                });
+
+                if (loginRes.ok) {
+                    const tokenData = await loginRes.json();
+                    login({ email, token: tokenData.access_token });
+                } else {
+                    // Fallback if login fails but register worked
+                    login({ email, token: null });
+                }
+            } catch (err) {
+                setLoading(false);
+                setError(err.message);
+            }
         }
     };
 
@@ -64,23 +99,43 @@ const LandingPage = () => {
                         Agenda, Inventario, Caja y Marketing en un solo lugar. Diseñado para estilistas, barberos y centros de estética.
                     </p>
 
-                    {/* Login Form (Magic Link Style) */}
+                    {/* Registration Form */}
                     {!emailSent ? (
-                        <form onSubmit={handleLogin} id="login-form" className="bg-slate-800/50 p-2 rounded-2xl border border-slate-700/50 flex flex-col sm:flex-row gap-2 max-w-md backdrop-blur-sm">
-                            <input
-                                type="email"
-                                placeholder="tucorreo@empresa.com"
-                                className="bg-transparent text-white px-4 py-3 outline-none flex-1 placeholder:text-slate-500"
-                                value={email}
-                                onChange={(e) => setEmail(e.target.value)}
-                                required
-                            />
+                        <form onSubmit={handleLogin} id="login-form" className="bg-slate-800/50 p-4 rounded-2xl border border-slate-700/50 flex flex-col gap-3 max-w-md backdrop-blur-sm shadow-xl">
+                            {error && (
+                                <div className="p-3 bg-red-500/10 border border-red-500/20 rounded-lg text-red-200 text-sm">
+                                    {error}
+                                </div>
+                            )}
+                            <div className="flex flex-col gap-1">
+                                <label className="text-xs font-bold text-slate-400 ml-1 uppercase">Correo Electrónico</label>
+                                <input
+                                    type="email"
+                                    placeholder="tucorreo@empresa.com"
+                                    className="bg-slate-900/50 text-white px-4 py-3 rounded-xl border border-slate-700 focus:border-indigo-500 outline-none placeholder:text-slate-600 transition-all"
+                                    value={email}
+                                    onChange={(e) => setEmail(e.target.value)}
+                                    required
+                                />
+                            </div>
+                            <div className="flex flex-col gap-1">
+                                <label className="text-xs font-bold text-slate-400 ml-1 uppercase">Crear Contraseña</label>
+                                <input
+                                    type="password"
+                                    placeholder="••••••••"
+                                    className="bg-slate-900/50 text-white px-4 py-3 rounded-xl border border-slate-700 focus:border-indigo-500 outline-none placeholder:text-slate-600 transition-all"
+                                    value={password}
+                                    onChange={(e) => setPassword(e.target.value)}
+                                    required
+                                    minLength={6}
+                                />
+                            </div>
                             <button
                                 type="submit"
                                 disabled={loading}
-                                className="bg-indigo-600 hover:bg-indigo-500 text-white px-6 py-3 rounded-xl font-bold transition-all shadow-lg shadow-indigo-500/20 flex items-center justify-center gap-2 whitespace-nowrap disabled:opacity-50"
+                                className="mt-2 bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 text-white px-6 py-3 rounded-xl font-bold transition-all shadow-lg shadow-indigo-500/20 flex items-center justify-center gap-2 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
                             >
-                                {loading ? 'Enviando...' : <Fragment>Ingresar Gratis <ArrowRight size={18} /></Fragment>}
+                                {loading ? 'Creando cuenta...' : <Fragment>Registrarme Gratis <ArrowRight size={18} /></Fragment>}
                             </button>
                         </form>
                     ) : (

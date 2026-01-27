@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html class="light" lang="es"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Ubicación Real Kingdom Coffee</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            "primary": "#d46211",
+            "background-light": "#f8f7f6",
+            "background-dark": "#221810",
+          },
+          fontFamily: {
+            "display": ["Plus Jakarta Sans", "sans-serif"]
+          },
+          borderRadius: { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px" },
+        },
+      },
+    }
+  </script>
+<style type="text/tailwindcss">
+    body {
+      font-family: "Plus Jakarta Sans", sans-serif;
+      min-height: max(884px, 100dvh);
+    }
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+    }
+    .filled-icon {
+      font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+    }
+  </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark text-[#1b130d] dark:text-white antialiased">
+<div class="relative flex h-auto min-h-screen w-full flex-col bg-background-light dark:bg-background-dark group/design-root overflow-x-hidden pb-10">
+<header class="sticky top-0 z-50 flex items-center bg-background-light/95 dark:bg-background-dark/95 backdrop-blur-sm p-4 pb-2 justify-between border-b border-gray-100 dark:border-white/5">
+<div class="text-[#1b130d] dark:text-white flex size-12 shrink-0 items-center justify-start cursor-pointer">
+<span class="material-symbols-outlined text-2xl">arrow_back_ios</span>
+</div>
+<h2 class="text-[#1b130d] dark:text-white text-lg font-bold leading-tight tracking-[-0.015em] flex-1 text-center pr-12">Ubicación y Contacto</h2>
+</header>
+<div class="flex px-4 py-4">
+<div class="w-full bg-center bg-no-repeat aspect-video bg-cover rounded-xl object-cover relative overflow-hidden ring-1 ring-black/5 shadow-md" data-location="Rancagua, Chile" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuBNwet0rycFegOrrF1UbJUBuBgaONjveN17Vbeuz2emqKv7ZwzbgPOdijhUlV5YM2-v6iIPQiJ9Pxtu8UfeMLR63f5fHLQv8NgJZRUmV5qdwEK1TcNQPwK-w37hldCX8EoYpW14JvUMCQ0lk3usTZesqdUpdKu9Xx5Yk_Cn8jQ-0IErJuYIWpEEZeZKtuT_y9jA4Zktx9KTL7Gl9q3xV38GVPZcGdEDj-Jb6ZjnuryZtThc1A4FB4xPL3dpDKioKBkds7b47s6nf3nZ");'>
+<div class="absolute inset-0 bg-black/5"></div>
+<div class="absolute inset-0 flex items-center justify-center">
+<div class="relative">
+<span class="material-symbols-outlined text-primary text-5xl drop-shadow-lg filled-icon">location_on</span>
+<div class="absolute -bottom-1 left-1/2 -translate-x-1/2 w-4 h-1 bg-black/30 rounded-full blur-[2px]"></div>
+</div>
+</div>
+<div class="absolute bottom-3 left-3 bg-white/90 dark:bg-background-dark/90 px-2 py-1 rounded text-[10px] font-bold uppercase tracking-tight shadow-sm">
+          Rancagua, Chile
+        </div>
+</div>
+</div>
+<div class="px-4 pt-4 pb-2">
+<div class="flex items-center justify-between">
+<h2 class="text-[#1b130d] dark:text-white tracking-light text-2xl font-extrabold leading-tight">Kingdom Coffee</h2>
+<div class="flex items-center gap-1.5 bg-green-100 dark:bg-green-900/30 px-3 py-1 rounded-full border border-green-200 dark:border-green-800/50">
+<span class="size-2 rounded-full bg-green-600 animate-pulse"></span>
+<span class="text-green-700 dark:text-green-400 text-xs font-bold uppercase tracking-wider">Abierto</span>
+</div>
+</div>
+<p class="text-[#9a6c4c] dark:text-primary/70 text-sm mt-1 font-medium">Barra de especialidad y Tostaduría</p>
+</div>
+<div class="px-4 py-4">
+<button class="w-full bg-primary hover:bg-primary/90 text-white font-extrabold py-5 rounded-2xl flex items-center justify-center gap-3 transition-all transform active:scale-[0.98] shadow-xl shadow-primary/30">
+<span class="material-symbols-outlined text-2xl filled-icon">near_me</span>
+<span class="text-lg">Cómo llegar</span>
+</button>
+<p class="text-center text-[10px] text-[#9a6c4c] dark:text-primary/50 mt-2 font-medium uppercase tracking-widest">Abrir en Google Maps o Waze</p>
+</div>
+<div class="flex items-center gap-4 bg-transparent px-4 min-h-[72px] py-4 border-b border-gray-100 dark:border-white/5">
+<div class="text-primary flex items-center justify-center rounded-2xl bg-primary/10 shrink-0 size-12">
+<span class="material-symbols-outlined filled-icon">map</span>
+</div>
+<div class="flex flex-col justify-center">
+<p class="text-[#1b130d] dark:text-white text-base font-bold leading-normal">Cardenal Caro 588</p>
+<p class="text-[#9a6c4c] dark:text-primary/60 text-sm font-medium leading-normal">Rancagua, Región de O'Higgins</p>
+</div>
+</div>
+<div class="flex flex-col bg-transparent px-4 py-4 border-b border-gray-100 dark:border-white/5">
+<div class="flex items-center gap-4 mb-4">
+<div class="text-primary flex items-center justify-center rounded-2xl bg-primary/10 shrink-0 size-12">
+<span class="material-symbols-outlined filled-icon">schedule</span>
+</div>
+<div class="flex flex-col">
+<p class="text-[#1b130d] dark:text-white text-base font-bold leading-normal">Horarios de atención</p>
+<p class="text-[#9a6c4c] dark:text-primary/60 text-sm font-medium">Cierra a las 20:00 hoy</p>
+</div>
+</div>
+<div class="space-y-3 pl-16">
+<div class="flex justify-between text-sm">
+<span class="text-[#1b130d] dark:text-white/80 font-medium">Lunes - Viernes</span>
+<span class="text-[#1b130d] dark:text-white font-bold">08:30 - 20:00</span>
+</div>
+<div class="flex justify-between text-sm">
+<span class="text-[#1b130d] dark:text-white/80 font-medium">Sábados</span>
+<span class="text-[#1b130d] dark:text-white font-bold">09:30 - 19:00</span>
+</div>
+<div class="flex justify-between text-sm">
+<span class="text-gray-400 dark:text-white/40 font-medium">Domingos</span>
+<span class="text-gray-400 dark:text-white/40 font-bold italic text-xs">Cerrado</span>
+</div>
+</div>
+</div>
+<div class="px-4 py-6">
+<h3 class="text-[#1b130d] dark:text-white text-lg font-bold mb-4">Ponte en contacto</h3>
+<div class="grid grid-cols-2 gap-4">
+<div class="bg-white dark:bg-white/5 border border-gray-100 dark:border-white/10 p-4 rounded-xl flex flex-col items-center justify-center gap-2 cursor-pointer transition-all active:scale-95 shadow-sm">
+<div class="size-10 bg-[#25D366] rounded-full flex items-center justify-center text-white">
+<span class="material-symbols-outlined text-xl filled-icon">chat</span>
+</div>
+<span class="text-sm font-bold">WhatsApp</span>
+</div>
+<div class="bg-white dark:bg-white/5 border border-gray-100 dark:border-white/10 p-4 rounded-xl flex flex-col items-center justify-center gap-2 cursor-pointer transition-all active:scale-95 shadow-sm">
+<div class="size-10 bg-primary rounded-full flex items-center justify-center text-white">
+<span class="material-symbols-outlined text-xl filled-icon">call</span>
+</div>
+<span class="text-sm font-bold">Llamar</span>
+</div>
+</div>
+<div class="mt-8 flex justify-center gap-10">
+<div class="flex flex-col items-center gap-2 cursor-pointer group">
+<div class="size-12 rounded-full border border-gray-200 dark:border-white/10 flex items-center justify-center text-gray-700 dark:text-white/70 group-active:bg-primary/10 group-active:text-primary transition-colors">
+<span class="material-symbols-outlined">share_reviews</span>
+</div>
+<span class="text-[10px] font-bold uppercase tracking-widest text-[#9a6c4c]">Instagram</span>
+</div>
+<div class="flex flex-col items-center gap-2 cursor-pointer group">
+<div class="size-12 rounded-full border border-gray-200 dark:border-white/10 flex items-center justify-center text-gray-700 dark:text-white/70 group-active:bg-primary/10 group-active:text-primary transition-colors">
+<span class="material-symbols-outlined">public</span>
+</div>
+<span class="text-[10px] font-bold uppercase tracking-widest text-[#9a6c4c]">Website</span>
+</div>
+<div class="flex flex-col items-center gap-2 cursor-pointer group">
+<div class="size-12 rounded-full border border-gray-200 dark:border-white/10 flex items-center justify-center text-gray-700 dark:text-white/70 group-active:bg-primary/10 group-active:text-primary transition-colors">
+<span class="material-symbols-outlined">thumb_up</span>
+</div>
+<span class="text-[10px] font-bold uppercase tracking-widest text-[#9a6c4c]">Facebook</span>
+</div>
+</div>
+</div>
+<div class="h-10"></div>
+</div>
+
+</body></html>
