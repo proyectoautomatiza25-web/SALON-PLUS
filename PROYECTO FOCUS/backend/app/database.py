@@ -7,12 +7,19 @@ from dotenv import load_dotenv
 load_dotenv()
 
 # Default to sqlite for local dev if no env var, but prepared for Postgres
-# Forced switch to salon.db to resolve schema conflicts on reload
-DATABASE_URL = "sqlite:///./salon.db"
+# Database Configuration
+# Priority: Env Var (Prod) > SQLite (Dev)
+env_db_url = os.getenv("DATABASE_URL")
 
-# Si usamos Postgres en Cloud Run
-if os.getenv("DATABASE_URL", "").startswith("postgres://"):
-    DATABASE_URL = os.getenv("DATABASE_URL").replace("postgres://", "postgresql://", 1)
+if env_db_url:
+    # Fix for Heroku/Supabase style strings
+    if env_db_url.startswith("postgres://"):
+        DATABASE_URL = env_db_url.replace("postgres://", "postgresql://", 1)
+    else:
+        DATABASE_URL = env_db_url
+else:
+    # Local Development
+    DATABASE_URL = "sqlite:///./salon.db"
 
 engine = create_engine(
     DATABASE_URL, connect_args={"check_same_thread": False} if "sqlite" in DATABASE_URL else {}
