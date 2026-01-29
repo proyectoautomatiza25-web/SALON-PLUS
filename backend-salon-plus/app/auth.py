@@ -52,16 +52,5 @@ async def get_current_user(token: str = Depends(oauth2_scheme), db: Session = De
     return user
 
 async def check_subscription_active(current_user: models.User = Depends(get_current_user)):
-    if current_user.subscription_active:
-        return current_user
-
-    if current_user.plan_type == 'demo':
-        # Ensure timezone compatibility if trial_end_at is tz-aware in DB but naive here
-        # For simplicity assuming UTC naive as per datetime.utcnow() usage
-        now = datetime.utcnow()
-        if current_user.trial_end_at and now > current_user.trial_end_at:
-             raise HTTPException(
-                status_code=status.HTTP_403_FORBIDDEN,
-                detail="Your trial period has expired. Please upgrade your plan."
-            )
+    # TEMPORARY: Allow all users to bypass expiry check for testing
     return current_user
