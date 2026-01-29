@@ -55,12 +55,20 @@ const ClientsView = () => {
                     </div>
                     <button
                         onClick={handleNew}
-                        className="flex items-center justify-center gap-2 bg-primary hover:bg-primary-dark text-white px-4 py-2 rounded-xl font-semibold shadow-lg shadow-primary/30 transition-all active:scale-95"
+                        className="hidden sm:flex items-center justify-center gap-2 bg-primary hover:bg-primary-dark text-white px-4 py-2 rounded-xl font-semibold shadow-lg shadow-primary/30 transition-all active:scale-95"
                     >
                         <Plus size={18} /> <span className="text-sm">Nuevo Cliente</span>
                     </button>
                 </div>
             </div>
+
+            {/* Mobile FAB */}
+            <button
+                onClick={handleNew}
+                className="sm:hidden fixed bottom-6 right-6 w-14 h-14 bg-primary text-white rounded-full shadow-2xl flex items-center justify-center z-50 active:scale-95 transition-all"
+            >
+                <Plus size={28} strokeWidth={3} />
+            </button>
 
             {/* Content Table / Cards */}
             <div className="flex-1 overflow-auto p-4 md:p-6">

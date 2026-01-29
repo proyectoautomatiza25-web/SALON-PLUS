@@ -158,9 +158,9 @@ const CalendarView = () => {
                                 setSelectedSlot({ start: new Date(), resourceId: null });
                                 setShowBookingModal(true);
                             }}
-                            className="flex items-center gap-2 bg-gradient-to-r from-pink-500 to-rose-500 text-white px-4 md:px-5 py-2 rounded-full font-bold shadow-md active:scale-95 transition-all text-xs md:text-sm"
+                            className="hidden sm:flex items-center gap-2 bg-gradient-to-r from-pink-500 to-rose-500 text-white px-4 md:px-5 py-2 rounded-full font-bold shadow-md active:scale-95 transition-all text-xs md:text-sm"
                         >
-                            <span className="hidden xs:inline">Agendar</span> <Plus size={16} strokeWidth={3} />
+                            <span>Agendar</span> <Plus size={16} strokeWidth={3} />
                         </button>
                     </div>
 
@@ -170,6 +170,17 @@ const CalendarView = () => {
                     </div>
                 </div>
             </div>
+
+            {/* Mobile FAB */}
+            <button
+                onClick={() => {
+                    setSelectedSlot({ start: new Date(), resourceId: null });
+                    setShowBookingModal(true);
+                }}
+                className="sm:hidden fixed bottom-6 right-6 w-14 h-14 bg-gradient-to-br from-pink-500 to-rose-600 text-white rounded-full shadow-2xl flex items-center justify-center z-50 active:scale-95 transition-all animate-bounce-subtle"
+            >
+                <Plus size={28} strokeWidth={3} />
+            </button>
 
             {/* Main Calendar Area - Clean & Borderless look with Scroll */}
             <div className="flex-1 bg-white overflow-y-auto relative">

@@ -57,11 +57,14 @@ const BookingModal = ({ isOpen, onClose, initialData }) => {
     const handleSubmit = (e) => {
         e.preventDefault();
 
-        const client = clients.find(c => c.id === parseInt(formData.clientId));
-        const service = services.find(s => s.id === parseInt(formData.serviceId));
-        const stylist = stylists.find(s => s.id === parseInt(formData.stylistId));
+        const client = clients.find(c => String(c.id) === String(formData.clientId));
+        const service = services.find(s => String(s.id) === String(formData.serviceId));
+        const stylist = stylists.find(s => String(s.id) === String(formData.stylistId));
 
-        if (!client || !service || !stylist) return;
+        if (!client || !service || !stylist) {
+            alert("Por favor selecciona todos los campos requeridos (Cliente, Servicio y Estilista)");
+            return;
+        }
 
         // Construct dates
         const startDateTime = new Date(`${formData.date}T${formData.time}`);
@@ -100,7 +103,7 @@ const BookingModal = ({ isOpen, onClose, initialData }) => {
 
     if (!isOpen) return null;
 
-    const selectedService = services.find(s => s.id === parseInt(formData.serviceId));
+    const selectedService = services.find(s => String(s.id) === String(formData.serviceId));
     const isEditing = !!formData.id;
 
     return (
@@ -223,7 +226,7 @@ const BookingModal = ({ isOpen, onClose, initialData }) => {
                         <div className="bg-primary/5 border border-primary/10 rounded-xl p-4 flex justify-between items-center text-sm">
                             <div>
                                 <span className="block text-primary font-bold">{selectedService.name}</span>
-                                <span className="text-slate-500">{selectedService.duration} min • {stylists.find(s => s.id === parseInt(formData.stylistId))?.name || 'Sin estilista'}</span>
+                                <span className="text-slate-500">{selectedService.duration} min • {stylists.find(s => String(s.id) === String(formData.stylistId))?.name || 'Sin estilista'}</span>
                             </div>
                             <div className="text-right">
                                 <span className="block text-lg font-bold text-slate-800">${selectedService.price.toLocaleString('es-CL')}</span>

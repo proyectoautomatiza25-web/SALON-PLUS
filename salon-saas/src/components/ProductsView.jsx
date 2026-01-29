@@ -140,12 +140,23 @@ const ProductsView = () => {
                             setSelectedItem(null);
                             activeTab === 'services' ? setShowServiceModal(true) : setShowProductModal(true);
                         }}
-                        className="flex items-center justify-center gap-2 bg-primary hover:bg-primary-dark text-white px-4 py-2 rounded-xl font-semibold shadow-lg shadow-primary/30 transition-all active:scale-95"
+                        className="hidden sm:flex items-center justify-center gap-2 bg-primary hover:bg-primary-dark text-white px-4 py-2 rounded-xl font-semibold shadow-lg shadow-primary/30 transition-all active:scale-95"
                     >
                         <Plus size={18} /> <span className="text-sm">{activeTab === 'services' ? 'Nuevo Servicio' : 'Nuevo Producto'}</span>
                     </button>
                 </div>
             </div>
+
+            {/* Mobile FAB */}
+            <button
+                onClick={() => {
+                    setSelectedItem(null);
+                    activeTab === 'services' ? setShowServiceModal(true) : setShowProductModal(true);
+                }}
+                className="sm:hidden fixed bottom-6 right-6 w-14 h-14 bg-primary text-white rounded-full shadow-2xl flex items-center justify-center z-50 active:scale-95 transition-all"
+            >
+                <Plus size={28} strokeWidth={3} />
+            </button>
 
             {/* Tabs */}
             <div className="flex border-b border-gray-100">

@@ -139,10 +139,14 @@ export const useSalonStore = create(
             },
 
             updateClient: async (updatedClient) => {
-                set((state) => ({
-                    clients: state.clients.map(c => c.id === updatedClient.id ? updatedClient : c)
-                }));
-                // TODO: Implement API update
+                try {
+                    const result = await api.updateClient(updatedClient.id, updatedClient);
+                    set((state) => ({
+                        clients: state.clients.map(c => c.id === result.id ? result : c)
+                    }));
+                } catch (e) {
+                    console.error("Error updating client", e);
+                }
             },
 
             removeClient: async (id) => {
@@ -166,9 +170,16 @@ export const useSalonStore = create(
                 }
             },
 
-            updateService: (updatedService) => set((state) => ({
-                services: state.services.map(s => s.id === updatedService.id ? updatedService : s)
-            })),
+            updateService: async (updatedService) => {
+                try {
+                    const result = await api.updateService(updatedService.id, updatedService);
+                    set((state) => ({
+                        services: state.services.map(s => s.id === result.id ? result : s)
+                    }));
+                } catch (e) {
+                    console.error("Error updating service", e);
+                }
+            },
 
             removeService: async (id) => {
                 try {
@@ -182,7 +193,6 @@ export const useSalonStore = create(
             // --- Productos (Local only for now or TODO API) ---
             products: [
                 { id: 1, name: 'Shampoo Keratina 500ml', price: 15990, stock: 12, category: 'Cuidado Capilar' },
-                // ... placeholders
             ],
             addProduct: (product) => set((state) => ({ products: [...state.products, { ...product, id: Date.now() }] })),
             updateProduct: (updatedProduct) => set((state) => ({ products: state.products.map(p => p.id === updatedProduct.id ? updatedProduct : p) })),
@@ -193,25 +203,19 @@ export const useSalonStore = create(
 
             addAppointment: async (appt) => {
                 try {
-                    // Convert Date objects to strings for API if needed, or API handles logic.
-                    // Schema expects start_time (datetime). JSON.stringify handles Dates as ISO strings.
-                    // BUT keys in frontend might differ slightly (stylistId vs stylist_id). 
-                    // Schema: stylist_id. Frontend: stylistId. 
-                    // We need to MAP keys!
-
                     const payload = {
-                        stylist_id: appt.stylistId, // Mapping
-                        client_id: appt.clientId,
+                        stylist_id: String(appt.stylistId),
+                        client_id: String(appt.clientId),
                         start_time: appt.start,
                         end_time: appt.end,
                         title: appt.title,
                         price: appt.price,
-                        status: appt.status
+                        status: appt.status,
+                        notes: appt.notes
                     };
 
                     const newAppt = await api.createAppointment(payload);
 
-                    // Convert back to Frontend Format (react-big-calendar needs Date objects)
                     const frontendAppt = {
                         ...newAppt,
                         stylistId: newAppt.stylist_id,
@@ -226,13 +230,68 @@ export const useSalonStore = create(
                 }
             },
 
-            updateAppointmentStatus: (id, status) => set((state) => ({
-                appointments: state.appointments.map(a => a.id === id ? { ...a, status } : a)
-            })),
+            updateAppointmentStatus: async (id, status) => {
+                try {
+                    // We need the full appt to update it correctly since backend usually needs full body
+                    const state = get();
+                    const appt = state.appointments.find(a => a.id === id);
+                    if (!appt) return;
 
-            updateAppointment: (updatedAppt) => set((state) => ({
-                appointments: state.appointments.map(a => a.id === updatedAppt.id ? updatedAppt : a)
-            })),
+                    const payload = {
+                        stylist_id: String(appt.stylistId),
+                        client_id: String(appt.clientId),
+                        start_time: appt.start,
+                        end_time: appt.end,
+                        title: appt.title,
+                        price: appt.price,
+                        status: status,
+                        notes: appt.notes
+                    };
+
+                    const result = await api.updateAppointment(id, payload);
+                    const frontendAppt = {
+                        ...result,
+                        stylistId: result.stylist_id,
+                        clientId: result.client_id,
+                        start: new Date(result.start_time),
+                        end: new Date(result.end_time)
+                    };
+
+                    set((state) => ({
+                        appointments: state.appointments.map(a => a.id === id ? frontendAppt : a)
+                    }));
+                } catch (e) {
+                    console.error("Error updating appointment status", e);
+                }
+            },
+
+            updateAppointment: async (updatedAppt) => {
+                try {
+                    const payload = {
+                        stylist_id: String(updatedAppt.stylistId),
+                        client_id: String(updatedAppt.clientId),
+                        start_time: updatedAppt.start,
+                        end_time: updatedAppt.end,
+                        title: updatedAppt.title,
+                        price: updatedAppt.price,
+                        status: updatedAppt.status,
+                        notes: updatedAppt.notes
+                    };
+                    const result = await api.updateAppointment(updatedAppt.id, payload);
+                    const frontendAppt = {
+                        ...result,
+                        stylistId: result.stylist_id,
+                        clientId: result.client_id,
+                        start: new Date(result.start_time),
+                        end: new Date(result.end_time)
+                    };
+                    set((state) => ({
+                        appointments: state.appointments.map(a => a.id === result.id ? frontendAppt : a)
+                    }));
+                } catch (e) {
+                    console.error("Error updating appointment", e);
+                }
+            },
 
             removeAppointment: async (id) => {
                 try {

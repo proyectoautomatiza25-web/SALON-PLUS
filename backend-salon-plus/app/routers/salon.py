@@ -57,6 +57,19 @@ def create_service(service: schemas.ServiceCreate, db: Session = Depends(databas
     db.refresh(db_service)
     return db_service
 
+@router.put("/services/{service_id}", response_model=schemas.Service)
+def update_service(service_id: str, service_update: schemas.ServiceCreate, db: Session = Depends(database.get_db), current_user: models.User = Depends(auth.check_subscription_active)):
+    db_service = db.query(models.Service).filter(models.Service.id == service_id, models.Service.owner_id == current_user.id).first()
+    if not db_service:
+        raise HTTPException(status_code=404, detail="Service not found")
+    
+    for key, value in service_update.model_dump().items():
+        setattr(db_service, key, value)
+        
+    db.commit()
+    db.refresh(db_service)
+    return db_service
+
 @router.delete("/services/{service_id}")
 def delete_service(service_id: str, db: Session = Depends(database.get_db), current_user: models.User = Depends(auth.check_subscription_active)):
     db_service = db.query(models.Service).filter(models.Service.id == service_id, models.Service.owner_id == current_user.id).first()
