@@ -38,12 +38,22 @@ export const useSalonStore = create(
 
                 try {
                     console.log("Fetching Initial Data from Backend...");
-                    const [stylists, services, clients, rawAppointments] = await Promise.all([
+                    const [userData, stylists, services, clients, rawAppointments] = await Promise.all([
+                        api.getMe(),
                         api.getStylists(),
                         api.getServices(),
                         api.getClients(),
                         api.getAppointments()
                     ]);
+
+                    // Sync Subscription & User Data
+                    set({
+                        subscription: {
+                            planType: userData.plan_type,
+                            trialEnd: userData.trial_end_at,
+                            active: userData.subscription_active
+                        }
+                    });
 
                     // Format Appointments (Backend snake_case -> Frontend camelCase + Date objects)
                     const appointments = rawAppointments.map(appt => ({
@@ -60,6 +70,7 @@ export const useSalonStore = create(
                     console.error("Error loading initial data:", error);
                 }
             },
+
 
             // --- Estilistas / Profesionales ---
             stylists: [], // Inicialmente vacío (se carga del backend)

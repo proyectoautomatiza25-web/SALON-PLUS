@@ -9,35 +9,77 @@ const LandingPage = () => {
     const [emailSent, setEmailSent] = useState(false);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
+    const [forgotMode, setForgotMode] = useState(false);
+    const [forgotSuccess, setForgotSuccess] = useState(false);
+
+    const [isLogin, setIsLogin] = useState(false);
+
+    // URL forzada directamente para evitar fallos de configuración de entorno
+    const API_URL = 'https://authentic-tenderness-production-a8bc.up.railway.app';
+
+    const handleForgotPassword = async (e) => {
+        e.preventDefault();
+        setError('');
+        setLoading(true);
+        try {
+            const response = await fetch(`${API_URL}/api/auth/forgot-password`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email, password: 'fake' }) // password is not used but part of schema
+            });
+            setLoading(false);
+            setForgotSuccess(true);
+        } catch (err) {
+            setLoading(false);
+            setError("No se pudo enviar el correo de recuperación.");
+        }
+    };
 
     const handleLogin = async (e) => {
         e.preventDefault();
         setError('');
-        if (email && password) {
-            setLoading(true);
-            try {
-                const response = await fetch('/api/auth/register', {
+        setLoading(true);
+
+        try {
+            if (isLogin) {
+                // FLOW: LOGIN
+                const formData = new URLSearchParams();
+                formData.append('username', email);
+                formData.append('password', password);
+
+                const response = await fetch(`${API_URL}/api/auth/login`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                    body: formData
+                });
+
+                const data = await response.json();
+                if (!response.ok) throw new Error(data.detail || 'Error en el login');
+
+                login({ email, token: data.access_token });
+            } else {
+                // FLOW: REGISTER
+                const response = await fetch(`${API_URL}/api/auth/register`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ email, password })
                 });
 
                 const data = await response.json();
+                if (!response.ok) throw new Error(data.detail || 'Error en el registro');
 
-                if (!response.ok) {
-                    throw new Error(data.detail || 'Error en el registro');
+                // Si hay link de pago, redirigir
+                if (data.checkout_url) {
+                    window.location.href = data.checkout_url;
+                    return;
                 }
 
-                // Success Register
-                setLoading(false);
-                setEmailSent(true);
-
-                // Auto Login to get Token
+                // Intentar auto-login
                 const loginData = new URLSearchParams();
                 loginData.append('username', email);
                 loginData.append('password', password);
 
-                const loginRes = await fetch('/api/auth/login', {
+                const loginRes = await fetch(`${API_URL}/api/auth/login`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
                     body: loginData
@@ -47,19 +89,17 @@ const LandingPage = () => {
                     const tokenData = await loginRes.json();
                     login({ email, token: tokenData.access_token });
                 } else {
-                    // Fallback if login fails but register worked
-                    login({ email, token: null });
+                    setEmailSent(true);
                 }
-            } catch (err) {
-                setLoading(false);
-                setError(err.message);
             }
+        } catch (err) {
+            setError(err.message);
+        } finally {
+            setLoading(false);
         }
     };
 
-    const confirmMagicLink = () => {
-        login(email);
-    };
+
 
     return (
         <div className="min-h-screen bg-slate-900 text-white font-sans selection:bg-pink-500 selection:text-white">
@@ -99,45 +139,120 @@ const LandingPage = () => {
                         Agenda, Inventario, Caja y Marketing en un solo lugar. Diseñado para estilistas, barberos y centros de estética.
                     </p>
 
-                    {/* Registration Form */}
+                    {/* Auth Form Area */}
                     {!emailSent ? (
-                        <form onSubmit={handleLogin} id="login-form" className="bg-slate-800/50 p-4 rounded-2xl border border-slate-700/50 flex flex-col gap-3 max-w-md backdrop-blur-sm shadow-xl">
-                            {error && (
-                                <div className="p-3 bg-red-500/10 border border-red-500/20 rounded-lg text-red-200 text-sm">
-                                    {error}
-                                </div>
+                        <div id="login-form" className="bg-slate-800/50 p-6 rounded-2xl border border-slate-700/50 flex flex-col gap-5 max-w-md backdrop-blur-sm shadow-xl">
+                            {forgotMode ? (
+                                <form onSubmit={handleForgotPassword} className="flex flex-col gap-4 animate-fade-in-up">
+                                    <div>
+                                        <h3 className="text-xl font-bold text-white mb-2">Recuperar Contraseña</h3>
+                                        <p className="text-slate-400 text-sm mb-4">Ingresa tu correo y te enviaremos las instrucciones.</p>
+                                    </div>
+
+                                    {forgotSuccess ? (
+                                        <div className="bg-green-500/20 p-4 rounded-xl border border-green-500/30 text-green-400 text-sm">
+                                            Si el correo existe, recibirás instrucciones en breve.
+                                            <button type="button" onClick={() => setForgotMode(false)} className="block mt-2 text-white font-bold underline">Volver al Login</button>
+                                        </div>
+                                    ) : (
+                                        <>
+                                            <div className="flex flex-col gap-2">
+                                                <label className="text-xs font-bold text-slate-400 uppercase tracking-widest px-1">Correo Electrónico</label>
+                                                <input
+                                                    required
+                                                    type="email"
+                                                    placeholder="tu@correo.com"
+                                                    value={email}
+                                                    onChange={(e) => setEmail(e.target.value)}
+                                                    className="w-full bg-slate-900/50 border border-slate-700 rounded-xl py-3 px-4 text-white placeholder-slate-600 focus:outline-none focus:border-indigo-500 transition-all font-medium"
+                                                />
+                                            </div>
+                                            <button
+                                                type="submit"
+                                                disabled={loading}
+                                                className="bg-indigo-600 text-white px-6 py-3 rounded-xl font-bold hover:bg-indigo-500 transition-all shadow-lg flex items-center justify-center gap-2"
+                                            >
+                                                {loading ? 'Enviando...' : 'Enviar Instrucciones'}
+                                            </button>
+                                            <button type="button" onClick={() => setForgotMode(false)} className="text-slate-400 hover:text-white text-sm transition-colors">
+                                                Cancelar y volver
+                                            </button>
+                                        </>
+                                    )}
+                                </form>
+                            ) : (
+                                <>
+                                    <div>
+                                        <h2 className="text-2xl font-bold text-white mb-1">
+                                            {isLogin ? 'Bienvenido de nuevo' : 'Comienza ahora'}
+                                        </h2>
+                                        <p className="text-slate-400 text-sm">
+                                            {isLogin ? 'Ingresa tus credenciales para acceder.' : 'Regístrate y prueba SalonPlus gratis.'}
+                                        </p>
+                                    </div>
+
+                                    <form onSubmit={handleLogin} className="flex flex-col gap-4">
+                                        {error && (
+                                            <div className="p-3 bg-red-500/10 border border-red-500/20 rounded-lg text-red-200 text-sm">
+                                                {error}
+                                            </div>
+                                        )}
+                                        <div className="flex flex-col gap-1.5">
+                                            <label className="text-xs font-bold text-slate-400 ml-1 uppercase tracking-wider">Correo Electrónico</label>
+                                            <input
+                                                type="email"
+                                                placeholder="ejemplo@correo.com"
+                                                className="bg-slate-900/50 text-white px-4 py-3 rounded-xl border border-slate-700 focus:border-indigo-500 outline-none placeholder:text-slate-600 transition-all font-medium"
+                                                value={email}
+                                                onChange={(e) => setEmail(e.target.value)}
+                                                required
+                                            />
+                                        </div>
+                                        <div className="flex flex-col gap-1.5">
+                                            <div className="flex justify-between items-center px-1">
+                                                <label className="text-xs font-bold text-slate-400 uppercase tracking-wider">Contraseña</label>
+                                                {isLogin && (
+                                                    <button type="button" onClick={() => setForgotMode(true)} className="text-[10px] text-indigo-400 hover:underline">¿Olvidaste tu clave?</button>
+                                                )}
+                                            </div>
+                                            <input
+                                                type="password"
+                                                placeholder="••••••••"
+                                                className="bg-slate-900/50 text-white px-4 py-3 rounded-xl border border-slate-700 focus:border-indigo-500 outline-none placeholder:text-slate-600 transition-all font-medium"
+                                                value={password}
+                                                onChange={(e) => setPassword(e.target.value)}
+                                                required
+                                                minLength={6}
+                                            />
+                                        </div>
+                                        <button
+                                            type="submit"
+                                            disabled={loading}
+                                            className="mt-2 bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 text-white px-6 py-4 rounded-xl font-bold transition-all shadow-lg shadow-indigo-500/20 flex items-center justify-center gap-2 active:scale-[0.98] disabled:opacity-50"
+                                        >
+                                            {loading ? (isLogin ? 'Iniciando...' : 'Creando cuenta...') : (
+                                                <>
+                                                    {isLogin ? 'Entrar a mi Salón' : 'Registrarme Gratis'}
+                                                    <ArrowRight size={18} />
+                                                </>
+                                            )}
+                                        </button>
+                                    </form>
+
+                                    <div className="text-center pt-2 border-t border-slate-700/50">
+                                        <button
+                                            onClick={() => {
+                                                setIsLogin(!isLogin);
+                                                setError('');
+                                            }}
+                                            className="text-indigo-400 hover:text-indigo-300 text-sm font-semibold transition-colors"
+                                        >
+                                            {isLogin ? '¿No tienes cuenta? Regístrate aquí' : '¿Ya tienes cuenta? Inicia Sesión'}
+                                        </button>
+                                    </div>
+                                </>
                             )}
-                            <div className="flex flex-col gap-1">
-                                <label className="text-xs font-bold text-slate-400 ml-1 uppercase">Correo Electrónico</label>
-                                <input
-                                    type="email"
-                                    placeholder="tucorreo@empresa.com"
-                                    className="bg-slate-900/50 text-white px-4 py-3 rounded-xl border border-slate-700 focus:border-indigo-500 outline-none placeholder:text-slate-600 transition-all"
-                                    value={email}
-                                    onChange={(e) => setEmail(e.target.value)}
-                                    required
-                                />
-                            </div>
-                            <div className="flex flex-col gap-1">
-                                <label className="text-xs font-bold text-slate-400 ml-1 uppercase">Crear Contraseña</label>
-                                <input
-                                    type="password"
-                                    placeholder="••••••••"
-                                    className="bg-slate-900/50 text-white px-4 py-3 rounded-xl border border-slate-700 focus:border-indigo-500 outline-none placeholder:text-slate-600 transition-all"
-                                    value={password}
-                                    onChange={(e) => setPassword(e.target.value)}
-                                    required
-                                    minLength={6}
-                                />
-                            </div>
-                            <button
-                                type="submit"
-                                disabled={loading}
-                                className="mt-2 bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 text-white px-6 py-3 rounded-xl font-bold transition-all shadow-lg shadow-indigo-500/20 flex items-center justify-center gap-2 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
-                            >
-                                {loading ? 'Creando cuenta...' : <Fragment>Registrarme Gratis <ArrowRight size={18} /></Fragment>}
-                            </button>
-                        </form>
+                        </div>
                     ) : (
                         <div className="bg-green-500/10 p-6 rounded-2xl border border-green-500/30 max-w-md animate-fade-in-up">
                             <div className="flex items-center gap-4 mb-4">
@@ -152,7 +267,7 @@ const LandingPage = () => {
                             <div className="bg-slate-900/50 p-4 rounded-xl text-center">
                                 <p className="text-xs text-slate-500 uppercase tracking-wider font-bold mb-2">Simulación de Demo</p>
                                 <button
-                                    onClick={confirmMagicLink}
+                                    onClick={() => login({ email, token: 'demo-token' })}
                                     className="w-full py-3 bg-white text-slate-900 font-bold rounded-lg hover:bg-slate-200 transition-colors flex items-center justify-center gap-2"
                                 >
                                     Abrir "Link Mágico" <ArrowRight size={16} />
@@ -160,7 +275,6 @@ const LandingPage = () => {
                             </div>
                         </div>
                     )}
-
                     {!emailSent && (
                         <p className="text-xs text-slate-500 pl-2">
                             * Sin tarjeta de crédito requerida. 7 días de prueba gratis.

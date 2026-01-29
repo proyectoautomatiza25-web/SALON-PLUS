@@ -16,6 +16,7 @@ import SalonLogo from './components/SalonLogo';
 
 function App() {
   const [activeTab, setActiveTab] = useState('home');
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const { subscription, expireDemo, auth, fetchInitialData } = useSalonStore();
 
   // Load Data from Backend
@@ -58,8 +59,20 @@ function App() {
   return (
     <div className="flex h-screen bg-white font-sans text-slate-900 overflow-hidden">
 
+      {/* Overlay para cerrar el menú en móvil al hacer click fuera */}
+      {isSidebarOpen && (
+        <div
+          className="fixed inset-0 bg-black/50 z-30 md:hidden animate-fade-in"
+          onClick={() => setIsSidebarOpen(false)}
+        />
+      )}
+
       {/* --- Sidebar (Salonist Style) --- */}
-      <aside className="w-[100px] bg-[#0b1120] flex flex-col z-20 shadow-xl text-white flex-shrink-0">
+      <aside className={`
+        fixed md:static inset-y-0 left-0 w-[100px] bg-[#0b1120] flex flex-col z-40 transition-transform duration-300 ease-in-out
+        ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}
+        shadow-xl text-white flex-shrink-0
+      `}>
         {/* Logo Icon Area */}
         <div className="h-16 flex items-center justify-center border-b border-gray-800">
           <div className="text-2xl font-serif font-bold tracking-tighter">S</div>
@@ -70,7 +83,10 @@ function App() {
           {menuItems.map((item) => (
             <button
               key={item.id}
-              onClick={() => setActiveTab(item.id)}
+              onClick={() => {
+                setActiveTab(item.id);
+                setIsSidebarOpen(false); // Cerrar automáticamente al elegir en móvil
+              }}
               className={`w-full flex flex-col items-center justify-center gap-1.5 py-4 px-1 transition-all duration-200 border-l-4 ${activeTab === item.id
                 ? 'bg-[#3b82f6] border-[#60a5fa]' // Blue active state
                 : 'border-transparent text-gray-400 hover:text-white hover:bg-white/5'
@@ -103,7 +119,15 @@ function App() {
         <header className="h-16 bg-white border-b border-gray-100 flex items-center justify-between px-6 z-10 shadow-sm">
           {/* Left: Hamburger & Brand */}
           <div className="flex items-center gap-4">
-            <button className="text-gray-500 hover:text-gray-800"><Menu size={24} /></button>
+            <button
+              onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+              className="text-gray-500 hover:text-gray-800 p-1 md:hidden"
+            >
+              <Menu size={24} />
+            </button>
+            <div className="hidden md:block">
+              <button className="text-gray-500 hover:text-gray-800"><Menu size={24} /></button>
+            </div>
             <SalonLogo />
           </div>
 
@@ -119,7 +143,7 @@ function App() {
         </header>
 
         {/* Dynamic Content */}
-        <div className="flex-1 p-6 overflow-hidden">
+        <div className="flex-1 p-3 md:p-6 overflow-hidden flex flex-col">
 
           {activeTab === 'home' && <DashboardView />}
 

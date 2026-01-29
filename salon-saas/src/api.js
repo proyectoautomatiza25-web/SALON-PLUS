@@ -1,6 +1,6 @@
 import { useSalonStore } from './store';
 
-const API_URL = '/api'; // Proxied via Vite to http://localhost:8000
+const API_URL = 'https://authentic-tenderness-production-a8bc.up.railway.app';
 
 const getHeaders = () => {
     const token = useSalonStore.getState().auth.token;
@@ -27,6 +27,9 @@ const request = async (url, options = {}) => {
 };
 
 export const api = {
+    // --- AUTH ---
+    getMe: () => request('/api/auth/me'),
+
     // --- STYLISTS ---
     getStylists: () => request('/salon/stylists'),
     createStylist: (data) => request('/salon/stylists', { method: 'POST', body: JSON.stringify(data) }),

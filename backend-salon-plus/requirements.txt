@@ -11,3 +11,8 @@ python-multipart==0.0.6
 python-dotenv==1.0.1
 mercadopago
 requests
+email-validator
+pandas
+httpx
+# force rebuild
+bcrypt==4.0.1
