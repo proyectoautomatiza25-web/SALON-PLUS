@@ -30,4 +30,8 @@ app.include_router(fudo.router, prefix="/api/fudo", tags=["fudo"])
 
 @app.get("/")
 def read_root():
-    return {"message": "Proyecto FOCUS Backend is running"}
+    return {"message": "Proyecto FOCUS Backend is running", "version": "v1.fix.billing.3"}
+
+@app.get("/health")
+def health_check():
+    return {"status": "ok", "version": "v1.fix.billing.3"}
