@@ -18,9 +18,9 @@ def register(user: schemas.UserCreate, db: Session = Depends(database.get_db)):
     
     
     # Generar link DIRECTO de suscripción de Mercado Pago (requiere tarjeta)
-    # Plan ID de VALIDACIÓN (Sin trial para activar botón en Producción)
-    MP_PLAN_ID = "d9c3eb0556424b3b87f54c8f438e4c0d"
-    MP_ACCESS_TOKEN = "APP_USR-6703285773653661-012801-f17be76f714591ed53de2d4beeb4e6fa-3164912896"
+    # VOLVEMOS A MODO TEST (Para usar tarjetas de prueba) pero sin trial (para activar botón)
+    MP_PLAN_ID = "f923bb651cb84715adca97e3197df7f3"
+    MP_ACCESS_TOKEN = "TEST-6703285773653661-012801-c9c03ce8a2bfda961701efaca8b49025-3164912896"
     checkout_url = f"https://www.mercadopago.cl/subscriptions/checkout?preapproval_plan_id={MP_PLAN_ID}&external_reference={new_user.id}&payer_email={new_user.email}"
     print(f"✅ Checkout URL generada para {new_user.email}: {checkout_url}")
 
