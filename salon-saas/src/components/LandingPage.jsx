@@ -277,7 +277,7 @@ const LandingPage = () => {
                     )}
                     {!emailSent && (
                         <p className="text-xs text-slate-500 pl-2">
-                            * Sin tarjeta de crédito requerida. 7 días de prueba gratis.
+                            * Tarjeta requerida. 7 días gratis, luego $29.990/mes. Cancela cuando quieras.
                         </p>
                     )}
                 </div>

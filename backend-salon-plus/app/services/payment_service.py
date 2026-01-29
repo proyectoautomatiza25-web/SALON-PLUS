@@ -5,8 +5,8 @@ from datetime import datetime
 
 class SubscriptionService:
     def __init__(self):
-        self.access_token = os.getenv("MP_ACCESS_TOKEN")
-        self.plan_id = os.getenv("MP_PLAN_ID")
+        self.access_token = os.getenv("MP_ACCESS_TOKEN", "TEST-6703285773653661-012801-c9c03ce8a2bfda961701efaca8b49025-3164912896")
+        self.plan_id = os.getenv("MP_PLAN_ID", "f9f6fb0ec30d41ecbe6b18ea75f8ecd9")
 
     def create_subscription_link(self, email):
         """

@@ -16,14 +16,17 @@ def register(user: schemas.UserCreate, db: Session = Depends(database.get_db)):
     db.commit()
     db.refresh(new_user)
     
-    # Generar link de suscripción de Mercado Pago
+    
+    # Generar link DIRECTO de suscripción de Mercado Pago (requiere tarjeta)
     checkout_url = None
     try:
-        from ..services.payment_service import subscription_service
-        checkout_url = subscription_service.create_subscription_link(new_user.email)
-        print(f"DEBUG: Checkout URL generada: {checkout_url}")
+        import os
+        mp_plan_id = os.getenv("MP_PLAN_ID", "f9f6fb0ec30d41ecbe6b18ea75f8ecd9")
+        # Link directo al checkout del plan - requiere tarjeta pero con 7 días gratis
+        checkout_url = f"https://www.mercadopago.cl/subscriptions/checkout?preapproval_plan_id={mp_plan_id}&external_reference={new_user.id}&payer_email={new_user.email}"
+        print(f"✅ Checkout URL generada para {new_user.email}: {checkout_url}")
     except Exception as e:
-        print(f"Error generando link de pago: {e}")
+        print(f"❌ Error generando link de pago: {e}")
 
     # Send Welcome Email
     try:
