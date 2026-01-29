@@ -35,3 +35,4 @@ def read_root():
 @app.get("/health")
 def health_check():
     return {"status": "ok", "version": "v1.fix.billing.3"}
+# TRIGGER DEPLOY V2
