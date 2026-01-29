@@ -127,6 +127,7 @@ class User(Base):
     # Salon Profile Fields
     business_name = Column(String, nullable=True)
     business_logo = Column(Text, nullable=True) # Base64
+    booking_slug = Column(String, unique=True, index=True, nullable=True)
     created_at = Column(DateTime, default=datetime.utcnow)
 
     # Subscription Fields

@@ -11,6 +11,8 @@ const StylistModal = ({ isOpen, onClose, initialData }) => {
         '#f472b6', '#a78bfa', '#fb923c', '#cbd5e1'
     ];
 
+    const [error, setError] = useState(null);
+    const [loading, setLoading] = useState(false);
     const [formData, setFormData] = useState({
         id: null,
         name: '',
@@ -22,6 +24,8 @@ const StylistModal = ({ isOpen, onClose, initialData }) => {
 
     useEffect(() => {
         if (isOpen) {
+            setError(null);
+            setLoading(false);
             if (initialData) {
                 setFormData({
                     id: initialData.id,
@@ -47,6 +51,10 @@ const StylistModal = ({ isOpen, onClose, initialData }) => {
     const handleAvatarChange = (e) => {
         const file = e.target.files[0];
         if (file) {
+            if (file.size > 2 * 1024 * 1024) {
+                alert("La imagen es muy pesada (máx 2MB)");
+                return;
+            }
             const reader = new FileReader();
             reader.onloadend = () => {
                 setFormData(prev => ({ ...prev, avatar: reader.result }));
@@ -55,30 +63,45 @@ const StylistModal = ({ isOpen, onClose, initialData }) => {
         }
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
+        setError(null);
+        setLoading(true);
 
         const stylistData = {
-            id: formData.id || Date.now(),
+            id: formData.id,
             name: formData.name,
             specialty: formData.specialty,
-            color: formData.color,
+            color: formData.color || '#fcd34d',
             active: formData.active,
             avatar: formData.avatar
         };
 
-        if (formData.id) {
-            updateStylist(stylistData);
-        } else {
-            addStylist(stylistData);
+        try {
+            if (formData.id) {
+                await updateStylist(stylistData);
+            } else {
+                await addStylist(stylistData);
+            }
+            onClose();
+        } catch (err) {
+            setError(err.message || "Error al procesar la solicitud");
+        } finally {
+            setLoading(false);
         }
-        onClose();
     };
 
-    const handleDelete = () => {
+    const handleDelete = async () => {
         if (formData.id && window.confirm('¿Eliminar estilista? Se mantendrán sus citas históricas pero no aparecerá en el calendario.')) {
-            removeStylist(formData.id);
-            onClose();
+            setLoading(true);
+            try {
+                await removeStylist(formData.id);
+                onClose();
+            } catch (err) {
+                setError(err.message || "Error al eliminar");
+            } finally {
+                setLoading(false);
+            }
         }
     };
 
@@ -167,13 +190,20 @@ const StylistModal = ({ isOpen, onClose, initialData }) => {
                         </div>
                     </div>
 
+                    {error && (
+                        <div className="bg-red-50 text-red-500 p-3 rounded-xl text-xs font-bold border border-red-100 animate-in fade-in slide-in-from-top-1">
+                            {error}
+                        </div>
+                    )}
+
                     {/* Footer Actions */}
                     <div className="flex gap-3 pt-4">
                         {isEditing && (
                             <button
                                 type="button"
                                 onClick={handleDelete}
-                                className="px-4 py-3 bg-red-50 text-red-500 border border-red-100 font-semibold rounded-xl hover:bg-red-100 transition-all"
+                                disabled={loading}
+                                className="px-4 py-3 bg-red-50 text-red-500 border border-red-100 font-semibold rounded-xl hover:bg-red-100 transition-all disabled:opacity-50"
                                 title="Eliminar"
                             >
                                 <Trash2 size={20} />
@@ -182,15 +212,21 @@ const StylistModal = ({ isOpen, onClose, initialData }) => {
                         <button
                             type="button"
                             onClick={onClose}
-                            className="flex-1 px-4 py-3 bg-white border border-slate-200 text-slate-600 font-semibold rounded-xl hover:bg-slate-50 transition-all"
+                            disabled={loading}
+                            className="flex-1 px-4 py-3 bg-white border border-slate-200 text-slate-600 font-semibold rounded-xl hover:bg-slate-50 transition-all disabled:opacity-50"
                         >
                             Cancelar
                         </button>
                         <button
                             type="submit"
-                            className="flex-1 px-4 py-3 bg-gradient-to-r from-primary to-secondary text-white font-bold rounded-xl shadow-lg shadow-primary/25 hover:shadow-primary/40 hover:scale-[1.02] active:scale-[0.98] transition-all"
+                            disabled={loading}
+                            className="flex-1 px-4 py-3 bg-gradient-to-r from-primary to-secondary text-white font-bold rounded-xl shadow-lg shadow-primary/25 hover:shadow-primary/40 hover:scale-[1.02] active:scale-[0.98] transition-all disabled:opacity-50 flex items-center justify-center gap-2"
                         >
-                            {isEditing ? 'Guardar' : 'Crear'}
+                            {loading ? (
+                                <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                            ) : (
+                                isEditing ? 'Guardar' : 'Crear'
+                            )}
                         </button>
                     </div>
                 </form>

@@ -1,13 +1,14 @@
 import React, { useState } from 'react';
 import { useSalonStore } from '../store';
-import { Save, MapPin, Phone, Mail, Globe, Clock, Camera } from 'lucide-react';
+import { Save, MapPin, Phone, Mail, Globe, Clock, Camera, Link as LinkIcon, Share2 } from 'lucide-react';
 
 const SalonProfileView = () => {
-    const { businessName, updateBusinessName, businessLogo, updateBusinessLogo } = useSalonStore();
+    const { businessName, businessLogo, bookingSlug, updateProfile } = useSalonStore();
 
     // Local state for form
     const [profile, setProfile] = useState({
         name: businessName,
+        slug: bookingSlug || '',
         address: 'Av. Providencia 1234, Santiago',
         phone: '+56 9 1234 5678',
         email: 'contacto@salonplus.cl',
@@ -21,9 +22,15 @@ const SalonProfileView = () => {
     });
 
     const [logoPreview, setLogoPreview] = useState(businessLogo);
+    const [isSaving, setIsSaving] = useState(false);
 
     const handleChange = (e) => {
-        setProfile({ ...profile, [e.target.name]: e.target.value });
+        const { name, value } = e.target;
+        if (name === 'slug') {
+            setProfile({ ...profile, [name]: value.toLowerCase().replace(/[^a-z0-9-]/g, '-') });
+        } else {
+            setProfile({ ...profile, [name]: value });
+        }
     };
 
     const handleLogoChange = (e) => {
@@ -37,11 +44,21 @@ const SalonProfileView = () => {
         }
     };
 
-    const handleSave = (e) => {
+    const handleSave = async (e) => {
         e.preventDefault();
-        updateBusinessName(profile.name);
-        if (logoPreview) updateBusinessLogo(logoPreview);
-        alert('Perfil del Salón actualizado exitosamente.');
+        setIsSaving(true);
+        try {
+            await updateProfile({
+                business_name: profile.name,
+                business_logo: logoPreview,
+                booking_slug: profile.slug
+            });
+            alert('Perfil del Salón actualizado exitosamente.');
+        } catch (e) {
+            alert(e.message || 'Error al actualizar perfil');
+        } finally {
+            setIsSaving(false);
+        }
     };
 
     return (
@@ -95,6 +112,38 @@ const SalonProfileView = () => {
                                         onChange={handleChange}
                                         className="w-full px-4 py-2 bg-white border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary/20 outline-none transition-all"
                                     />
+                                </div>
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <div className="space-y-1">
+                                        <label className="block text-sm font-bold text-slate-700">Link de Reserva Online</label>
+                                        <div className="flex bg-white border border-gray-300 rounded-xl overflow-hidden focus-within:ring-2 focus-within:ring-primary/20 transition-all">
+                                            <span className="bg-slate-100 px-3 flex items-center text-slate-400 text-xs font-medium border-r border-gray-200">/reserva/</span>
+                                            <input
+                                                type="text"
+                                                name="slug"
+                                                placeholder="mi-salon"
+                                                value={profile.slug}
+                                                onChange={handleChange}
+                                                className="flex-1 px-3 py-2 outline-none"
+                                            />
+                                        </div>
+                                        <p className="text-[10px] text-slate-400 italic">Ej: salonplus.cl/reserva/{profile.slug || 'mi-salon'}</p>
+                                    </div>
+                                    <div className="flex items-end pb-1 px-1">
+                                        {profile.slug && (
+                                            <button
+                                                type="button"
+                                                onClick={() => {
+                                                    const url = `${window.location.origin}/reserva/${profile.slug}`;
+                                                    navigator.clipboard.writeText(url);
+                                                    alert("Link copiado");
+                                                }}
+                                                className="text-primary hover:text-primary-dark text-xs font-bold flex items-center gap-1.5 p-2 hover:bg-primary/5 rounded-lg transition-all"
+                                            >
+                                                <Share2 size={14} /> Copiar Link
+                                            </button>
+                                        )}
+                                    </div>
                                 </div>
                                 <div>
                                     <label className="block text-sm font-bold text-slate-700 mb-1">Descripción Corta</label>

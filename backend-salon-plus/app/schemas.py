@@ -20,9 +20,17 @@ class User(UserBase):
     trial_end_at: Optional[datetime] = None
     subscription_active: bool = False
     checkout_url: Optional[str] = None
+    business_name: Optional[str] = None
+    business_logo: Optional[str] = None
+    booking_slug: Optional[str] = None
     
     class Config:
         from_attributes = True
+
+class UserUpdate(BaseModel):
+    business_name: Optional[str] = None
+    business_logo: Optional[str] = None
+    booking_slug: Optional[str] = None
 
 class Token(BaseModel):
     access_token: str
@@ -184,3 +192,19 @@ class Appointment(AppointmentBase):
     owner_id: str
     class Config:
         from_attributes = True
+
+# --- PUBLIC BOOKING SCHEMAS ---
+class PublicSalonInfo(BaseModel):
+    business_name: Optional[str] = None
+    business_logo: Optional[str] = None
+    stylists: List[Stylist]
+    services: List[Service]
+
+class PublicBookingCreate(BaseModel):
+    stylist_id: str
+    service_id: str
+    start_time: datetime
+    client_name: str
+    client_phone: str
+    client_email: Optional[str] = None
+    notes: Optional[str] = None

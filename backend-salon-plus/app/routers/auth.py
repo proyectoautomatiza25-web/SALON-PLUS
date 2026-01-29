@@ -43,6 +43,21 @@ def login(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depend
 def get_me(current_user: models.User = Depends(auth.get_current_user)):
     return current_user
 
+@router.put("/me", response_model=schemas.User)
+def update_me(user_update: schemas.UserUpdate, db: Session = Depends(database.get_db), current_user: models.User = Depends(auth.get_current_user)):
+    if user_update.booking_slug:
+        # Check if slug is taken by someone else
+        existing = db.query(models.User).filter(models.User.booking_slug == user_update.booking_slug).first()
+        if existing and existing.id != current_user.id:
+            raise HTTPException(status_code=400, detail="El link de reserva ya está ocupado por otro salón.")
+            
+    for key, value in user_update.model_dump(exclude_unset=True).items():
+        setattr(current_user, key, value)
+        
+    db.commit()
+    db.refresh(current_user)
+    return current_user
+
 @router.post("/forgot-password")
 def forgot_password(request: schemas.UserCreate, db: Session = Depends(database.get_db)):
     # Buscamos al usuario por email

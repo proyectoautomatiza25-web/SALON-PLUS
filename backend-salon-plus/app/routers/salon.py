@@ -1,3 +1,4 @@
+from datetime import timedelta
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 from typing import List
@@ -17,6 +18,19 @@ def get_stylists(db: Session = Depends(database.get_db), current_user: models.Us
 def create_stylist(stylist: schemas.StylistCreate, db: Session = Depends(database.get_db), current_user: models.User = Depends(auth.check_subscription_active)):
     db_stylist = models.Stylist(**stylist.model_dump(), owner_id=current_user.id)
     db.add(db_stylist)
+    db.commit()
+    db.refresh(db_stylist)
+    return db_stylist
+
+@router.put("/stylists/{stylist_id}", response_model=schemas.Stylist)
+def update_stylist(stylist_id: str, stylist_update: schemas.StylistCreate, db: Session = Depends(database.get_db), current_user: models.User = Depends(auth.check_subscription_active)):
+    db_stylist = db.query(models.Stylist).filter(models.Stylist.id == stylist_id, models.Stylist.owner_id == current_user.id).first()
+    if not db_stylist:
+        raise HTTPException(status_code=404, detail="Stylist not found")
+    
+    for key, value in stylist_update.model_dump().items():
+        setattr(db_stylist, key, value)
+        
     db.commit()
     db.refresh(db_stylist)
     return db_stylist
@@ -123,3 +137,72 @@ def delete_appointment(appointment_id: str, db: Session = Depends(database.get_d
     db.delete(db_appt)
     db.commit()
     return {"message": "Deleted"}
+
+# --- PUBLIC ENDPOINTS ---
+
+@router.get("/public/{slug}", response_model=schemas.PublicSalonInfo)
+def get_public_salon_info(slug: str, db: Session = Depends(database.get_db)):
+    user = db.query(models.User).filter(models.User.booking_slug == slug).first()
+    if not user:
+        raise HTTPException(status_code=404, detail="Salon not found")
+    
+    # We allow getting info even if sub is not active for the public page to show "Expired" or similar
+    # But usually, it's better to show the info and then block the booking if needed.
+    
+    stylists = db.query(models.Stylist).filter(models.Stylist.owner_id == user.id, models.Stylist.active == True).all()
+    services = db.query(models.Service).filter(models.Service.owner_id == user.id).all()
+    
+    return {
+        "business_name": user.business_name,
+        "business_logo": user.business_logo,
+        "stylists": stylists,
+        "services": services
+    }
+
+@router.post("/public/{slug}/book")
+def public_book(slug: str, booking: schemas.PublicBookingCreate, db: Session = Depends(database.get_db)):
+    user = db.query(models.User).filter(models.User.booking_slug == slug).first()
+    if not user:
+        raise HTTPException(status_code=404, detail="Salon not found")
+    
+    # 1. Look for client or create it
+    client = db.query(models.SalonClient).filter(
+        models.SalonClient.owner_id == user.id, 
+        models.SalonClient.phone == booking.client_phone
+    ).first()
+    
+    if not client:
+        client = models.SalonClient(
+            owner_id=user.id,
+            name=booking.client_name,
+            phone=booking.client_phone,
+            email=booking.client_email,
+            notes="Creado vía reserva online"
+        )
+        db.add(client)
+        db.commit()
+        db.refresh(client)
+        
+    # 2. Get service info for duration and price
+    service = db.query(models.Service).filter(models.Service.id == booking.service_id).first()
+    if not service:
+        raise HTTPException(status_code=404, detail="Service not found")
+        
+    end_time = booking.start_time + timedelta(minutes=service.duration)
+    
+    # 3. Create appointment
+    db_appt = models.Appointment(
+        owner_id=user.id,
+        stylist_id=booking.stylist_id,
+        client_id=client.id,
+        service_id=service.id,
+        title=service.name,
+        start_time=booking.start_time,
+        end_time=end_time,
+        status="pending",
+        notes=booking.notes,
+        price=service.price
+    )
+    db.add(db_appt)
+    db.commit()
+    return {"message": "Booking successful", "appointment_id": db_appt.id}

@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Routes, Route, useNavigate, useParams, useLocation } from 'react-router-dom';
 import CalendarView from './components/CalendarView';
 import ClientsView from './components/ClientsView';
 import CheckoutView from './components/CheckoutView';
@@ -10,14 +11,21 @@ import ReportsView from './components/ReportsView';
 import AppointmentsListView from './components/AppointmentsListView';
 import BillingExpiredView from './components/BillingExpiredView';
 import LandingPage from './components/LandingPage';
+import PublicBookingView from './components/PublicBookingView';
 import { useSalonStore } from './store';
-import { Calendar, Users, ShoppingBag, PieChart, Menu, Bell, Clock, AlertTriangle } from 'lucide-react';
+import { Calendar, Users, ShoppingBag, PieChart, Menu, Bell, Clock, AlertTriangle, Share2 } from 'lucide-react';
 import SalonLogo from './components/SalonLogo';
 
-function App() {
+const PublicBookingWrapper = () => {
+  const { slug } = useParams();
+  return <PublicBookingView slug={slug} />;
+};
+
+function AdminApp() {
   const [activeTab, setActiveTab] = useState('home');
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-  const { subscription, expireDemo, auth, fetchInitialData } = useSalonStore();
+  const { subscription, expireDemo, auth, fetchInitialData, bookingSlug } = useSalonStore();
+  const location = useLocation();
 
   // Load Data from Backend
   React.useEffect(() => {
@@ -26,6 +34,7 @@ function App() {
     }
   }, [auth.isAuthenticated, auth.token, fetchInitialData]);
 
+  // Handle URL params for direct tab access if needed, or just default to 'home'
   // 1. Auth Check
   if (!auth.isAuthenticated) {
     return <LandingPage />;
@@ -33,7 +42,7 @@ function App() {
 
   // 2. Trial Status Check
   const now = new Date();
-  const trialEnd = new Date(subscription.trialEnd);
+  const trialEnd = new Date(subscription.trialEnd || Date.now());
   const isExpired = subscription.planType === 'demo' && !subscription.active && now > trialEnd;
   const daysLeft = Math.ceil((trialEnd - now) / (1000 * 60 * 60 * 24));
   const isOnTrial = subscription.planType === 'demo' && !subscription.active && !isExpired;
@@ -111,7 +120,21 @@ function App() {
               <Clock size={14} />
               <span className="font-medium">Modo Demo: Quedan {daysLeft} días de prueba gratuita.</span>
             </div>
-            <button onClick={expireDemo} className="text-indigo-200 hover:text-white text-xs underline">Simular Vencimiento</button>
+            <div className="flex items-center gap-4">
+              {bookingSlug && (
+                <button
+                  onClick={() => {
+                    const url = `${window.location.origin}/reserva/${bookingSlug}`;
+                    navigator.clipboard.writeText(url);
+                    alert("¡Link de reserva copiado al portapapeles!");
+                  }}
+                  className="bg-white/20 hover:bg-white/30 px-2 py-0.5 rounded flex items-center gap-1.5 text-xs transition-colors"
+                >
+                  <Share2 size={12} /> Copiar Link Reserva
+                </button>
+              )}
+              <button onClick={expireDemo} className="text-indigo-200 hover:text-white text-xs underline">Simular Vencimiento</button>
+            </div>
           </div>
         )}
 
@@ -134,7 +157,7 @@ function App() {
           {/* Right: Actions */}
           <div className="flex items-center gap-2 md:gap-4">
             <button className="relative p-1.5 md:p-2 text-gray-600 hover:bg-gray-100 rounded-full transition-colors">
-              <Bell size={20} md:size={22} />
+              <Bell size={20} />
               <span className="absolute top-1.5 right-2 w-2 h-2 bg-red-500 rounded-full border border-white"></span>
             </button>
             <div className="w-8 h-8 md:w-9 md:h-9 rounded-full bg-[#1e1b4b] text-white flex items-center justify-center font-bold shadow-md text-sm md:text-base">M</div>
@@ -166,6 +189,15 @@ function App() {
 
       </main>
     </div>
+  );
+}
+
+function App() {
+  return (
+    <Routes>
+      <Route path="/reserva/:slug" element={<PublicBookingWrapper />} />
+      <Route path="*" element={<AdminApp />} />
+    </Routes>
   );
 }
 

@@ -8,9 +8,21 @@ export const useSalonStore = create(
             // --- Estado del Negocio ---
             businessName: 'Salon Plus',
             businessLogo: null,
+            bookingSlug: null,
 
-            updateBusinessName: (name) => set(() => ({ businessName: name })),
-            updateBusinessLogo: (logo) => set(() => ({ businessLogo: logo })),
+            updateProfile: async (data) => {
+                try {
+                    const updatedUser = await api.updateMe(data);
+                    set({
+                        businessName: updatedUser.business_name,
+                        businessLogo: updatedUser.business_logo,
+                        bookingSlug: updatedUser.booking_slug
+                    });
+                } catch (e) {
+                    console.error("Error updating profile", e);
+                    throw e;
+                }
+            },
 
             // --- Autenticación ---
             auth: {
@@ -48,6 +60,9 @@ export const useSalonStore = create(
 
                     // Sync Subscription & User Data
                     set({
+                        businessName: userData.business_name || 'Salon Plus',
+                        businessLogo: userData.business_logo || null,
+                        bookingSlug: userData.booking_slug || null,
                         subscription: {
                             planType: userData.plan_type,
                             trialEnd: userData.trial_end_at,
@@ -84,10 +99,23 @@ export const useSalonStore = create(
                 }
             },
 
-            updateStylist: (updatedStylist) => set((state) => ({
-                stylists: state.stylists.map(s => s.id === updatedStylist.id ? updatedStylist : s)
-                // TODO: Implement API update
-            })),
+            updateStylist: async (updatedStylist) => {
+                try {
+                    const payload = {
+                        name: updatedStylist.name,
+                        specialty: updatedStylist.specialty,
+                        color: updatedStylist.color,
+                        active: updatedStylist.active,
+                        avatar: updatedStylist.avatar
+                    };
+                    const result = await api.updateStylist(updatedStylist.id, payload);
+                    set((state) => ({
+                        stylists: state.stylists.map(s => s.id === result.id ? result : s)
+                    }));
+                } catch (e) {
+                    console.error("Error updating stylist", e);
+                }
+            },
 
             removeStylist: async (id) => {
                 try {

@@ -29,26 +29,32 @@ const request = async (url, options = {}) => {
 export const api = {
     // --- AUTH ---
     getMe: () => request('/api/auth/me'),
+    updateMe: (data) => request('/api/auth/me', { method: 'PUT', body: JSON.stringify(data) }),
 
     // --- STYLISTS ---
-    getStylists: () => request('/salon/stylists'),
-    createStylist: (data) => request('/salon/stylists', { method: 'POST', body: JSON.stringify(data) }),
-    deleteStylist: (id) => request(`/salon/stylists/${id}`, { method: 'DELETE' }),
+    getStylists: () => request('/api/salon/stylists'),
+    createStylist: (data) => request('/api/salon/stylists', { method: 'POST', body: JSON.stringify(data) }),
+    updateStylist: (id, data) => request(`/api/salon/stylists/${id}`, { method: 'PUT', body: JSON.stringify(data) }),
+    deleteStylist: (id) => request(`/api/salon/stylists/${id}`, { method: 'DELETE' }),
 
     // --- SERVICES ---
-    getServices: () => request('/salon/services'),
-    createService: (data) => request('/salon/services', { method: 'POST', body: JSON.stringify(data) }),
-    deleteService: (id) => request(`/salon/services/${id}`, { method: 'DELETE' }),
+    getServices: () => request('/api/salon/services'),
+    createService: (data) => request('/api/salon/services', { method: 'POST', body: JSON.stringify(data) }),
+    deleteService: (id) => request(`/api/salon/services/${id}`, { method: 'DELETE' }),
 
     // --- CLIENTS ---
-    getClients: () => request('/salon/clients'),
-    createClient: (data) => request('/salon/clients', { method: 'POST', body: JSON.stringify(data) }),
-    updateClient: (id, data) => request(`/salon/clients/${id}`, { method: 'PUT', body: JSON.stringify(data) }),
-    deleteClient: (id) => request(`/salon/clients/${id}`, { method: 'DELETE' }),
+    getClients: () => request('/api/salon/clients'),
+    createClient: (data) => request('/api/salon/clients', { method: 'POST', body: JSON.stringify(data) }),
+    updateClient: (id, data) => request(`/api/salon/clients/${id}`, { method: 'PUT', body: JSON.stringify(data) }),
+    deleteClient: (id) => request(`/api/salon/clients/${id}`, { method: 'DELETE' }),
 
     // --- APPOINTMENTS ---
-    getAppointments: () => request('/salon/appointments'),
-    createAppointment: (data) => request('/salon/appointments', { method: 'POST', body: JSON.stringify(data) }),
-    updateAppointment: (id, data) => request(`/salon/appointments/${id}`, { method: 'PUT', body: JSON.stringify(data) }),
-    deleteAppointment: (id) => request(`/salon/appointments/${id}`, { method: 'DELETE' }),
+    getAppointments: () => request('/api/salon/appointments'),
+    createAppointment: (data) => request('/api/salon/appointments', { method: 'POST', body: JSON.stringify(data) }),
+    updateAppointment: (id, data) => request(`/api/salon/appointments/${id}`, { method: 'PUT', body: JSON.stringify(data) }),
+    deleteAppointment: (id) => request(`/api/salon/appointments/${id}`, { method: 'DELETE' }),
+
+    // --- PUBLIC BOOKING ---
+    getPublicSalonInfo: (slug) => request(`/api/salon/public/${slug}`),
+    publicBook: (slug, data) => request(`/api/salon/public/${slug}/book`, { method: 'POST', body: JSON.stringify(data) }),
 };
