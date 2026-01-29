@@ -9,7 +9,7 @@ router = APIRouter(prefix="/api/billing", tags=["Billing & Subscriptions"])
 
 # Configurar SDK de MercadoPago
 mp_access_token = os.getenv("MP_ACCESS_TOKEN", "TEST-6703285773653661-012801-c9c03ce8a2bfda961701efaca8b49025-3164912896")
-mp_plan_id = os.getenv("MP_PLAN_ID", "f9f6fb0ec30d41ecbe6b18ea75f8ecd9")
+mp_plan_id = os.getenv("MP_PLAN_ID", "d0b5914a97f04ff99608765cafbbc932")
 sdk = mercadopago.SDK(mp_access_token)
 
 @router.post("/create-subscription")
