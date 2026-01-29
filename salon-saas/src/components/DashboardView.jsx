@@ -171,7 +171,7 @@ const UpgradeCard = () => {
     const handleUpgrade = async () => {
         setLoading(true);
         try {
-            const res = await fetch(`${API_URL}/api/billing/create-subscription?plan_id=pro`, {
+            const res = await fetch(`${API_URL}/api/billing/create-subscription`, {
                 method: 'POST',
                 headers: {
                     'Authorization': `Bearer ${auth.token}`,
