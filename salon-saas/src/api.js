@@ -54,6 +54,12 @@ export const api = {
     updateAppointment: (id, data) => request(`/api/salon/appointments/${id}`, { method: 'PUT', body: JSON.stringify(data) }),
     deleteAppointment: (id) => request(`/api/salon/appointments/${id}`, { method: 'DELETE' }),
 
+    // --- PRODUCTS ---
+    getProducts: () => request('/api/salon/products'),
+    createProduct: (data) => request('/api/salon/products', { method: 'POST', body: JSON.stringify(data) }),
+    updateProduct: (id, data) => request(`/api/salon/products/${id}`, { method: 'PUT', body: JSON.stringify(data) }),
+    deleteProduct: (id) => request(`/api/salon/products/${id}`, { method: 'DELETE' }),
+
     // --- PUBLIC BOOKING ---
     getPublicSalonInfo: (slug) => request(`/api/salon/public/${slug}`),
     publicBook: (slug, data) => request(`/api/salon/public/${slug}/book`, { method: 'POST', body: JSON.stringify(data) }),

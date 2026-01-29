@@ -155,6 +155,22 @@ class Service(ServiceBase):
     class Config:
         from_attributes = True
 
+# SalonProduct
+class SalonProductBase(BaseModel):
+    name: str
+    price: float
+    stock: int = 0
+    category: Optional[str] = None
+
+class SalonProductCreate(SalonProductBase):
+    pass
+
+class SalonProduct(SalonProductBase):
+    id: str
+    owner_id: str
+    class Config:
+        from_attributes = True
+
 # SalonClient
 class SalonClientBase(BaseModel):
     name: str

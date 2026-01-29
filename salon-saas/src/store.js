@@ -50,12 +50,13 @@ export const useSalonStore = create(
 
                 try {
                     console.log("Fetching Initial Data from Backend...");
-                    const [userData, stylists, services, clients, rawAppointments] = await Promise.all([
+                    const [userData, stylists, services, clients, rawAppointments, products] = await Promise.all([
                         api.getMe(),
                         api.getStylists(),
                         api.getServices(),
                         api.getClients(),
-                        api.getAppointments()
+                        api.getAppointments(),
+                        api.getProducts()
                     ]);
 
                     // Sync Subscription & User Data
@@ -79,7 +80,8 @@ export const useSalonStore = create(
                         end: new Date(appt.end_time)
                     }));
 
-                    set({ stylists, services, clients, appointments });
+                    // We use backend IDs now, so ensure they are respected
+                    set({ stylists, services, clients, appointments, products });
                     console.log("Data loaded successfully");
                 } catch (error) {
                     console.error("Error loading initial data:", error);
@@ -208,13 +210,41 @@ export const useSalonStore = create(
                 }
             },
 
-            // --- Productos (Local only for now or TODO API) ---
-            products: [
-                { id: 1, name: 'Shampoo Keratina 500ml', price: 15990, stock: 12, category: 'Cuidado Capilar' },
-            ],
-            addProduct: (product) => set((state) => ({ products: [...state.products, { ...product, id: Date.now() }] })),
-            updateProduct: (updatedProduct) => set((state) => ({ products: state.products.map(p => p.id === updatedProduct.id ? updatedProduct : p) })),
-            removeProduct: (id) => set((state) => ({ products: state.products.filter(p => p.id !== id) })),
+            // --- Productos (API Integrated) ---
+            products: [], // Init empty, load from backend
+
+            addProduct: async (product) => {
+                try {
+                    const { id, ...payload } = product;
+                    const newProduct = await api.createProduct(payload);
+                    set((state) => ({ products: [...state.products, newProduct] }));
+                    return newProduct;
+                } catch (e) {
+                    console.error("Error creating product", e);
+                    throw e;
+                }
+            },
+
+            updateProduct: async (updatedProduct) => {
+                try {
+                    const { id, ...payload } = updatedProduct;
+                    const result = await api.updateProduct(id, payload);
+                    set((state) => ({ products: state.products.map(p => p.id === result.id ? result : p) }));
+                    return result;
+                } catch (e) {
+                    console.error("Error updating product", e);
+                    throw e;
+                }
+            },
+
+            removeProduct: async (id) => {
+                try {
+                    await api.deleteProduct(id);
+                    set((state) => ({ products: state.products.filter(p => p.id !== id) }));
+                } catch (e) {
+                    console.error("Error deleting product", e);
+                }
+            },
 
             // --- Citas (Calendario) ---
             appointments: [],

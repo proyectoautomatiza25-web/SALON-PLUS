@@ -4,19 +4,28 @@ import { Search, Plus, Package, Scissors, Edit, Trash2, Tag, DollarSign, Clock }
 
 // Sub-component for Service Modal
 const ServiceModal = ({ isOpen, onClose, initialData }) => {
-    const { addService, updateService, removeService } = useSalonStore();
+    const { addService, updateService } = useSalonStore();
     const [formData, setFormData] = useState(initialData || { name: '', duration: 60, price: 0, color: '#f472b6' });
+    const [loading, setLoading] = useState(false);
 
     if (!isOpen) return null;
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        if (initialData?.id) {
-            updateService({ ...formData, id: initialData.id });
-        } else {
-            addService(formData);
+        setLoading(true);
+        try {
+            if (initialData?.id) {
+                await updateService({ ...formData, id: initialData.id });
+            } else {
+                await addService(formData);
+            }
+            onClose();
+        } catch (error) {
+            console.error(error);
+            alert("Error al guardar servicio");
+        } finally {
+            setLoading(false);
         }
-        onClose();
     };
 
     return (
@@ -43,8 +52,10 @@ const ServiceModal = ({ isOpen, onClose, initialData }) => {
                         <input type="color" className="w-full h-10 rounded-lg mt-1 cursor-pointer" value={formData.color} onChange={e => setFormData({ ...formData, color: e.target.value })} />
                     </div>
                     <div className="flex gap-2 pt-2">
-                        <button type="button" onClick={onClose} className="flex-1 py-2 border rounded-lg hover:bg-gray-50">Cancelar</button>
-                        <button type="submit" className="flex-1 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">Guardar</button>
+                        <button type="button" onClick={onClose} disabled={loading} className="flex-1 py-2 border rounded-lg hover:bg-gray-50">Cancelar</button>
+                        <button type="submit" disabled={loading} className="flex-1 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-70">
+                            {loading ? 'Guardando...' : 'Guardar'}
+                        </button>
                     </div>
                 </form>
             </div>
@@ -54,19 +65,28 @@ const ServiceModal = ({ isOpen, onClose, initialData }) => {
 
 // Sub-component for Product Modal
 const ProductModal = ({ isOpen, onClose, initialData }) => {
-    const { addProduct, updateProduct, removeProduct } = useSalonStore();
+    const { addProduct, updateProduct } = useSalonStore();
     const [formData, setFormData] = useState(initialData || { name: '', price: 0, stock: 0, category: '' });
+    const [loading, setLoading] = useState(false);
 
     if (!isOpen) return null;
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        if (initialData?.id) {
-            updateProduct({ ...formData, id: initialData.id });
-        } else {
-            addProduct(formData);
+        setLoading(true);
+        try {
+            if (initialData?.id) {
+                await updateProduct({ ...formData, id: initialData.id });
+            } else {
+                await addProduct(formData);
+            }
+            onClose();
+        } catch (error) {
+            console.error(error);
+            alert("Error al guardar producto");
+        } finally {
+            setLoading(false);
         }
-        onClose();
     };
 
     return (
@@ -93,8 +113,10 @@ const ProductModal = ({ isOpen, onClose, initialData }) => {
                         <input className="w-full border rounded-lg p-2 mt-1" value={formData.category} onChange={e => setFormData({ ...formData, category: e.target.value })} />
                     </div>
                     <div className="flex gap-2 pt-2">
-                        <button type="button" onClick={onClose} className="flex-1 py-2 border rounded-lg hover:bg-gray-50">Cancelar</button>
-                        <button type="submit" className="flex-1 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">Guardar</button>
+                        <button type="button" onClick={onClose} disabled={loading} className="flex-1 py-2 border rounded-lg hover:bg-gray-50">Cancelar</button>
+                        <button type="submit" disabled={loading} className="flex-1 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-70">
+                            {loading ? 'Guardando...' : 'Guardar'}
+                        </button>
                     </div>
                 </form>
             </div>
@@ -135,6 +157,53 @@ const ProductsView = () => {
                             className="w-full bg-slate-50 border border-slate-200 pl-10 pr-4 py-2 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all"
                         />
                     </div>
+
+                    {/* Excel Import Button */}
+                    {activeTab === 'products' && (
+                        <label className="hidden sm:flex items-center justify-center gap-2 bg-emerald-500 hover:bg-emerald-600 text-white px-4 py-2 rounded-xl font-semibold shadow-lg shadow-emerald-500/30 transition-all active:scale-95 cursor-pointer">
+                            <span className="text-sm">Importar Excel</span>
+                            <input
+                                type="file"
+                                accept=".xlsx, .xls"
+                                className="hidden"
+                                onChange={async (e) => {
+                                    const file = e.target.files[0];
+                                    if (!file) return;
+
+                                    try {
+                                        const XLSX = await import("xlsx");
+                                        const data = await file.arrayBuffer();
+                                        const workbook = XLSX.read(data);
+                                        const worksheet = workbook.Sheets[workbook.SheetNames[0]];
+                                        const json = XLSX.utils.sheet_to_json(worksheet);
+
+                                        // Auto-map columns helper
+                                        const mapProduct = (row) => ({
+                                            name: row['Nombre'] || row['Producto'] || row['Servicio'] || 'Sin Nombre',
+                                            price: row['Precio'] || row['Valor'] || row['Costo'] || 0,
+                                            stock: row['Stock'] || row['Cantidad'] || 0,
+                                            category: row['Categoria'] || row['Tipo'] || 'General'
+                                        });
+
+                                        let count = 0;
+                                        for (const row of json) {
+                                            const product = mapProduct(row);
+                                            if (product.name && product.name !== 'Sin Nombre') {
+                                                // Use store action (now async)
+                                                await useSalonStore.getState().addProduct(product);
+                                                count++;
+                                            }
+                                        }
+                                        alert(`Se importaron ${count} productos correctamente.`);
+                                    } catch (err) {
+                                        console.error(err);
+                                        alert("Error al leer Excel. Verifica el formato.");
+                                    }
+                                }}
+                            />
+                        </label>
+                    )}
+
                     <button
                         onClick={() => {
                             setSelectedItem(null);

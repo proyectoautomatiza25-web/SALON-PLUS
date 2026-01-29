@@ -143,6 +143,7 @@ class User(Base):
     services = relationship("Service", back_populates="owner")
     appointments = relationship("Appointment", back_populates="owner")
     clients = relationship("SalonClient", back_populates="owner")
+    products = relationship("SalonProduct", back_populates="owner")
 
 # --- SALON SAAS CORE ---
 
@@ -207,3 +208,15 @@ class Appointment(Base):
     owner = relationship("User", back_populates="appointments")
     stylist = relationship("Stylist", back_populates="appointments")
     client = relationship("SalonClient", back_populates="appointments")
+
+class SalonProduct(Base):
+    __tablename__ = "salon_products"
+
+    id = Column(String, primary_key=True, default=lambda: str(uuid.uuid4()))
+    owner_id = Column(String, ForeignKey("users.id"))
+    name = Column(String)
+    price = Column(Numeric(10, 2))
+    stock = Column(Integer, default=0)
+    category = Column(String, nullable=True)
+    
+    owner = relationship("User", back_populates="products")

@@ -79,6 +79,41 @@ def delete_service(service_id: str, db: Session = Depends(database.get_db), curr
     db.commit()
     return {"message": "Deleted"}
 
+# --- PRODUCTS ---
+@router.get("/products", response_model=List[schemas.SalonProduct])
+def get_products(db: Session = Depends(database.get_db), current_user: models.User = Depends(auth.check_subscription_active)):
+    return db.query(models.SalonProduct).filter(models.SalonProduct.owner_id == current_user.id).all()
+
+@router.post("/products", response_model=schemas.SalonProduct)
+def create_product(product: schemas.SalonProductCreate, db: Session = Depends(database.get_db), current_user: models.User = Depends(auth.check_subscription_active)):
+    db_product = models.SalonProduct(**product.model_dump(), owner_id=current_user.id)
+    db.add(db_product)
+    db.commit()
+    db.refresh(db_product)
+    return db_product
+
+@router.put("/products/{product_id}", response_model=schemas.SalonProduct)
+def update_product(product_id: str, product_update: schemas.SalonProductCreate, db: Session = Depends(database.get_db), current_user: models.User = Depends(auth.check_subscription_active)):
+    db_product = db.query(models.SalonProduct).filter(models.SalonProduct.id == product_id, models.SalonProduct.owner_id == current_user.id).first()
+    if not db_product:
+        raise HTTPException(status_code=404, detail="Product not found")
+    
+    for key, value in product_update.model_dump().items():
+        setattr(db_product, key, value)
+        
+    db.commit()
+    db.refresh(db_product)
+    return db_product
+
+@router.delete("/products/{product_id}")
+def delete_product(product_id: str, db: Session = Depends(database.get_db), current_user: models.User = Depends(auth.check_subscription_active)):
+    db_product = db.query(models.SalonProduct).filter(models.SalonProduct.id == product_id, models.SalonProduct.owner_id == current_user.id).first()
+    if not db_product:
+        raise HTTPException(status_code=404, detail="Product not found")
+    db.delete(db_product)
+    db.commit()
+    return {"message": "Deleted"}
+
 # --- CLIENTS ---
 @router.get("/clients", response_model=List[schemas.SalonClient])
 def get_clients(db: Session = Depends(database.get_db), current_user: models.User = Depends(auth.check_subscription_active)):
