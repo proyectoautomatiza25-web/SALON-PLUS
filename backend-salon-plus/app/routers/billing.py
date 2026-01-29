@@ -14,6 +14,7 @@ sdk = mercadopago.SDK(mp_access_token)
 
 @router.post("/create-subscription")
 async def create_subscription(
+    plan_id: str = None,
     current_user: models.User = Depends(auth.get_current_user)
 ):
     """
