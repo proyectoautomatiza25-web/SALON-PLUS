@@ -28,29 +28,41 @@ const DashboardView = () => {
             {/* Header */}
             <div className="mb-4 md:mb-8 flex flex-col md:flex-row justify-between items-start md:items-end gap-4">
                 <div>
-                    <h2 className="text-xl md:text-3xl font-bold text-slate-800">Bienvenido, Admin</h2>
+                    <h2 className="text-xl md:text-3xl font-bold text-slate-800">Bienvenido a SalonPlus v2.0</h2>
                     <p className="text-xs md:text-base text-slate-500">Aquí está el resumen de tu salón para hoy.</p>
                 </div>
 
-                {bookingSlug && (
-                    <div className="bg-white p-3 rounded-2xl shadow-sm border border-slate-100 flex items-center gap-4 w-full md:w-auto">
-                        <div className="flex-1 min-w-0">
-                            <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest leading-none mb-1">Link de Reserva</p>
-                            <p className="text-xs text-primary font-bold truncate">/reserva/{bookingSlug}</p>
+                <div className="bg-white p-3 rounded-2xl shadow-sm border border-slate-100 flex items-center gap-4 w-full md:w-auto">
+                    {bookingSlug ? (
+                        <>
+                            <div className="flex-1 min-w-0">
+                                <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest leading-none mb-1">Link de Reserva</p>
+                                <p className="text-xs text-primary font-bold truncate">/reserva/{bookingSlug}</p>
+                            </div>
+                            <button
+                                onClick={() => {
+                                    const url = `${window.location.origin}/reserva/${bookingSlug}`;
+                                    navigator.clipboard.writeText(url);
+                                    alert("Link copiado al portapapeles");
+                                }}
+                                className="bg-primary/10 hover:bg-primary/20 text-primary p-2 rounded-xl transition-all active:scale-95"
+                                title="Copiar Link"
+                            >
+                                <ArrowUpRight size={18} />
+                            </button>
+                        </>
+                    ) : (
+                        <div className="flex items-center gap-3">
+                            <div className="flex-1 min-w-0">
+                                <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest leading-none mb-1">Perfil Online</p>
+                                <p className="text-xs text-slate-500 font-medium">Aún no tienes link</p>
+                            </div>
+                            <a href="#profile" className="text-xs bg-primary text-white px-3 py-2 rounded-lg font-bold hover:bg-primary-dark transition-colors">
+                                Activar Ahora
+                            </a>
                         </div>
-                        <button
-                            onClick={() => {
-                                const url = `${window.location.origin}/reserva/${bookingSlug}`;
-                                navigator.clipboard.writeText(url);
-                                alert("Link copiado al portapapeles");
-                            }}
-                            className="bg-primary/10 hover:bg-primary/20 text-primary p-2 rounded-xl transition-all active:scale-95"
-                            title="Copiar Link"
-                        >
-                            <ArrowUpRight size={18} />
-                        </button>
-                    </div>
-                )}
+                    )}
+                </div>
             </div>
 
             {/* Stats Grid */}
