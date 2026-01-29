@@ -92,10 +92,14 @@ export const useSalonStore = create(
 
             addStylist: async (stylist) => {
                 try {
-                    const newStylist = await api.createStylist(stylist);
+                    // Remove ID if creating
+                    const { id, ...payload } = stylist;
+                    const newStylist = await api.createStylist(payload);
                     set((state) => ({ stylists: [...state.stylists, newStylist] }));
+                    return newStylist;
                 } catch (e) {
                     console.error("Error creating stylist", e);
+                    throw e;
                 }
             },
 
@@ -112,8 +116,10 @@ export const useSalonStore = create(
                     set((state) => ({
                         stylists: state.stylists.map(s => s.id === result.id ? result : s)
                     }));
+                    return result;
                 } catch (e) {
                     console.error("Error updating stylist", e);
+                    throw e;
                 }
             },
 
@@ -131,21 +137,27 @@ export const useSalonStore = create(
 
             addClient: async (client) => {
                 try {
-                    const newClient = await api.createClient(client);
+                    const { id, ...payload } = client;
+                    const newClient = await api.createClient(payload);
                     set((state) => ({ clients: [...state.clients, newClient] }));
+                    return newClient;
                 } catch (e) {
                     console.error("Error creating client", e);
+                    throw e;
                 }
             },
 
             updateClient: async (updatedClient) => {
                 try {
-                    const result = await api.updateClient(updatedClient.id, updatedClient);
+                    const { id, ...payload } = updatedClient;
+                    const result = await api.updateClient(id, payload);
                     set((state) => ({
                         clients: state.clients.map(c => c.id === result.id ? result : c)
                     }));
+                    return result;
                 } catch (e) {
                     console.error("Error updating client", e);
+                    throw e;
                 }
             },
 
@@ -163,21 +175,27 @@ export const useSalonStore = create(
 
             addService: async (service) => {
                 try {
-                    const newService = await api.createService(service);
+                    const { id, ...payload } = service;
+                    const newService = await api.createService(payload);
                     set((state) => ({ services: [...state.services, newService] }));
+                    return newService;
                 } catch (e) {
                     console.error("Error creating service", e);
+                    throw e;
                 }
             },
 
             updateService: async (updatedService) => {
                 try {
-                    const result = await api.updateService(updatedService.id, updatedService);
+                    const { id, ...payload } = updatedService;
+                    const result = await api.updateService(id, payload);
                     set((state) => ({
                         services: state.services.map(s => s.id === result.id ? result : s)
                     }));
+                    return result;
                 } catch (e) {
                     console.error("Error updating service", e);
+                    throw e;
                 }
             },
 
