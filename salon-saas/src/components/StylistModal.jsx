@@ -86,8 +86,8 @@ const StylistModal = ({ isOpen, onClose, initialData }) => {
     const isEditing = !!formData.id;
 
     return (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm transition-all">
-            <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 bg-slate-900/40 backdrop-blur-sm transition-all">
+            <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md max-h-[95vh] overflow-y-auto animate-in fade-in zoom-in-95 duration-200">
                 {/* Header */}
                 <div className="bg-slate-50 border-b border-slate-100 p-5 flex justify-between items-center">
                     <h2 className="text-xl font-bold text-slate-800 flex items-center gap-2">

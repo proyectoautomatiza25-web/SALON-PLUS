@@ -104,8 +104,8 @@ const BookingModal = ({ isOpen, onClose, initialData }) => {
     const isEditing = !!formData.id;
 
     return (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm transition-all">
-            <div className="bg-white rounded-2xl shadow-2xl w-full max-w-lg overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 bg-slate-900/40 backdrop-blur-sm transition-all">
+            <div className="bg-white rounded-2xl shadow-2xl w-full max-w-lg max-h-[95vh] overflow-y-auto animate-in fade-in zoom-in-95 duration-200">
 
                 {/* Header */}
                 <div className="bg-slate-50 border-b border-slate-100 p-5 flex justify-between items-center">
@@ -156,7 +156,7 @@ const BookingModal = ({ isOpen, onClose, initialData }) => {
                     </div>
 
                     {/* Service & Stylist Grid */}
-                    <div className="grid grid-cols-2 gap-4">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
                             <label className="block text-sm font-semibold text-slate-700 mb-2">Servicio</label>
                             <div className="relative">
@@ -192,7 +192,7 @@ const BookingModal = ({ isOpen, onClose, initialData }) => {
                     </div>
 
                     {/* Date & Time Grid */}
-                    <div className="grid grid-cols-2 gap-4">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
                             <label className="block text-sm font-semibold text-slate-700 mb-2">Fecha</label>
                             <input

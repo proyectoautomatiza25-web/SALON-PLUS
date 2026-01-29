@@ -47,9 +47,9 @@ body {
   font-family: 'Inter', sans-serif;
   background-color: #f8fafc;
   color: #1e293b;
+  -webkit-tap-highlight-color: transparent;
 }
 
-/* Personalización del Calendario estilo Salonist */
 /* Personalización del Calendario estilo Salonist */
 .rbc-calendar {
   background: white;
@@ -96,13 +96,47 @@ body {
 
 .rbc-time-view .rbc-row {
   min-height: 20px;
-  /* Altura de filas */
+}
+
+/* Mobile Adjustments */
+@media (max-width: 640px) {
+  .rbc-header {
+    padding: 6px 0 !important;
+    font-size: 0.6rem !important;
+  }
+
+  .rbc-time-gutter .rbc-label {
+    font-size: 10px !important;
+    padding: 0 4px !important;
+    text-align: center;
+  }
+
+  .rbc-event {
+    padding: 1px 2px !important;
+    font-size: 0.65rem !important;
+    line-height: 1.1 !important;
+  }
+
+  .rbc-event-content {
+    font-size: 0.65rem !important;
+  }
+
+  /* Modal responsiveness fallback */
+  .fixed.inset-0>div {
+    max-height: 95vh;
+    overflow-y: auto;
+  }
+
+  .rbc-time-column .rbc-timeslot-group {
+    min-height: 40px !important;
+    /* Ensure touch targets are usable */
+  }
 }
 
 /* Scrollbar Bonita */
 ::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
+  width: 6px;
+  height: 6px;
 }
 
 ::-webkit-scrollbar-track {

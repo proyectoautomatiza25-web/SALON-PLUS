@@ -25,20 +25,20 @@ const localizer = dateFnsLocalizer({
 // Custom Resource Header (Circular Avatar + Name)
 const ResourceHeader = ({ label, resource }) => {
     return (
-        <div className="flex flex-col items-center justify-center py-2 group cursor-pointer">
+        <div className="flex flex-col items-center justify-center py-1 md:py-2 group cursor-pointer">
             {resource?.avatar ? (
-                <div className="w-14 h-14 rounded-full shadow-md mb-2 overflow-hidden border-2 border-white ring-1 ring-slate-200 group-hover:ring-pink-400 group-hover:scale-105 transition-all">
+                <div className="w-10 h-10 md:w-14 md:h-14 rounded-full shadow-md mb-1 md:mb-2 overflow-hidden border-2 border-white ring-1 ring-slate-200 group-hover:ring-pink-400 group-hover:scale-105 transition-all">
                     <img src={resource.avatar} alt={label} className="w-full h-full object-cover" />
                 </div>
             ) : (
                 <div
-                    className="w-14 h-14 rounded-full flex items-center justify-center text-white font-bold text-lg shadow-md mb-2 overflow-hidden border-2 border-white ring-1 ring-slate-200 group-hover:scale-105 transition-all"
+                    className="w-10 h-10 md:w-14 md:h-14 rounded-full flex items-center justify-center text-white font-bold text-sm md:text-lg shadow-md mb-1 md:mb-2 overflow-hidden border-2 border-white ring-1 ring-slate-200 group-hover:scale-105 transition-all"
                     style={{ backgroundColor: resource?.color || '#3b82f6' }}
                 >
                     {label ? label.substring(0, 2).toUpperCase() : '??'}
                 </div>
             )}
-            <span className="text-xs font-bold text-slate-700 uppercase tracking-wide group-hover:text-pink-500 transition-colors">{label}</span>
+            <span className="text-[10px] md:text-xs font-bold text-slate-700 uppercase tracking-wide group-hover:text-pink-500 transition-colors truncate max-w-[60px] md:max-w-none">{label}</span>
         </div>
     );
 };
@@ -123,69 +123,50 @@ const CalendarView = () => {
         <div className="h-full flex flex-col bg-slate-50 relative overflow-hidden">
 
             {/* Salonist-style Header Control */}
-            <div className="px-4 py-3 flex justify-between items-center bg-white border-b border-gray-200">
+            <div className="px-3 py-3 flex flex-col sm:flex-row justify-between items-start sm:items-center bg-white border-b border-gray-200 gap-3">
 
-                {/* Left Controls */}
-                <div className="flex items-center gap-4">
+                {/* Left & Center Controls (Navigation & Date) */}
+                <div className="flex flex-wrap items-center gap-2 w-full sm:w-auto">
                     <div className="relative">
                         <select
                             value={view}
                             onChange={(e) => setView(e.target.value)}
-                            className="appearance-none bg-white border border-gray-300 text-gray-700 py-1.5 pl-4 pr-8 rounded-full text-sm font-medium focus:outline-none focus:ring-2 focus:ring-blue-100 shadow-sm hover:border-gray-400 transition-colors cursor-pointer"
+                            className="appearance-none bg-white border border-gray-300 text-gray-700 py-1.5 pl-3 pr-7 rounded-full text-xs md:text-sm font-medium focus:outline-none focus:ring-2 focus:ring-blue-100 shadow-sm cursor-pointer"
                         >
                             <option value={Views.DAY}>Día</option>
                             <option value={Views.WEEK}>Semana</option>
                             <option value={Views.MONTH}>Mes</option>
                         </select>
-                        <ChevronRight className="absolute right-3 top-1/2 -translate-y-1/2 rotate-90 text-gray-400 pointer-events-none" size={12} />
+                        <ChevronRight className="absolute right-2.5 top-1/2 -translate-y-1/2 rotate-90 text-gray-400 pointer-events-none" size={10} />
                     </div>
 
-                    <div className="flex items-center bg-white border border-gray-300 rounded-full px-1 py-0.5 shadow-sm">
-                        <button onClick={() => setDate(new Date(date.setDate(date.getDate() - 1)))} className="p-1 text-gray-500 hover:text-gray-800 hover:bg-gray-100 rounded-full transition-colors"><ChevronLeft size={16} /></button>
-                        <div className="px-3 text-sm font-semibold text-gray-700 min-w-[160px] text-center capitalize">
-                            {format(date, 'EEE, MMMM do yyyy', { locale: es })}
+                    <div className="flex items-center bg-white border border-gray-300 rounded-full px-1 py-0.5 shadow-sm flex-1 sm:flex-none justify-between sm:justify-start">
+                        <button onClick={() => setDate(new Date(date.setDate(date.getDate() - 1)))} className="p-1 text-gray-500 hover:bg-gray-100 rounded-full"><ChevronLeft size={16} /></button>
+                        <div className="px-2 text-xs md:text-sm font-bold text-gray-700 text-center capitalize min-w-[120px] md:min-w-[160px]">
+                            {format(date, 'EEE, MMMM do', { locale: es })}
                         </div>
-                        <button onClick={() => setDate(new Date(date.setDate(date.getDate() + 1)))} className="p-1 text-gray-500 hover:text-gray-800 hover:bg-gray-100 rounded-full transition-colors"><ChevronRight size={16} /></button>
+                        <button onClick={() => setDate(new Date(date.setDate(date.getDate() + 1)))} className="p-1 text-gray-500 hover:bg-gray-100 rounded-full"><ChevronRight size={16} /></button>
                     </div>
                 </div>
 
-                {/* Center - Time Slot Duration */}
-                <div className="hidden md:block">
-                    <div className="relative">
-                        <select
-                            value={step}
-                            onChange={(e) => setStep(parseInt(e.target.value))}
-                            className="appearance-none bg-white border border-gray-300 text-gray-700 py-1.5 pl-4 pr-8 rounded-full text-sm font-medium focus:outline-none shadow-sm cursor-pointer"
+                {/* Right Controls (Actions) */}
+                <div className="flex items-center justify-between sm:justify-end w-full sm:w-auto gap-2">
+                    <div className="flex items-center gap-1">
+                        <button className="p-2 text-gray-500 hover:bg-gray-100 rounded-full border hidden sm:block"><Settings size={18} /></button>
+                        <button
+                            onClick={() => {
+                                setSelectedSlot({ start: new Date(), resourceId: null });
+                                setShowBookingModal(true);
+                            }}
+                            className="flex items-center gap-2 bg-gradient-to-r from-pink-500 to-rose-500 text-white px-4 md:px-5 py-2 rounded-full font-bold shadow-md active:scale-95 transition-all text-xs md:text-sm"
                         >
-                            <option value={10}>10 Min</option>
-                            <option value={15}>15 Min</option>
-                            <option value={30}>30 Min</option>
-                            <option value={60}>60 Min</option>
-                        </select>
-                        <ChevronRight className="absolute right-3 top-1/2 -translate-y-1/2 rotate-90 text-gray-400 pointer-events-none" size={12} />
+                            <span className="hidden xs:inline">Agendar</span> <Plus size={16} strokeWidth={3} />
+                        </button>
                     </div>
-                </div>
 
-                {/* Right Controls */}
-                <div className="flex items-center gap-2">
-                    <button className="p-2 text-gray-500 hover:bg-gray-100 rounded-full border border-transparent hover:border-gray-200 transition-all"><Settings size={18} /></button>
-                    <button className="p-2 text-gray-500 hover:bg-gray-100 rounded-full border border-transparent hover:border-gray-200 transition-all"><ChevronRight size={18} className="rotate-[-45deg]" /></button>
-
-                    <button
-                        onClick={() => {
-                            setSelectedSlot({ start: new Date(), resourceId: null });
-                            setShowBookingModal(true);
-                        }}
-                        className="flex items-center gap-2 bg-gradient-to-r from-pink-500 to-rose-500 hover:from-pink-600 hover:to-rose-600 text-white px-5 py-2 rounded-full font-bold shadow-md hover:shadow-lg transition-all ml-2 transform hover:-translate-y-0.5"
-                    >
-                        Agendar <Plus size={18} strokeWidth={3} />
-                    </button>
-
-                    <div className="h-6 w-[1px] bg-gray-300 mx-2"></div>
-
-                    <div className="flex bg-gray-100 p-0.5 rounded-lg border border-gray-200">
-                        <button onClick={() => setView(Views.DAY)} className={`p-1.5 rounded-md ${view === Views.DAY ? 'bg-white shadow-sm text-blue-600' : 'text-gray-500 hover:text-gray-800'}`}><CalIcon size={16} /></button>
-                        <button onClick={() => setView(Views.WEEK)} className={`p-1.5 rounded-md ${view === Views.WEEK ? 'bg-white shadow-sm text-blue-600' : 'text-gray-500 hover:text-gray-800'}`}><Menu size={16} /></button>
+                    <div className="flex bg-gray-100 p-0.5 rounded-lg border border-gray-200 ml-auto sm:ml-0">
+                        <button onClick={() => setView(Views.DAY)} className={`p-1.5 rounded-md ${view === Views.DAY ? 'bg-white shadow-sm text-blue-600' : 'text-gray-500'}`}><CalIcon size={14} md:size={16} /></button>
+                        <button onClick={() => setView(Views.WEEK)} className={`p-1.5 rounded-md ${view === Views.WEEK ? 'bg-white shadow-sm text-blue-600' : 'text-gray-500'}`}><Menu size={14} md:size={16} /></button>
                     </div>
                 </div>
             </div>

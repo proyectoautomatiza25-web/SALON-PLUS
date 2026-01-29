@@ -23,12 +23,12 @@ const DashboardView = () => {
     const monthlyGrowth = 12.5;
 
     return (
-        <div className="h-full flex flex-col bg-slate-50/50 rounded-2xl overflow-y-auto animate-in fade-in zoom-in-95 duration-300 font-sans">
+        <div className="flex-1 flex flex-col bg-slate-50/50 rounded-2xl overflow-y-auto animate-in fade-in zoom-in-95 duration-300 font-sans p-4 md:p-8">
 
             {/* Header */}
-            <div className="mb-4 md:mb-8">
-                <h2 className="text-2xl md:text-3xl font-bold text-slate-800">Bienvenido, Admin</h2>
-                <p className="text-sm md:text-base text-slate-500">Aquí está el resumen de tu salón para hoy.</p>
+            <div className="mb-4 md:mb-8 text-left">
+                <h2 className="text-xl md:text-3xl font-bold text-slate-800">Bienvenido, Admin</h2>
+                <p className="text-xs md:text-base text-slate-500">Aquí está el resumen de tu salón para hoy.</p>
             </div>
 
             {/* Stats Grid */}
