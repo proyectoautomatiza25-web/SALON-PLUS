@@ -115,10 +115,13 @@ const LandingPage = () => {
                 <div className="hidden md:flex gap-8 text-sm font-medium text-slate-300">
                     <a href="#features" className="hover:text-white transition-colors">Características</a>
                     <a href="#pricing" className="hover:text-white transition-colors">Precios</a>
-                    <a href="#" className="hover:text-white transition-colors">Soporte</a>
+                    <a href="https://wa.me/56999999999" target="_blank" className="hover:text-white transition-colors">Soporte</a>
                 </div>
                 <button
-                    onClick={() => document.getElementById('login-form').scrollIntoView({ behavior: 'smooth' })}
+                    onClick={() => {
+                        setIsLogin(true);
+                        document.getElementById('login-form').scrollIntoView({ behavior: 'smooth' });
+                    }}
                     className="px-5 py-2 rounded-full border border-slate-700 hover:bg-slate-800 transition-all font-medium text-sm"
                 >
                     Acceso Clientes
@@ -138,6 +141,17 @@ const LandingPage = () => {
                     <p className="text-xl text-slate-400 max-w-lg leading-relaxed">
                         Agenda, Inventario, Caja y Marketing en un solo lugar. Diseñado para estilistas, barberos y centros de estética.
                     </p>
+                    <div className="flex gap-4">
+                        <button
+                            onClick={() => {
+                                setIsLogin(false);
+                                document.getElementById('login-form').scrollIntoView({ behavior: 'smooth' });
+                            }}
+                            className="bg-gradient-to-r from-pink-500 to-indigo-500 px-8 py-4 rounded-xl font-bold hover:opacity-90 transition-all shadow-lg shadow-indigo-500/20 flex items-center gap-2"
+                        >
+                            Probar 7 días gratis <ArrowRight size={18} />
+                        </button>
+                    </div>
 
                     {/* Auth Form Area */}
                     {!emailSent ? (
@@ -403,6 +417,41 @@ const LandingPage = () => {
                                 <p className="text-slate-400 text-sm leading-relaxed">{feature.desc}</p>
                             </div>
                         ))}
+                    </div>
+                </div>
+            </section>
+
+            {/* Pricing Section */}
+            <section id="pricing" className="py-24 bg-slate-900">
+                <div className="container mx-auto px-6">
+                    <div className="text-center mb-16">
+                        <h2 className="text-3xl font-bold mb-4">Planes Simples</h2>
+                        <p className="text-slate-400">7 días de prueba gratis en todos los servicios.</p>
+                    </div>
+                    <div className="max-w-lg mx-auto bg-slate-800 rounded-3xl border-2 border-indigo-500 p-10 relative overflow-hidden">
+                        <div className="absolute top-0 right-0 bg-indigo-500 text-white text-[10px] font-bold px-3 py-1 rounded-bl-xl uppercase tracking-widest">Recomendado</div>
+                        <h3 className="text-2xl font-bold mb-2">Plan Pro</h3>
+                        <div className="flex items-baseline gap-1 mb-6">
+                            <span className="text-4xl font-extrabold">$29.990</span>
+                            <span className="text-slate-400 text-sm">/ mes</span>
+                        </div>
+                        <ul className="space-y-4 mb-10">
+                            {["Agenda Online 24/7", "Ficha de Clientes Ilimitada", "Caja y Finanzas", "Reportes en Tiempo Real", "Soporte por WhatsApp"].map((item, i) => (
+                                <li key={i} className="flex items-center gap-3 text-sm text-slate-300">
+                                    <CheckCircle size={18} className="text-indigo-500" />
+                                    {item}
+                                </li>
+                            ))}
+                        </ul>
+                        <button
+                            onClick={() => {
+                                setIsLogin(false);
+                                document.getElementById('login-form').scrollIntoView({ behavior: 'smooth' });
+                            }}
+                            className="w-full py-4 bg-indigo-600 hover:bg-indigo-500 rounded-xl font-bold shadow-lg shadow-indigo-900/40 transition-all flex items-center justify-center gap-2"
+                        >
+                            Comenzar Prueba Gratis <ArrowRight size={18} />
+                        </button>
                     </div>
                 </div>
             </section>
