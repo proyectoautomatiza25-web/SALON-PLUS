@@ -204,8 +204,17 @@
             </button>
         </form>
 
+        <div class="info-box" style="background: #fff3cd; color: #856404; border: 1px solid #ffeeba;">
+            <strong>⚠️ IMPORTANTE PARA PRUEBAS:</strong>
+            <p>1. <b>USA MODO INCÓGNITO:</b> Mercado Pago bloquea el pago si detecta que eres el mismo dueño de la
+                cuenta.</p>
+            <p>2. <b>NO USES TU PROPIA TARJETA:</b> Debes usar una tarjeta distinta a la relacionada con tu cuenta de
+                Mercado Pago.</p>
+            <p>3. <b>MONTO $0:</b> Verás que dice "total hoy $0" o similar, la suscripción se cobrará en 7 días.</p>
+        </div>
+
         <div class="info-box">
-            <strong>📝 Tarjetas de Prueba (Modo TEST):</strong>
+            <strong>📝 Datos de Prueba Final:</strong>
             <div class="test-card">
                 💳 Mastercard: 5416 7526 0258 2580<br>
                 CVV: 123 | Venc: 12/28 | RUT: 11111111-1
@@ -221,7 +230,7 @@
     </div>
 
     <script>
-        const PLAN_ID = 'd0b5914a97f04ff99608765cafbbc932'; // NUEVO PLAN OPTIMIZADO
+        const PLAN_ID = 'd9c3eb0556424b3b87f54c8f438e4c0d'; // PLAN SIN TRIAL (PRUEBA DE VALIDACIÓN)
 
         document.getElementById('paymentForm').addEventListener('submit', function (e) {
             e.preventDefault();
