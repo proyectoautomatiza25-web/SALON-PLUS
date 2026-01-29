@@ -275,7 +275,7 @@ useEffect(() => {
 
 ### **5. Proceso de Upgrade**
 - [ ] Página de checkout integrada
-- [ ] Integración con Mercado Pago / Flow
+- [ ] Integración con Flow
 - [ ] Migración automática de datos demo → real
 - [ ] Email de confirmación de upgrade
 

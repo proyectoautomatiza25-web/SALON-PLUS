@@ -1,16 +1,9 @@
 from fastapi import APIRouter, Depends, HTTPException, Request
 from sqlalchemy.orm import Session
 from .. import database, models, auth
-import mercadopago
 import os
-from datetime import datetime, timedelta
 
 router = APIRouter(prefix="/api/billing", tags=["Billing & Subscriptions"])
-
-# Configurar SDK de MercadoPago - PRODUCCIÓN
-mp_access_token = os.getenv("MP_ACCESS_TOKEN", "APP_USR-6703285773653661-012801-f17be76f714591ed53de2d4beeb4e6fa-3164912896")
-mp_plan_id = os.getenv("MP_PLAN_ID", "d9c3eb0556424b3b87f54c8f438e4c0d")
-sdk = mercadopago.SDK(mp_access_token)
 
 @router.post("/create-subscription")
 async def create_subscription(
@@ -18,65 +11,14 @@ async def create_subscription(
     current_user: models.User = Depends(auth.get_current_user)
 ):
     """
-    Retorna el link directo de suscripción al plan de Mercado Pago.
+    Endpoint de suscripción (Provisionalmente deshabilitado para Mercado Pago).
+    En espera de integración con Flow.
     """
-    print(f"DEBUG: create_subscription called for {current_user.email} with plan_id={plan_id}")
-    
-    if not mp_plan_id:
-        print("ERROR: mp_plan_id is missing in environment")
-        raise HTTPException(status_code=500, detail="MP_PLAN_ID no configurado")
+    raise HTTPException(status_code=501, detail="El sistema de pagos está siendo actualizado a Flow. Por favor, contacte a soporte.")
 
-    # Forzamos el uso del plan de producción correcto sin importar lo que mande el frontend
-    target_plan = mp_plan_id
-    
-    checkout_url = f"https://www.mercadopago.cl/subscriptions/checkout?preapproval_plan_id={target_plan}&external_reference={current_user.id}&payer_email={current_user.email}"
-    
-    print(f"DEBUG: Returning checkout_url={checkout_url}")
-    return {"url": checkout_url}
-
-@router.post("/webhook/mercadopago")
-async def mercadopago_webhook(request: Request, db: Session = Depends(database.get_db)):
+@router.post("/webhook/flow")
+async def flow_webhook(request: Request, db: Session = Depends(database.get_db)):
     """
-    Recibe notificaciones de MercadoPago.
+    Placeholder para futura integración con Flow.
     """
-    try:
-        body = await request.json()
-        topic = body.get("type") or request.query_params.get("topic")
-        resource_id = body.get("data", {}).get("id") or request.query_params.get("id")
-
-        print(f"🔔 Webhook recibido: Topic={topic}, ID={resource_id}")
-
-        if topic in ["subscription_preapproval", "preapproval"]:
-            # Consultar estado actual
-            subscription_response = sdk.preapproval().get(resource_id)
-            sub_data = subscription_response["response"]
-            
-            external_ref = sub_data.get("external_reference")
-            payer_email = sub_data.get("payer_email")
-            status_mp = sub_data.get("status")
-            
-            user = None
-            if external_ref:
-                user = db.query(models.User).filter(models.User.id == external_ref).first()
-            
-            if not user and payer_email:
-                user = db.query(models.User).filter(models.User.email == payer_email).first()
-
-            if user:
-                if status_mp == "authorized":
-                    user.subscription_active = True
-                    user.plan_type = "pro"
-                    user.stripe_subscription_id = resource_id
-                    print(f"✅ Suscripción ACTIVADA para usuario {user.email}")
-                
-                elif status_mp in ["cancelled", "paused"]:
-                    user.subscription_active = False
-                    print(f"❌ Suscripción PAUSADA/CANCELADA para usuario {user.email}")
-                
-                db.commit()
-
-        return {"status": "ok"}
-        
-    except Exception as e:
-        print(f"Error en webhook: {e}")
-        return {"status": "error", "detail": str(e)}
+    return {"status": "waiting_for_implementation"}

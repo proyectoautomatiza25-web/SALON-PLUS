@@ -168,45 +168,22 @@ const UpgradeCard = () => {
 
     if (isPaying) return null;
 
-    const handleUpgrade = async () => {
-        setLoading(true);
-        try {
-            const res = await fetch(`${API_URL}/api/billing/create-subscription?plan_id=default`, {
-                method: 'POST',
-                headers: {
-                    'Authorization': `Bearer ${auth.token}`,
-                    'Content-Type': 'application/json'
-                }
-            });
-            const data = await res.json();
-            if (data.url) {
-                window.location.href = data.url;
-            } else {
-                alert("No se pudo generar el link de pago.");
-            }
-        } catch (e) {
-            alert("Error al conectar con Mercado Pago.");
-        } finally {
-            setLoading(false);
-        }
+    const handleUpgrade = () => {
+        window.open('https://wa.me/56999999999?text=Hola,%20quiero%20pasarme%20al%20plan%20Pro%20de%20Salon%20Plus%20usando%20Flow', '_blank');
     };
 
     return (
         <div className="bg-gradient-to-br from-[#1e1b4b] to-[#4338ca] rounded-xl p-6 text-white text-center shadow-lg transform hover:scale-[1.02] transition-all">
             <h4 className="font-bold text-xl mb-1">¡Pásate a Pro!</h4>
             <p className="text-white/80 text-xs mb-4">
-                Te quedan {daysLeft} días de prueba. Activa hoy y asegura tu precio especial.
+                Te quedan {daysLeft} días de prueba. Activa hoy y asegura tu precio especial. Estamos integrando Flow para tus pagos.
             </p>
             <button
                 onClick={handleUpgrade}
-                disabled={loading}
                 className="w-full bg-white text-[#1e1b4b] py-2.5 rounded-lg font-bold text-sm shadow-md hover:bg-slate-50 transition-colors flex items-center justify-center gap-2"
             >
-                {loading ? 'Cargando...' : 'Suscribirme con Mercado Pago'}
+                Hablar con Soporte (Flow)
             </button>
-            <div className="mt-3 flex justify-center gap-2 opacity-60">
-                <img src="https://logodownload.org/wp-content/uploads/2019/06/mercado-pago-logo.png" className="h-4 object-contain contrast-0 brightness-200" alt="Mercado Pago" />
-            </div>
         </div>
     );
 };
