@@ -9,6 +9,9 @@ export const useSalonStore = create(
             businessName: 'Salon Plus',
             businessLogo: null,
             bookingSlug: null,
+            globalError: null,
+
+            setGlobalError: (error) => set({ globalError: error }),
 
             updateProfile: async (data) => {
                 try {
@@ -50,7 +53,7 @@ export const useSalonStore = create(
 
                 try {
                     console.log("Fetching Initial Data from Backend...");
-                    const [userData, stylists, services, clients, rawAppointments, products] = await Promise.all([
+                    const [userData, rawStylists, rawServices, rawClients, rawAppointments, rawProducts] = await Promise.all([
                         api.getMe(),
                         api.getStylists(),
                         api.getServices(),
@@ -71,7 +74,41 @@ export const useSalonStore = create(
                         }
                     });
 
-                    // Format Appointments (Backend snake_case -> Frontend camelCase + Date objects)
+                    // Map Entities for Frontend (snake_case -> camelCase)
+                    const stylists = rawStylists.map(s => ({
+                        id: s.id,
+                        name: s.name,
+                        specialty: s.specialty,
+                        color: s.color,
+                        avatar: s.avatar,
+                        active: s.active
+                    }));
+
+                    const clients = rawClients.map(c => ({
+                        id: c.id,
+                        name: c.nombre || c.name,
+                        phone: c.telefono || c.phone,
+                        email: c.email,
+                        notes: c.notes,
+                        lastVisit: c.ultima_compra || c.last_visit
+                    }));
+
+                    const services = rawServices.map(s => ({
+                        id: s.id,
+                        name: s.name,
+                        duration: s.duration,
+                        price: s.price,
+                        color: s.color
+                    }));
+
+                    const products = rawProducts.map(p => ({
+                        id: p.id,
+                        name: p.name,
+                        price: p.price,
+                        stock: p.stock,
+                        category: p.category
+                    }));
+
                     const appointments = rawAppointments.map(appt => ({
                         ...appt,
                         stylistId: appt.stylist_id,
@@ -80,25 +117,33 @@ export const useSalonStore = create(
                         end: new Date(appt.end_time)
                     }));
 
-                    // We use backend IDs now, so ensure they are respected
-                    set({ stylists, services, clients, appointments, products });
+                    set({ stylists, services, clients, appointments, products, globalError: null });
                     console.log("Data loaded successfully");
                 } catch (error) {
                     console.error("Error loading initial data:", error);
+                    set({ globalError: "Error al conectar con el servidor. Revisa tu conexión." });
                 }
             },
 
 
             // --- Estilistas / Profesionales ---
-            stylists: [], // Inicialmente vacío (se carga del backend)
+            stylists: [],
 
             addStylist: async (stylist) => {
                 try {
-                    // Remove ID if creating
                     const { id, ...payload } = stylist;
                     const newStylist = await api.createStylist(payload);
-                    set((state) => ({ stylists: [...state.stylists, newStylist] }));
-                    return newStylist;
+                    // Map back to camelCase
+                    const mapped = {
+                        id: newStylist.id,
+                        name: newStylist.name,
+                        specialty: newStylist.specialty,
+                        color: newStylist.color,
+                        avatar: newStylist.avatar,
+                        active: newStylist.active
+                    };
+                    set((state) => ({ stylists: [...state.stylists, mapped] }));
+                    return mapped;
                 } catch (e) {
                     console.error("Error creating stylist", e);
                     throw e;
@@ -107,18 +152,20 @@ export const useSalonStore = create(
 
             updateStylist: async (updatedStylist) => {
                 try {
-                    const payload = {
-                        name: updatedStylist.name,
-                        specialty: updatedStylist.specialty,
-                        color: updatedStylist.color,
-                        active: updatedStylist.active,
-                        avatar: updatedStylist.avatar
+                    const { id, ...payload } = updatedStylist;
+                    const result = await api.updateStylist(id, payload);
+                    const mapped = {
+                        id: result.id,
+                        name: result.name,
+                        specialty: result.specialty,
+                        color: result.color,
+                        avatar: result.avatar,
+                        active: result.active
                     };
-                    const result = await api.updateStylist(updatedStylist.id, payload);
                     set((state) => ({
-                        stylists: state.stylists.map(s => s.id === result.id ? result : s)
+                        stylists: state.stylists.map(s => s.id === result.id ? mapped : s)
                     }));
-                    return result;
+                    return mapped;
                 } catch (e) {
                     console.error("Error updating stylist", e);
                     throw e;
@@ -139,10 +186,18 @@ export const useSalonStore = create(
 
             addClient: async (client) => {
                 try {
-                    const { id, ...payload } = client;
+                    const { id, lastVisit, ...payload } = client;
                     const newClient = await api.createClient(payload);
-                    set((state) => ({ clients: [...state.clients, newClient] }));
-                    return newClient;
+                    const mapped = {
+                        id: newClient.id,
+                        name: newClient.name,
+                        phone: newClient.phone,
+                        email: newClient.email,
+                        notes: newClient.notes,
+                        lastVisit: newClient.last_visit
+                    };
+                    set((state) => ({ clients: [...state.clients, mapped] }));
+                    return mapped;
                 } catch (e) {
                     console.error("Error creating client", e);
                     throw e;
@@ -151,12 +206,20 @@ export const useSalonStore = create(
 
             updateClient: async (updatedClient) => {
                 try {
-                    const { id, ...payload } = updatedClient;
+                    const { id, lastVisit, ...payload } = updatedClient;
                     const result = await api.updateClient(id, payload);
+                    const mapped = {
+                        id: result.id,
+                        name: result.name,
+                        phone: result.phone,
+                        email: result.email,
+                        notes: result.notes,
+                        lastVisit: result.last_visit
+                    };
                     set((state) => ({
-                        clients: state.clients.map(c => c.id === result.id ? result : c)
+                        clients: state.clients.map(c => c.id === result.id ? mapped : c)
                     }));
-                    return result;
+                    return mapped;
                 } catch (e) {
                     console.error("Error updating client", e);
                     throw e;
@@ -179,8 +242,15 @@ export const useSalonStore = create(
                 try {
                     const { id, ...payload } = service;
                     const newService = await api.createService(payload);
-                    set((state) => ({ services: [...state.services, newService] }));
-                    return newService;
+                    const mapped = {
+                        id: newService.id,
+                        name: newService.name,
+                        duration: newService.duration,
+                        price: newService.price,
+                        color: newService.color
+                    };
+                    set((state) => ({ services: [...state.services, mapped] }));
+                    return mapped;
                 } catch (e) {
                     console.error("Error creating service", e);
                     throw e;
@@ -191,10 +261,17 @@ export const useSalonStore = create(
                 try {
                     const { id, ...payload } = updatedService;
                     const result = await api.updateService(id, payload);
+                    const mapped = {
+                        id: result.id,
+                        name: result.name,
+                        duration: result.duration,
+                        price: result.price,
+                        color: result.color
+                    };
                     set((state) => ({
-                        services: state.services.map(s => s.id === result.id ? result : s)
+                        services: state.services.map(s => s.id === result.id ? mapped : s)
                     }));
-                    return result;
+                    return mapped;
                 } catch (e) {
                     console.error("Error updating service", e);
                     throw e;
@@ -210,15 +287,22 @@ export const useSalonStore = create(
                 }
             },
 
-            // --- Productos (API Integrated) ---
-            products: [], // Init empty, load from backend
+            // --- Productos ---
+            products: [],
 
             addProduct: async (product) => {
                 try {
                     const { id, ...payload } = product;
                     const newProduct = await api.createProduct(payload);
-                    set((state) => ({ products: [...state.products, newProduct] }));
-                    return newProduct;
+                    const mapped = {
+                        id: newProduct.id,
+                        name: newProduct.name,
+                        price: newProduct.price,
+                        stock: newProduct.stock,
+                        category: newProduct.category
+                    };
+                    set((state) => ({ products: [...state.products, mapped] }));
+                    return mapped;
                 } catch (e) {
                     console.error("Error creating product", e);
                     throw e;
@@ -229,8 +313,15 @@ export const useSalonStore = create(
                 try {
                     const { id, ...payload } = updatedProduct;
                     const result = await api.updateProduct(id, payload);
-                    set((state) => ({ products: state.products.map(p => p.id === result.id ? result : p) }));
-                    return result;
+                    const mapped = {
+                        id: result.id,
+                        name: result.name,
+                        price: result.price,
+                        stock: result.stock,
+                        category: result.category
+                    };
+                    set((state) => ({ products: state.products.map(p => p.id === result.id ? mapped : p) }));
+                    return mapped;
                 } catch (e) {
                     console.error("Error updating product", e);
                     throw e;
@@ -280,7 +371,6 @@ export const useSalonStore = create(
 
             updateAppointmentStatus: async (id, status) => {
                 try {
-                    // We need the full appt to update it correctly since backend usually needs full body
                     const state = get();
                     const appt = state.appointments.find(a => a.id === id);
                     if (!appt) return;
@@ -288,8 +378,8 @@ export const useSalonStore = create(
                     const payload = {
                         stylist_id: String(appt.stylistId),
                         client_id: String(appt.clientId),
-                        start_time: appt.start,
-                        end_time: appt.end,
+                        start_time: appt.start.toISOString ? appt.start.toISOString() : appt.start,
+                        end_time: appt.end.toISOString ? appt.end.toISOString() : appt.end,
                         title: appt.title,
                         price: appt.price,
                         status: status,
@@ -318,8 +408,8 @@ export const useSalonStore = create(
                     const payload = {
                         stylist_id: String(updatedAppt.stylistId),
                         client_id: String(updatedAppt.clientId),
-                        start_time: updatedAppt.start,
-                        end_time: updatedAppt.end,
+                        start_time: updatedAppt.start.toISOString ? updatedAppt.start.toISOString() : updatedAppt.start,
+                        end_time: updatedAppt.end.toISOString ? updatedAppt.end.toISOString() : updatedAppt.end,
                         title: updatedAppt.title,
                         price: updatedAppt.price,
                         status: updatedAppt.status,
@@ -334,7 +424,7 @@ export const useSalonStore = create(
                         end: new Date(result.end_time)
                     };
                     set((state) => ({
-                        appointments: state.appointments.map(a => a.id === result.id ? frontendAppt : a)
+                        appointments: state.appointments.map(a => a.id === updatedAppt.id ? frontendAppt : a)
                     }));
                 } catch (e) {
                     console.error("Error updating appointment", e);
@@ -349,8 +439,6 @@ export const useSalonStore = create(
                     console.error("Error deleting appointment", e);
                 }
             },
-
-            // --- Legacy Actions (kept for safety or partial migration) ---
 
             // --- Constantes ---
             APPOINTMENT_STATUS: {
@@ -395,8 +483,6 @@ export const useSalonStore = create(
                 businessLogo: state.businessLogo,
                 auth: state.auth,
                 subscription: state.subscription
-                // Note: Stylists, Clients, Appointments are NOT persisted locally anymore.
-                // They are fetched fresh on load.
             }),
         }
     )

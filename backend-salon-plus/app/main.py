@@ -8,9 +8,14 @@ from .routers import auth, ventas, stats, fudo, salon, billing
 load_dotenv()
 
 # Create tables automatically (for simple dev, usually we use alembic in prod)
-models.Base.metadata.create_all(bind=database.engine)
-
 app = FastAPI(title="Proyecto FOCUS API", version="0.1.0")
+
+print("--- BACKEND STARTING ---")
+try:
+    models.Base.metadata.create_all(bind=database.engine)
+    print("--- TABLES CREATED SUCCESSFULLY ---")
+except Exception as e:
+    print(f"--- ERROR CREATING TABLES: {e} ---")
 
 # CORS
 app.add_middleware(

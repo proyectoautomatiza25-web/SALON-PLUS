@@ -166,6 +166,11 @@ function AdminApp() {
 
         {/* Dynamic Content */}
         <div className={`flex-1 overflow-hidden flex flex-col ${activeTab === 'calendar' ? 'p-0' : 'p-3 md:p-6'}`}>
+          {useSalonStore(state => state.globalError) && (
+            <div className="mb-4 p-3 bg-red-50 border border-red-200 text-red-600 rounded-xl text-sm flex items-center gap-2 animate-pulse">
+              <AlertTriangle size={18} /> {useSalonStore(state => state.globalError)}
+            </div>
+          )}
 
           {activeTab === 'home' && <DashboardView />}
 

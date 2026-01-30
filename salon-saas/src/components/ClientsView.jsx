@@ -159,7 +159,7 @@ const ClientsView = () => {
                                     </div>
                                     <div>
                                         <p className="font-semibold text-slate-700">
-                                            {format(new Date(client.lastVisit), 'd MMMM, yyyy', { locale: es })}
+                                            {client.lastVisit ? format(new Date(client.lastVisit), 'd MMMM, yyyy', { locale: es }) : 'Primera visita'}
                                         </p>
                                         <p className="text-[10px] text-slate-400 md:hidden">Última visita</p>
                                     </div>
