@@ -132,8 +132,8 @@ const LandingPage = () => {
             <section className="container mx-auto px-6 py-20 md:py-32 flex flex-col md:flex-row items-center gap-16">
                 <div className="md:w-1/2 space-y-8">
                     <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-500/10 text-indigo-400 text-xs font-bold uppercase tracking-wider border border-indigo-500/20">
-                        <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
-                        VERSIÓN 2.0 ACTIVA
+                        <span className="w-2 h-2 rounded-full bg-indigo-500 animate-pulse"></span>
+                        Nuevo SaaS para Chile
                     </div>
                     <h1 className="text-5xl md:text-7xl font-extrabold leading-tight tracking-tight">
                         Gestiona tu <span className="text-transparent bg-clip-text bg-gradient-to-r from-pink-500 to-indigo-500">Salón</span> de forma inteligente.
@@ -291,7 +291,7 @@ const LandingPage = () => {
                     )}
                     {!emailSent && (
                         <p className="text-xs text-slate-500 pl-2">
-                            * Tarjeta requerida. 7 días gratis, luego $29.990/mes. Cancela cuando quieras.
+                            * Tarjeta requerida. 7 días gratis, luego $39.990/mes. Cancela cuando quieras.
                         </p>
                     )}
                 </div>
@@ -432,7 +432,7 @@ const LandingPage = () => {
                         <div className="absolute top-0 right-0 bg-indigo-500 text-white text-[10px] font-bold px-3 py-1 rounded-bl-xl uppercase tracking-widest">Recomendado</div>
                         <h3 className="text-2xl font-bold mb-2">Plan Pro</h3>
                         <div className="flex items-baseline gap-1 mb-6">
-                            <span className="text-4xl font-extrabold">$29.990</span>
+                            <span className="text-4xl font-extrabold">$39.990</span>
                             <span className="text-slate-400 text-sm">/ mes</span>
                         </div>
                         <ul className="space-y-4 mb-10">

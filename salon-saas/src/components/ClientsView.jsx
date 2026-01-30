@@ -53,6 +53,51 @@ const ClientsView = () => {
                             className="w-full bg-slate-50 border border-slate-200 pl-10 pr-4 py-2 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all"
                         />
                     </div>
+
+                    {/* Excel Import Button */}
+                    <label className="hidden sm:flex items-center justify-center gap-2 bg-emerald-500 hover:bg-emerald-600 text-white px-4 py-2 rounded-xl font-semibold shadow-lg shadow-emerald-500/30 transition-all active:scale-95 cursor-pointer">
+                        <span className="text-sm">Importar Excel</span>
+                        <input
+                            type="file"
+                            accept=".xlsx, .xls"
+                            className="hidden"
+                            onChange={async (e) => {
+                                const file = e.target.files[0];
+                                if (!file) return;
+
+                                try {
+                                    const XLSX = await import("xlsx");
+                                    const data = await file.arrayBuffer();
+                                    const workbook = XLSX.read(data);
+                                    const worksheet = workbook.Sheets[workbook.SheetNames[0]];
+                                    const json = XLSX.utils.sheet_to_json(worksheet);
+
+                                    // Auto-map columns helper for Clients
+                                    const mapClient = (row) => ({
+                                        name: row['Nombre'] || row['Cliente'] || row['Nombre Completo'] || 'Sin Nombre',
+                                        phone: row['Telefono'] || row['Celular'] || row['Movil'] || '',
+                                        email: row['Email'] || row['Correo'] || '',
+                                        lastVisit: new Date().toISOString().split('T')[0] // Default to today if unknown
+                                    });
+
+                                    let count = 0;
+                                    for (const row of json) {
+                                        const client = mapClient(row);
+                                        if (client.name && client.name !== 'Sin Nombre') {
+                                            // Add one by one using the store action
+                                            useSalonStore.getState().addClient(client);
+                                            count++;
+                                        }
+                                    }
+                                    alert(`Se importaron ${count} clientes correctamente.`);
+                                } catch (err) {
+                                    console.error(err);
+                                    alert("Error al leer Excel. Asegúrate de tener columnas como 'Nombre', 'Telefono', 'Email'.");
+                                }
+                            }}
+                        />
+                    </label>
+
                     <button
                         onClick={handleNew}
                         className="hidden sm:flex items-center justify-center gap-2 bg-primary hover:bg-primary-dark text-white px-4 py-2 rounded-xl font-semibold shadow-lg shadow-primary/30 transition-all active:scale-95"

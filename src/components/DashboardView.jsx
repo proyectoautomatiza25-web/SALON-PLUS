@@ -28,7 +28,7 @@ const DashboardView = () => {
             {/* Header */}
             <div className="mb-4 md:mb-8 flex flex-col md:flex-row justify-between items-start md:items-end gap-4">
                 <div>
-                    <h2 className="text-xl md:text-3xl font-bold text-slate-800">Bienvenido a SalonPlus v2.0</h2>
+                    <h2 className="text-xl md:text-3xl font-bold text-slate-800">Bienvenido, Admin</h2>
                     <p className="text-xs md:text-base text-slate-500">Aquí está el resumen de tu salón para hoy.</p>
                 </div>
 

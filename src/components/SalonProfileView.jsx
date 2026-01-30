@@ -24,6 +24,14 @@ const SalonProfileView = () => {
     const [logoPreview, setLogoPreview] = useState(businessLogo);
     const [isSaving, setIsSaving] = useState(false);
 
+    // Auto-generate slug if empty
+    React.useEffect(() => {
+        if (!bookingSlug && businessName) {
+            const cleanSlug = businessName.toLowerCase().replace(/[^a-z0-9]/g, '-').replace(/-+/g, '-').replace(/^-|-$/g, '');
+            setProfile(p => ({ ...p, slug: cleanSlug }));
+        }
+    }, [bookingSlug, businessName]);
+
     const handleChange = (e) => {
         const { name, value } = e.target;
         if (name === 'slug') {

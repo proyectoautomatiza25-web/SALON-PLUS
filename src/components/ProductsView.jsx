@@ -124,112 +124,77 @@ const ProductsView = () => {
                     <p className="text-slate-500 text-xs md:text-sm mt-1">Gestiona tus servicios y productos de venta.</p>
                 </div>
 
-                <div className="flex flex-col sm:flex-row gap-3 w-full md:w-auto">
-                    <div className="relative group w-full sm:w-64">
-                        <Search className="absolute left-3 top-2.5 text-slate-400" size={18} />
-                        <input
-                            type="text"
-                            placeholder={activeTab === 'services' ? "Buscar servicio..." : "Buscar producto..."}
-                            value={searchTerm}
-                            onChange={(e) => setSearchTerm(e.target.value)}
-                            className="w-full bg-slate-50 border border-slate-200 pl-10 pr-4 py-2 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all"
-                        />
-                    </div>
-                    <button
-                        onClick={() => {
-                            setSelectedItem(null);
-                            activeTab === 'services' ? setShowServiceModal(true) : setShowProductModal(true);
-                        }}
-                        className="hidden sm:flex items-center justify-center gap-2 bg-primary hover:bg-primary-dark text-white px-4 py-2 rounded-xl font-semibold shadow-lg shadow-primary/30 transition-all active:scale-95"
-                    >
-                        <Plus size={18} /> <span className="text-sm">{activeTab === 'services' ? 'Nuevo Servicio' : 'Nuevo Producto'}</span>
-                    </button>
+                <div className="relative group w-full sm:w-64">
+                    <Search className="absolute left-3 top-2.5 text-slate-400" size={18} />
+                    <input
+                        type="text"
+                        placeholder={activeTab === 'services' ? "Buscar servicio..." : "Buscar producto..."}
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                        className="w-full bg-slate-50 border border-slate-200 pl-10 pr-4 py-2 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all"
+                    />
                 </div>
             </div>
 
-            {/* Mobile FAB */}
-            <button
-                onClick={() => {
-                    setSelectedItem(null);
-                    activeTab === 'services' ? setShowServiceModal(true) : setShowProductModal(true);
-                }}
-                className="sm:hidden fixed bottom-6 right-6 w-14 h-14 bg-primary text-white rounded-full shadow-2xl flex items-center justify-center z-50 active:scale-95 transition-all"
-            >
-                <Plus size={28} strokeWidth={3} />
-            </button>
+            {activeTab === 'products' && (
+                <div className="mt-4 md:mt-0 flex gap-2">
+                    <label className="flex items-center justify-center gap-2 bg-emerald-500 hover:bg-emerald-600 text-white px-4 py-2 rounded-xl font-semibold shadow-lg shadow-emerald-500/30 transition-all active:scale-95 cursor-pointer">
+                        <Package size={18} /> <span className="text-sm">Importar Excel</span>
+                        <input
+                            type="file"
+                            accept=".xlsx, .xls"
+                            className="hidden"
+                            onChange={async (e) => {
+                                const file = e.target.files[0];
+                                if (!file) return;
 
-            {/* Tabs */}
-            <div className="flex border-b border-gray-100">
+                                try {
+                                    const XLSX = await import("xlsx");
+                                    const data = await file.arrayBuffer();
+                                    const workbook = XLSX.read(data);
+                                    const worksheet = workbook.Sheets[workbook.SheetNames[0]];
+                                    const json = XLSX.utils.sheet_to_json(worksheet);
+
+                                    // Auto-map columns helper
+                                    const mapProduct = (row) => ({
+                                        name: row['Nombre'] || row['Producto'] || row['Servicio'] || 'Sin Nombre',
+                                        price: row['Precio'] || row['Valor'] || 0,
+                                        stock: row['Stock'] || row['Cantidad'] || 0,
+                                        category: row['Categoria'] || row['Tipo'] || 'General'
+                                    });
+
+                                    let count = 0;
+                                    for (const row of json) {
+                                        const product = mapProduct(row);
+                                        // Add one by one
+                                        if (product.name) {
+                                            useSalonStore.getState().addProduct(product);
+                                            count++;
+                                        }
+                                    }
+                                    alert(`Se importaron ${count} productos correctamente.`);
+                                } catch (err) {
+                                    console.error(err);
+                                    alert("Error al leer el archivo Excel. Asegúrate de tener columnas como 'Nombre', 'Precio', 'Stock'.");
+                                }
+                            }}
+                        />
+                    </label>
+                </div>
+            )}
+
+
+            <div className="flex gap-2">
                 <button
-                    onClick={() => setActiveTab('services')}
-                    className={`flex-1 py-4 text-sm font-bold uppercase tracking-wide transition-all border-b-2 ${activeTab === 'services' ? 'border-primary text-primary bg-primary/5' : 'border-transparent text-gray-500 hover:text-gray-700 hover:bg-gray-50'}`}
+                    onClick={() => {
+                        setSelectedItem(null);
+                        activeTab === 'services' ? setShowServiceModal(true) : setShowProductModal(true);
+                    }}
+                    className="hidden sm:flex items-center justify-center gap-2 bg-primary hover:bg-primary-dark text-white px-4 py-2 rounded-xl font-semibold shadow-lg shadow-primary/30 transition-all active:scale-95"
                 >
-                    <div className="flex items-center justify-center gap-2">
-                        <Scissors size={18} /> Servicios
-                    </div>
-                </button>
-                <button
-                    onClick={() => setActiveTab('products')}
-                    className={`flex-1 py-4 text-sm font-bold uppercase tracking-wide transition-all border-b-2 ${activeTab === 'products' ? 'border-primary text-primary bg-primary/5' : 'border-transparent text-gray-500 hover:text-gray-700 hover:bg-gray-50'}`}
-                >
-                    <div className="flex items-center justify-center gap-2">
-                        <Package size={18} /> Productos (Inventario)
-                    </div>
+                    <Plus size={18} /> <span className="text-sm">{activeTab === 'services' ? 'Nuevo Servicio' : 'Nuevo Producto'}</span>
                 </button>
             </div>
-
-            {/* Content */}
-            <div className="flex-1 overflow-y-auto p-6 bg-slate-50">
-                {activeTab === 'services' ? (
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                        {filteredServices.map(service => (
-                            <div key={service.id} className="bg-white p-4 rounded-xl border border-gray-100 hover:shadow-md transition-all flex justify-between group">
-                                <div className="flex gap-4">
-                                    <div className="w-12 h-12 rounded-lg flex items-center justify-center text-white shadow-sm" style={{ backgroundColor: service.color }}>
-                                        <Scissors size={20} />
-                                    </div>
-                                    <div>
-                                        <h4 className="font-bold text-gray-800">{service.name}</h4>
-                                        <div className="flex items-center gap-3 text-xs text-gray-500 mt-1">
-                                            <span className="flex items-center gap-1"><Clock size={12} /> {service.duration} min</span>
-                                            <span className="flex items-center gap-1"><DollarSign size={12} /> {service.price.toLocaleString('es-CL')}</span>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div className="flex flex-col gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                                    <button onClick={() => { setSelectedItem(service); setShowServiceModal(true); }} className="p-1.5 text-blue-500 hover:bg-blue-50 rounded-lg"><Edit size={16} /></button>
-                                    <button onClick={() => { if (window.confirm('¿Borrar?')) removeService(service.id); }} className="p-1.5 text-red-500 hover:bg-red-50 rounded-lg"><Trash2 size={16} /></button>
-                                </div>
-                            </div>
-                        ))}
-                    </div>
-                ) : (
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                        {filteredProducts.map(product => (
-                            <div key={product.id} className="bg-white p-4 rounded-xl border border-gray-100 hover:shadow-md transition-all flex justify-between group">
-                                <div className="flex gap-4">
-                                    <div className="w-12 h-12 rounded-lg bg-emerald-100 text-emerald-600 flex items-center justify-center shadow-sm">
-                                        <Package size={20} />
-                                    </div>
-                                    <div>
-                                        <h4 className="font-bold text-gray-800">{product.name}</h4>
-                                        <div className="flex items-center gap-3 text-xs text-gray-500 mt-1">
-                                            <span className="flex items-center gap-1"><Tag size={12} /> {product.category}</span>
-                                            <span className="flex items-center gap-1 text-emerald-600 font-bold bg-emerald-50 px-1.5 py-0.5 rounded">Stock: {product.stock}</span>
-                                        </div>
-                                        <div className="mt-1 font-bold text-sm text-gray-900">${product.price.toLocaleString('es-CL')}</div>
-                                    </div>
-                                </div>
-                                <div className="flex flex-col gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                                    <button onClick={() => { setSelectedItem(product); setShowProductModal(true); }} className="p-1.5 text-blue-500 hover:bg-blue-50 rounded-lg"><Edit size={16} /></button>
-                                    <button onClick={() => { if (window.confirm('¿Borrar?')) removeProduct(product.id); }} className="p-1.5 text-red-500 hover:bg-red-50 rounded-lg"><Trash2 size={16} /></button>
-                                </div>
-                            </div>
-                        ))}
-                    </div>
-                )}
-            </div>
-
             {/* Modals */}
             {showServiceModal && <ServiceModal isOpen={showServiceModal} onClose={() => setShowServiceModal(false)} initialData={selectedItem} />}
             {showProductModal && <ProductModal isOpen={showProductModal} onClose={() => setShowProductModal(false)} initialData={selectedItem} />}

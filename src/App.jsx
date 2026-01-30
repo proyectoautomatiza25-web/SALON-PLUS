@@ -160,7 +160,7 @@ function AdminApp() {
               <Bell size={20} />
               <span className="absolute top-1.5 right-2 w-2 h-2 bg-red-500 rounded-full border border-white"></span>
             </button>
-            <div className="w-8 h-8 md:w-9 md:h-9 rounded-full bg-[#1e1b4b] text-white flex items-center justify-center font-bold shadow-md text-sm md:text-base">M</div>
+            {/* Removed placeholder M avatar */}
           </div>
         </header>
 
