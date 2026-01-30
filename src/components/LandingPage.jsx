@@ -87,7 +87,27 @@ const LandingPage = () => {
 
                 if (loginRes.ok) {
                     const tokenData = await loginRes.json();
-                    login({ email, token: tokenData.access_token });
+                    const token = tokenData.access_token;
+
+                    // AUTO-SUSCRIPCIÓN: Redirigir a Flow para inscribir tarjeta
+                    try {
+                        const subRes = await fetch(`${API_URL}/api/billing/subscribe`, {
+                            method: 'POST',
+                            headers: {
+                                'Authorization': `Bearer ${token}`,
+                                'Content-Type': 'application/json'
+                            }
+                        });
+                        const subData = await subRes.json();
+                        if (subData.checkout_url) {
+                            window.location.href = subData.checkout_url;
+                            return;
+                        }
+                    } catch (subErr) {
+                        console.error("Error en auto-suscripción:", subErr);
+                    }
+
+                    login({ email, token });
                 } else {
                     setEmailSent(true);
                 }

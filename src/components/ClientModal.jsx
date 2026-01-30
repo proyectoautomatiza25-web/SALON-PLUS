@@ -35,24 +35,48 @@ const ClientModal = ({ isOpen, onClose, initialData }) => {
         }
     }, [isOpen, initialData]);
 
-    const handleSubmit = (e) => {
+    const [loading, setLoading] = useState(false);
+
+    // ... useEffect ...
+
+    const handleSubmit = async (e) => {
         e.preventDefault();
+        setLoading(true);
 
         const clientData = {
-            id: formData.id || Date.now(),
+            id: formData.id, // Only send ID if editing, otherwise it's null and backend handles or store handles
             name: formData.name,
             phone: formData.phone,
             email: formData.email,
             lastVisit: formData.lastVisit
         };
 
-        if (formData.id) {
-            updateClient(clientData);
-        } else {
-            addClient(clientData);
+        try {
+            if (formData.id) {
+                await updateClient(clientData);
+            } else {
+                await addClient(clientData);
+            }
+            onClose();
+        } catch (error) {
+            console.error(error);
+            alert("Error al guardar cliente. Revisa si el correo ya existe o intenta de nuevo.");
+        } finally {
+            setLoading(false);
         }
-        onClose();
     };
+
+    // ... handleDelete ...
+
+    // ... render ...
+    <button
+        type="submit"
+        disabled={loading}
+        className="flex-1 px-4 py-3 bg-gradient-to-r from-primary to-secondary text-white font-bold rounded-xl shadow-lg shadow-primary/25 hover:shadow-primary/40 hover:scale-[1.02] active:scale-[0.98] transition-all flex justify-center items-center gap-2 disabled:opacity-70"
+    >
+        {loading ? <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" /> : <Check size={20} />}
+        {loading ? 'Guardando...' : (isEditing ? 'Guardar' : 'Crear Cliente')}
+    </button>
 
     const handleDelete = () => {
         if (formData.id && window.confirm('¿Estás seguro de eliminar este cliente?')) {
@@ -150,10 +174,11 @@ const ClientModal = ({ isOpen, onClose, initialData }) => {
                         </button>
                         <button
                             type="submit"
-                            className="flex-1 px-4 py-3 bg-gradient-to-r from-primary to-secondary text-white font-bold rounded-xl shadow-lg shadow-primary/25 hover:shadow-primary/40 hover:scale-[1.02] active:scale-[0.98] transition-all flex justify-center items-center gap-2"
+                            disabled={loading}
+                            className="flex-1 px-4 py-3 bg-gradient-to-r from-primary to-secondary text-white font-bold rounded-xl shadow-lg shadow-primary/25 hover:shadow-primary/40 hover:scale-[1.02] active:scale-[0.98] transition-all flex justify-center items-center gap-2 disabled:opacity-70"
                         >
-                            <Check size={20} />
-                            {isEditing ? 'Guardar' : 'Crear Cliente'}
+                            {loading ? <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" /> : <Check size={20} />}
+                            {loading ? 'Guardando...' : (isEditing ? 'Guardar' : 'Crear Cliente')}
                         </button>
                     </div>
 

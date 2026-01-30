@@ -12,18 +12,29 @@ const getHeaders = () => {
 
 // Helper for error handling
 const request = async (url, options = {}) => {
-    const res = await fetch(`${API_URL}${url}`, {
-        ...options,
-        headers: {
-            ...getHeaders(),
-            ...options.headers
+    console.log(`[API REQUEST] ${options.method || 'GET'} ${url}`, options.body ? JSON.parse(options.body) : '');
+    try {
+        const res = await fetch(`${API_URL}${url}`, {
+            ...options,
+            headers: {
+                ...getHeaders(),
+                ...options.headers
+            }
+        });
+
+        if (!res.ok) {
+            const error = await res.json().catch(() => ({ detail: 'Error desconocido' }));
+            console.error(`[API ERROR] ${res.status}:`, error);
+            throw new Error(error.detail || `Error ${res.status}`);
         }
-    });
-    if (!res.ok) {
-        const error = await res.json().catch(() => ({ detail: 'Error desconocido' }));
-        throw new Error(error.detail || `Error ${res.status}`);
+
+        const data = await res.json();
+        console.log(`[API SUCCESS] ${url}:`, data);
+        return data;
+    } catch (e) {
+        console.error(`[API FETCH FAILED] ${url}:`, e);
+        throw e;
     }
-    return res.json();
 };
 
 export const api = {
@@ -54,7 +65,16 @@ export const api = {
     updateAppointment: (id, data) => request(`/api/salon/appointments/${id}`, { method: 'PUT', body: JSON.stringify(data) }),
     deleteAppointment: (id) => request(`/api/salon/appointments/${id}`, { method: 'DELETE' }),
 
+    // --- PRODUCTS ---
+    getProducts: () => request('/api/salon/products'),
+    createProduct: (data) => request('/api/salon/products', { method: 'POST', body: JSON.stringify(data) }),
+    updateProduct: (id, data) => request(`/api/salon/products/${id}`, { method: 'PUT', body: JSON.stringify(data) }),
+    deleteProduct: (id) => request(`/api/salon/products/${id}`, { method: 'DELETE' }),
+
     // --- PUBLIC BOOKING ---
     getPublicSalonInfo: (slug) => request(`/api/salon/public/${slug}`),
     publicBook: (slug, data) => request(`/api/salon/public/${slug}/book`, { method: 'POST', body: JSON.stringify(data) }),
+
+    // --- BILLING ---
+    subscribe: () => request('/api/billing/subscribe', { method: 'POST' }),
 };

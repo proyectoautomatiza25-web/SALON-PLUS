@@ -160,12 +160,17 @@ function AdminApp() {
               <Bell size={20} />
               <span className="absolute top-1.5 right-2 w-2 h-2 bg-red-500 rounded-full border border-white"></span>
             </button>
-            {/* Removed placeholder M avatar */}
+            <div className="w-8 h-8 md:w-9 md:h-9 rounded-full bg-[#1e1b4b] text-white flex items-center justify-center font-bold shadow-md text-sm md:text-base">M</div>
           </div>
         </header>
 
         {/* Dynamic Content */}
         <div className={`flex-1 overflow-hidden flex flex-col ${activeTab === 'calendar' ? 'p-0' : 'p-3 md:p-6'}`}>
+          {useSalonStore(state => state.globalError) && (
+            <div className="mb-4 p-3 bg-red-50 border border-red-200 text-red-600 rounded-xl text-sm flex items-center gap-2 animate-pulse">
+              <AlertTriangle size={18} /> {useSalonStore(state => state.globalError)}
+            </div>
+          )}
 
           {activeTab === 'home' && <DashboardView />}
 
