@@ -56,7 +56,9 @@ def send_welcome_email(to_email: str):
             <p>Gracias por registrarte en la plataforma líder para gestión de salones de belleza y barberías.</p>
             <p>Estamos emocionados de ayudarte a llevar tu negocio al siguiente nivel.</p>
             <br/>
-            <a href="http://localhost:5173" style="background-color: #F472B6; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px; font-weight: bold;">Acceder a mi Cuenta</a>
+            <br/>
+            <p>Accede a tu cuenta aquí:</p>
+            <a href="https://salonplus.automatizasur.cl" style="background-color: #F472B6; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px; font-weight: bold; display: inline-block;">Ingresar a Salon Plus</a>
             <br/><br/>
             <p>Saludos,<br/>El Equipo de Salon Plus by Automatiza Sur</p>
         </div>
