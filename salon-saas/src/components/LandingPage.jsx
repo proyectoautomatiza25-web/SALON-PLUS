@@ -87,7 +87,27 @@ const LandingPage = () => {
 
                 if (loginRes.ok) {
                     const tokenData = await loginRes.json();
-                    login({ email, token: tokenData.access_token });
+                    const token = tokenData.access_token;
+
+                    // AUTO-SUSCRIPCIÓN: Redirigir a Flow para inscribir tarjeta
+                    try {
+                        const subRes = await fetch(`${API_URL}/api/billing/subscribe`, {
+                            method: 'POST',
+                            headers: {
+                                'Authorization': `Bearer ${token}`,
+                                'Content-Type': 'application/json'
+                            }
+                        });
+                        const subData = await subRes.json();
+                        if (subData.checkout_url) {
+                            window.location.href = subData.checkout_url;
+                            return;
+                        }
+                    } catch (subErr) {
+                        console.error("Error en auto-suscripción:", subErr);
+                    }
+
+                    login({ email, token });
                 } else {
                     setEmailSent(true);
                 }
@@ -291,7 +311,7 @@ const LandingPage = () => {
                     )}
                     {!emailSent && (
                         <p className="text-xs text-slate-500 pl-2">
-                            * Tarjeta requerida. 7 días gratis, luego $29.990/mes. Cancela cuando quieras.
+                            * Tarjeta requerida. 7 días gratis, luego $39.990/mes. Cancela cuando quieras.
                         </p>
                     )}
                 </div>
@@ -432,7 +452,7 @@ const LandingPage = () => {
                         <div className="absolute top-0 right-0 bg-indigo-500 text-white text-[10px] font-bold px-3 py-1 rounded-bl-xl uppercase tracking-widest">Recomendado</div>
                         <h3 className="text-2xl font-bold mb-2">Plan Pro</h3>
                         <div className="flex items-baseline gap-1 mb-6">
-                            <span className="text-4xl font-extrabold">$29.990</span>
+                            <span className="text-4xl font-extrabold">$39.990</span>
                             <span className="text-slate-400 text-sm">/ mes</span>
                         </div>
                         <ul className="space-y-4 mb-10">
