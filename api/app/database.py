@@ -20,9 +20,10 @@ if env_db_url:
     else:
         DATABASE_URL = env_db_url
 else:
-    # Local Development Fallback
-    print("⚠️ WARNING: No DATABASE_URL set. Using local SQLite.")
-    DATABASE_URL = "sqlite:///./sql_app.db"
+    # Fallback to Production Supabase for Vercel/Cloud environments if env var is missing
+    PROD_DB = "postgresql://postgres.wnzpltxackalafxrbeix:FLORENCIA2010JULIETA2022@aws-0-us-west-2.pooler.supabase.com:6543/postgres"
+    print("⚠️ WARNING: No DATABASE_URL set. Using production fallback.")
+    DATABASE_URL = PROD_DB
 
 engine = create_engine(
     DATABASE_URL, 
