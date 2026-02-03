@@ -1,6 +1,9 @@
 from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel
-from google import genai
+try:
+    from google import genai
+except ImportError:
+    genai = None
 import os
 from ..auth import get_current_user
 from ..models import User
