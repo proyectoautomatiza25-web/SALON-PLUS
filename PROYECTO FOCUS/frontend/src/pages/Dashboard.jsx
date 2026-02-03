@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import api from '../services/api';
 import Layout from '../components/Layout';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
-import { DollarSign, ShoppingBag, Users, TrendingUp } from 'lucide-react';
+import { DollarSign, ShoppingBag, Users, TrendingUp, Receipt, Wallet } from 'lucide-react';
 
 export default function Dashboard() {
     const [stats, setStats] = useState(null);
@@ -18,6 +18,8 @@ export default function Dashboard() {
                 // Fallback fake data for visual demo if API fails (or is empty)
                 setStats({
                     ventas_total: 0,
+                    gastos_total: 0,
+                    utilidad_neta: 0,
                     cantidad_ventas: 0,
                     ticket_promedio: 0,
                     ventas_por_canal: [],
@@ -41,32 +43,46 @@ export default function Dashboard() {
             </div>
 
             {/* KPI Cards */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
                 <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 flex items-center">
                     <div className="p-3 bg-blue-100 rounded-full mr-4">
                         <DollarSign className="h-6 w-6 text-blue-600" />
                     </div>
                     <div>
                         <p className="text-sm text-gray-500 font-medium">Ventas Totales</p>
-                        <p className="text-2xl font-bold text-gray-900">${stats.ventas_total.toLocaleString('es-CL')}</p>
+                        <p className="text-2xl font-bold text-gray-900">${(stats.ventas_total || 0).toLocaleString('es-CL')}</p>
                     </div>
                 </div>
+
                 <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 flex items-center">
-                    <div className="p-3 bg-green-100 rounded-full mr-4">
-                        <ShoppingBag className="h-6 w-6 text-green-600" />
+                    <div className="p-3 bg-red-100 rounded-full mr-4">
+                        <Receipt className="h-6 w-6 text-red-600" />
                     </div>
                     <div>
-                        <p className="text-sm text-gray-500 font-medium">Transacciones</p>
-                        <p className="text-2xl font-bold text-gray-900">{stats.cantidad_ventas}</p>
+                        <p className="text-sm text-gray-500 font-medium">Gastos Totales</p>
+                        <p className="text-2xl font-bold text-gray-900">${(stats.gastos_total || 0).toLocaleString('es-CL')}</p>
                     </div>
                 </div>
+
+                <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 flex items-center">
+                    <div className="p-3 bg-emerald-100 rounded-full mr-4">
+                        <Wallet className="h-6 w-6 text-emerald-600" />
+                    </div>
+                    <div>
+                        <p className="text-sm text-gray-500 font-medium">Utilidad Neta</p>
+                        <p className={`text-2xl font-bold ${stats.utilidad_neta >= 0 ? 'text-emerald-600' : 'text-red-600'}`}>
+                            ${(stats.utilidad_neta || 0).toLocaleString('es-CL')}
+                        </p>
+                    </div>
+                </div>
+
                 <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 flex items-center">
                     <div className="p-3 bg-purple-100 rounded-full mr-4">
                         <TrendingUp className="h-6 w-6 text-purple-600" />
                     </div>
                     <div>
                         <p className="text-sm text-gray-500 font-medium">Ticket Promedio</p>
-                        <p className="text-2xl font-bold text-gray-900">${Math.round(stats.ticket_promedio).toLocaleString('es-CL')}</p>
+                        <p className="text-2xl font-bold text-gray-900">${Math.round(stats.ticket_promedio || 0).toLocaleString('es-CL')}</p>
                     </div>
                 </div>
             </div>

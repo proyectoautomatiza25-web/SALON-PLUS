@@ -105,9 +105,11 @@ class VentaResponse(BaseModel):
 
 class DashboardStats(BaseModel):
     ventas_total: float
+    gastos_total: float
+    utilidad_neta: float
     cantidad_ventas: int
     ticket_promedio: float
-    ventas_por_canal: List[dict] # [{"canal": "salon", "total": 1000}]
+    ventas_por_canal: List[dict]
     top_productos: List[dict]
     top_clientes: List[dict]
 
