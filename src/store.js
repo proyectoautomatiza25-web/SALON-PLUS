@@ -2,513 +2,273 @@ import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
 import { api } from './api';
 
-export const useSalonStore = create(
+export const useSaaSStore = create(
     persist(
         (set, get) => ({
-            // --- Estado del Negocio ---
-            businessName: 'Salon Plus',
+            // --- State ---
+            businessName: 'Agenda Plus',
             businessLogo: null,
-            bookingSlug: null,
+            professionals: [],
+            patients: [],
+            appointments: [],
+            finances: {
+                transactions: [],
+                boxes: [{ id: 1, name: 'Caja Central', status: 'closed', balance: 0 }],
+                boxHistory: []
+            },
+            campaigns: [],
             globalError: null,
+            loading: false,
+            isHydrated: false, // New: track if persist has finished
 
+            // --- Actions ---
+            setLoading: (loading) => set({ loading }),
             setGlobalError: (error) => set({ globalError: error }),
+            setHydrated: (val) => set({ isHydrated: val }),
 
-            updateProfile: async (data) => {
-                try {
-                    const updatedUser = await api.updateMe(data);
-                    set({
-                        businessName: updatedUser.business_name,
-                        businessLogo: updatedUser.business_logo,
-                        bookingSlug: updatedUser.booking_slug
-                    });
-                } catch (e) {
-                    console.error("Error updating profile", e);
-                    set({ globalError: "Error al actualizar perfil" });
-                    throw e;
-                }
-            },
-
-            // --- Autenticación ---
-            auth: {
-                isAuthenticated: false,
-                userEmail: null,
-                token: null,
-            },
-
-            login: (data) => set(() => ({
-                auth: {
-                    isAuthenticated: true,
-                    userEmail: data.email,
-                    token: data.token
-                },
-                globalError: null
-            })),
-
-            logout: () => {
-                localStorage.removeItem('salon-plus-v3-storage');
-                set(() => ({
-                    auth: { isAuthenticated: false, userEmail: null, token: null },
-                    stylists: [],
-                    services: [],
-                    clients: [],
-                    appointments: [],
-                    products: [],
-                    globalError: null
-                }));
-                window.location.href = '/';
-            },
-
-            // --- FETCH INITIAL DATA (Backend Sync) ---
             fetchInitialData: async () => {
-                const { auth } = get();
-                if (!auth || !auth.token) return;
+                if (get().loading) return; // Prevent double fetch
+                set({ loading: true, globalError: null });
 
                 try {
-                    console.log("Fetching Initial Data from Backend...");
-                    const responses = await Promise.allSettled([
-                        api.getMe(),
-                        api.getStylists(),
-                        api.getServices(),
-                        api.getClients(),
+                    console.log('🔄 Sincronizando datos...');
+                    const [profRes, patientRes, apptRes, userRes] = await Promise.allSettled([
+                        api.getProfessionals(),
+                        api.getPatients(),
                         api.getAppointments(),
-                        api.getProducts()
+                        api.getMe()
                     ]);
 
-                    const [userRes, stylistsRes, servicesRes, clientsRes, apptsRes, productsRes] = responses;
+                    const newState = { loading: false };
 
-                    // Sync User Data
-                    if (userRes.status === 'fulfilled') {
-                        const userData = userRes.value;
-                        set({
-                            businessName: userData.business_name || 'Salon Plus',
-                            businessLogo: userData.business_logo || null,
-                            bookingSlug: userData.booking_slug || null,
-                            subscription: {
-                                planType: userData.plan_type || 'demo',
-                                trialEnd: userData.trial_end_at || new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
-                                active: userData.subscription_active || false
-                            }
-                        });
+                    if (profRes.status === 'fulfilled') {
+                        newState.professionals = (profRes.value || []).map(p => ({
+                            ...p,
+                            id: String(p.id),
+                            active: p.active !== undefined ? p.active : true
+                        }));
                     }
 
-                    // Map Entities with safety checks
-                    const stylists = stylistsRes.status === 'fulfilled' && Array.isArray(stylistsRes.value)
-                        ? stylistsRes.value.map(s => ({
-                            id: s.id,
-                            name: s.name,
-                            specialty: s.specialty,
-                            color: s.color,
-                            avatar: s.avatar,
-                            active: s.active
-                        })) : [];
+                    if (patientRes.status === 'fulfilled') {
+                        newState.patients = (patientRes.value || []).map(p => ({
+                            ...p,
+                            id: String(p.id)
+                        }));
+                    }
 
-                    const clients = clientsRes.status === 'fulfilled' && Array.isArray(clientsRes.value)
-                        ? clientsRes.value.map(c => ({
-                            id: c.id,
-                            name: c.nombre || c.name || 'Sin nombre',
-                            phone: c.telefono || c.phone || '',
-                            email: c.email || '',
-                            notes: c.notes || '',
-                            lastVisit: c.ultima_compra || c.last_visit || null
-                        })) : [];
+                    if (apptRes.status === 'fulfilled') {
+                        newState.appointments = (apptRes.value || []).map(a => {
+                            try {
+                                return {
+                                    ...a,
+                                    id: String(a.id),
+                                    profId: String(a.stylist_id || a.profId || ''),
+                                    patientId: String(a.client_id || a.patientId || ''),
+                                    start: new Date(a.start_time || a.start),
+                                    end: new Date(a.end_time || a.end)
+                                };
+                            } catch (err) {
+                                console.warn("Cita corrupta ignorada:", a);
+                                return null;
+                            }
+                        }).filter(Boolean);
+                    }
 
-                    const services = servicesRes.status === 'fulfilled' && Array.isArray(servicesRes.value)
-                        ? servicesRes.value.map(s => ({
-                            id: s.id,
-                            name: s.name,
-                            duration: s.duration || 60,
-                            price: s.price || 0,
-                            color: s.color || '#3b82f6'
-                        })) : [];
+                    if (userRes.status === 'fulfilled') {
+                        newState.businessName = userRes.value?.business_name || 'Agenda Plus';
+                        newState.businessLogo = userRes.value?.business_logo || null;
+                    }
 
-                    const products = productsRes.status === 'fulfilled' && Array.isArray(productsRes.value)
-                        ? productsRes.value.map(p => ({
-                            id: p.id,
-                            name: p.name,
-                            price: p.price || 0,
-                            stock: p.stock || 0,
-                            category: p.category || 'General'
-                        })) : [];
-
-                    const appointments = apptsRes.status === 'fulfilled' && Array.isArray(apptsRes.value)
-                        ? apptsRes.value.map(appt => ({
-                            ...appt,
-                            stylistId: appt.stylist_id,
-                            clientId: appt.client_id,
-                            start: new Date(appt.start_time),
-                            end: new Date(appt.end_time)
-                        })) : [];
-
-                    set({ stylists, services, clients, appointments, products, globalError: null });
-                    console.log("Data loaded successfully");
-                } catch (error) {
-                    console.error("Critical error in fetchInitialData:", error);
-                    set({ globalError: "Error de red. Por favor intenta recargar la página." });
+                    set(newState);
+                    console.log('✅ Sincronización completa');
+                } catch (e) {
+                    console.error("❌ Error en fetchInitialData:", e);
+                    set({ loading: false, globalError: "Error al sincronizar con el servidor" });
                 }
             },
 
-
-            // --- Estilistas / Profesionales ---
-            stylists: [],
-
-            addStylist: async (stylist) => {
+            // --- Professionals ---
+            addProfessional: async (prof) => {
                 try {
-                    const { id, ...payload } = stylist;
-                    const newStylist = await api.createStylist(payload);
-                    const mapped = {
-                        id: newStylist.id,
-                        name: newStylist.name,
-                        specialty: newStylist.specialty,
-                        color: newStylist.color,
-                        avatar: newStylist.avatar,
-                        active: newStylist.active
-                    };
-                    set((state) => ({ stylists: [...(state.stylists || []), mapped] }));
-                    return mapped;
+                    const newProf = await api.createProfessional(prof);
+                    set((state) => ({ professionals: [...state.professionals, newProf] }));
+                    return newProf;
                 } catch (e) {
-                    console.error("Error creating stylist", e);
-                    set({ globalError: "No se pudo guardar el estilista." });
+                    set({ globalError: "Error al crear profesional" });
                     throw e;
                 }
             },
 
-            updateStylist: async (updatedStylist) => {
+            updateProfessional: async (id, data) => {
                 try {
-                    const { id, ...payload } = updatedStylist;
-                    const result = await api.updateStylist(id, payload);
-                    const mapped = {
-                        id: result.id,
-                        name: result.name,
-                        specialty: result.specialty,
-                        color: result.color,
-                        avatar: result.avatar,
-                        active: result.active
-                    };
+                    const updated = await api.updateProfessional(id, data);
                     set((state) => ({
-                        stylists: (state.stylists || []).map(s => s.id === result.id ? mapped : s)
+                        professionals: state.professionals.map(p => p.id === id ? updated : p)
                     }));
+                } catch (e) {
+                    set({ globalError: "Error al actualizar profesional" });
+                }
+            },
+
+            // --- Patients ---
+            addPatient: async (patient) => {
+                try {
+                    const newPatient = await api.createPatient(patient);
+                    const mapped = { ...newPatient, id: String(newPatient.id) };
+                    set((state) => ({ patients: [...state.patients, mapped] }));
                     return mapped;
                 } catch (e) {
-                    console.error("Error updating stylist", e);
+                    set({ globalError: "Error al crear paciente" });
                     throw e;
                 }
             },
 
-            removeStylist: async (id) => {
+            updatePatient: async (id, data) => {
                 try {
-                    await api.deleteStylist(id);
-                    set((state) => ({ stylists: (state.stylists || []).filter(s => s.id !== id) }));
-                } catch (e) {
-                    console.error("Error deleting stylist", e);
-                }
-            },
-
-            // --- Clientes ---
-            clients: [],
-
-            addClient: async (client) => {
-                try {
-                    const { id, lastVisit, ...payload } = client;
-                    const newClient = await api.createClient(payload);
-                    const mapped = {
-                        id: newClient.id,
-                        name: newClient.name,
-                        phone: newClient.phone,
-                        email: newClient.email,
-                        notes: newClient.notes,
-                        lastVisit: newClient.last_visit
-                    };
-                    set((state) => ({ clients: [...(state.clients || []), mapped] }));
-                    return mapped;
-                } catch (e) {
-                    console.error("Error creating client", e);
-                    throw e;
-                }
-            },
-
-            updateClient: async (updatedClient) => {
-                try {
-                    const { id, lastVisit, ...payload } = updatedClient;
-                    const result = await api.updateClient(id, payload);
-                    const mapped = {
-                        id: result.id,
-                        name: result.name,
-                        phone: result.phone,
-                        email: result.email,
-                        notes: result.notes,
-                        lastVisit: result.last_visit
-                    };
+                    const updated = await api.updatePatient(id, data);
+                    const mapped = { ...updated, id: String(updated.id) };
                     set((state) => ({
-                        clients: (state.clients || []).map(c => c.id === result.id ? mapped : c)
+                        patients: state.patients.map(p => p.id === String(id) || p.id === id ? mapped : p)
                     }));
-                    return mapped;
                 } catch (e) {
-                    console.error("Error updating client", e);
-                    throw e;
+                    set({ globalError: "Error al actualizar paciente" });
                 }
             },
 
-            removeClient: async (id) => {
-                try {
-                    await api.deleteClient(id);
-                    set((state) => ({ clients: (state.clients || []).filter(c => c.id !== id) }));
-                } catch (e) {
-                    console.error("Error deleting client", e);
-                }
-            },
-
-            // --- Servicios ---
-            services: [],
-
-            addService: async (service) => {
-                try {
-                    const { id, ...payload } = service;
-                    const newService = await api.createService(payload);
-                    const mapped = {
-                        id: newService.id,
-                        name: newService.name,
-                        duration: newService.duration,
-                        price: newService.price,
-                        color: newService.color
-                    };
-                    set((state) => ({ services: [...(state.services || []), mapped] }));
-                    return mapped;
-                } catch (e) {
-                    console.error("Error creating service", e);
-                    throw e;
-                }
-            },
-
-            updateService: async (updatedService) => {
-                try {
-                    const { id, ...payload } = updatedService;
-                    const result = await api.updateService(id, payload);
-                    const mapped = {
-                        id: result.id,
-                        name: result.name,
-                        duration: result.duration,
-                        price: result.price,
-                        color: result.color
-                    };
-                    set((state) => ({
-                        services: (state.services || []).map(s => s.id === result.id ? mapped : s)
-                    }));
-                    return mapped;
-                } catch (e) {
-                    console.error("Error updating service", e);
-                    throw e;
-                }
-            },
-
-            removeService: async (id) => {
-                try {
-                    await api.deleteService(id);
-                    set((state) => ({ services: (state.services || []).filter(s => s.id !== id) }));
-                } catch (e) {
-                    console.error("Error deleting service", e);
-                }
-            },
-
-            // --- Productos ---
-            products: [],
-
-            addProduct: async (product) => {
-                try {
-                    const { id, ...payload } = product;
-                    const newProduct = await api.createProduct(payload);
-                    const mapped = {
-                        id: newProduct.id,
-                        name: newProduct.name,
-                        price: newProduct.price,
-                        stock: newProduct.stock,
-                        category: newProduct.category
-                    };
-                    set((state) => ({ products: [...(state.products || []), mapped] }));
-                    return mapped;
-                } catch (e) {
-                    console.error("Error creating product", e);
-                    throw e;
-                }
-            },
-
-            updateProduct: async (updatedProduct) => {
-                try {
-                    const { id, ...payload } = updatedProduct;
-                    const result = await api.updateProduct(id, payload);
-                    const mapped = {
-                        id: result.id,
-                        name: result.name,
-                        price: result.price,
-                        stock: result.stock,
-                        category: result.category
-                    };
-                    set((state) => ({
-                        products: (state.products || []).map(p => p.id === result.id ? mapped : p)
-                    }));
-                    return mapped;
-                } catch (e) {
-                    console.error("Error updating product", e);
-                    throw e;
-                }
-            },
-
-            removeProduct: async (id) => {
-                try {
-                    await api.deleteProduct(id);
-                    set((state) => ({ products: (state.products || []).filter(p => p.id !== id) }));
-                } catch (e) {
-                    console.error("Error deleting product", e);
-                }
-            },
-
-            // --- Citas (Calendario) ---
-            appointments: [],
-
+            // --- Appointments ---
             addAppointment: async (appt) => {
                 try {
                     const payload = {
-                        stylist_id: String(appt.stylistId),
-                        client_id: String(appt.clientId),
+                        stylist_id: String(appt.profId),
+                        client_id: String(appt.patientId),
+                        start_time: appt.start,
+                        end_time: appt.end,
+                        title: appt.title || 'Consulta Médica',
+                        price: appt.price || 0,
+                        status: appt.status || 'pending',
+                        notes: appt.notes || '',
+                        anamnesis: appt.anamnesis || '',
+                        physical_exam: appt.physicalExam || '',
+                        diagnosis: appt.diagnosis || '',
+                        indications: appt.indications || '',
+                        weight: appt.weight || '',
+                        height: appt.height || '',
+                        imc: appt.imc || ''
+                    };
+                    const result = await api.createAppointment(payload);
+                    const mapped = {
+                        ...result,
+                        profId: result.stylist_id,
+                        patientId: result.client_id,
+                        start: new Date(result.start_time),
+                        end: new Date(result.end_time)
+                    };
+                    set((state) => ({ appointments: [...state.appointments, mapped] }));
+                    return mapped;
+                } catch (e) {
+                    set({ globalError: "Error al crear cita" });
+                    throw e;
+                }
+            },
+
+            // --- Campaigns ---
+            addCampaign: (campaign) => {
+                const newCampaign = {
+                    ...campaign,
+                    id: Date.now(),
+                    status: 'draft',
+                    createdAt: new Date()
+                };
+                set((state) => ({ campaigns: [...state.campaigns, newCampaign] }));
+            },
+
+            sendCampaign: (id) => {
+                set((state) => ({
+                    campaigns: state.campaigns.map(c => c.id === id ? { ...c, status: 'sent', sentAt: new Date() } : c)
+                }));
+            },
+
+            updateAppointment: async (id, appt) => {
+                try {
+                    const payload = {
+                        stylist_id: String(appt.profId),
+                        client_id: String(appt.patientId),
                         start_time: appt.start,
                         end_time: appt.end,
                         title: appt.title,
                         price: appt.price,
                         status: appt.status,
-                        notes: appt.notes
+                        notes: appt.notes,
+                        anamnesis: appt.anamnesis,
+                        physical_exam: appt.physicalExam,
+                        diagnosis: appt.diagnosis,
+                        indications: appt.indications,
+                        weight: appt.weight,
+                        height: appt.height,
+                        imc: appt.imc
                     };
-
-                    const newAppt = await api.createAppointment(payload);
-
-                    const frontendAppt = {
-                        ...newAppt,
-                        stylistId: newAppt.stylist_id,
-                        clientId: newAppt.client_id,
-                        start: new Date(newAppt.start_time),
-                        end: new Date(newAppt.end_time)
-                    };
-
-                    set((state) => ({ appointments: [...(state.appointments || []), frontendAppt] }));
-                } catch (e) {
-                    console.error("Error creating appointment", e);
-                }
-            },
-
-            updateAppointmentStatus: async (id, status) => {
-                try {
-                    const state = get();
-                    const appt = (state.appointments || []).find(a => a.id === id);
-                    if (!appt) return;
-
-                    const payload = {
-                        stylist_id: String(appt.stylistId),
-                        client_id: String(appt.clientId),
-                        start_time: appt.start.toISOString ? appt.start.toISOString() : appt.start,
-                        end_time: appt.end.toISOString ? appt.end.toISOString() : appt.end,
-                        title: appt.title,
-                        price: appt.price,
-                        status: status,
-                        notes: appt.notes
-                    };
-
                     const result = await api.updateAppointment(id, payload);
-                    const frontendAppt = {
+                    const mapped = {
                         ...result,
-                        stylistId: result.stylist_id,
-                        clientId: result.client_id,
-                        start: new Date(result.start_time),
-                        end: new Date(result.end_time)
-                    };
-
-                    set((state) => ({
-                        appointments: (state.appointments || []).map(a => a.id === id ? frontendAppt : a)
-                    }));
-                } catch (e) {
-                    console.error("Error updating appointment status", e);
-                }
-            },
-
-            updateAppointment: async (updatedAppt) => {
-                try {
-                    const payload = {
-                        stylist_id: String(updatedAppt.stylistId),
-                        client_id: String(updatedAppt.clientId),
-                        start_time: updatedAppt.start.toISOString ? updatedAppt.start.toISOString() : updatedAppt.start,
-                        end_time: updatedAppt.end.toISOString ? updatedAppt.end.toISOString() : updatedAppt.end,
-                        title: updatedAppt.title,
-                        price: updatedAppt.price,
-                        status: updatedAppt.status,
-                        notes: updatedAppt.notes
-                    };
-                    const result = await api.updateAppointment(updatedAppt.id, payload);
-                    const frontendAppt = {
-                        ...result,
-                        stylistId: result.stylist_id,
-                        clientId: result.client_id,
+                        profId: result.stylist_id,
+                        patientId: result.client_id,
                         start: new Date(result.start_time),
                         end: new Date(result.end_time)
                     };
                     set((state) => ({
-                        appointments: (state.appointments || []).map(a => a.id === updatedAppt.id ? frontendAppt : a)
+                        appointments: state.appointments.map(a => a.id === id ? mapped : a)
                     }));
                 } catch (e) {
-                    console.error("Error updating appointment", e);
+                    set({ globalError: "Error al actualizar cita" });
                 }
             },
 
-            removeAppointment: async (id) => {
+            deleteAppointment: async (id) => {
                 try {
                     await api.deleteAppointment(id);
-                    set((state) => ({ appointments: (state.appointments || []).filter(a => a.id !== id) }));
+                    set((state) => ({ appointments: state.appointments.filter(a => a.id !== id) }));
                 } catch (e) {
-                    console.error("Error deleting appointment", e);
+                    set({ globalError: "Error al eliminar cita" });
                 }
             },
 
-            // --- Constantes ---
+            // --- Stats helper ---
+            getStats: () => {
+                const state = get();
+                const appointments = state.appointments;
+                const totalSales = appointments.filter(a => a.status === 'attended').reduce((sum, a) => sum + (Number(a.price) || 0), 0);
+                return {
+                    totalSales,
+                    activePatients: state.patients.length,
+                    confirmedAppointments: appointments.filter(a => a.status === 'confirmed').length,
+                    pendingAppointments: appointments.filter(a => a.status === 'pending').length,
+                    attendedAppointments: appointments.filter(a => a.status === 'attended').length,
+                    noShowAppointments: appointments.filter(a => a.status === 'no_show').length,
+                    activeProfessionals: state.professionals.filter(p => p.active).length,
+                    totalPatients: state.patients.length
+                };
+            },
+
             APPOINTMENT_STATUS: {
-                PENDING: 'pending',
                 CONFIRMED: 'confirmed',
                 ATTENDED: 'attended',
                 NO_SHOW: 'no_show',
-                CANCELLED: 'cancelled'
-            },
-
-            // --- Subscription ---
-            subscription: {
-                planType: 'demo',
-                trialStart: new Date().toISOString(),
-                trialEnd: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
-                active: false
-            },
-
-            getTrialStatus: () => {
-                const state = get();
-                const sub = state.subscription || { planType: 'demo', active: false, trialEnd: new Date().toISOString() };
-                const now = new Date();
-                const end = new Date(sub.trialEnd);
-                const isExpired = sub.planType === 'demo' && !sub.active && now > end;
-                const daysLeft = Math.ceil((end - now) / (1000 * 60 * 60 * 24));
-                const isOnTrial = sub.planType === 'demo' && !sub.active && !isExpired;
-                return { isOnTrial, isExpired, daysLeft, isPaying: sub.active };
-            },
-
-            activateSubscription: (plan) => set((state) => ({
-                subscription: { ...state.subscription, planType: plan, active: true }
-            })),
-
-            expireDemo: () => set((state) => ({
-                subscription: { ...state.subscription, trialEnd: new Date(Date.now() - 1000).toISOString() }
-            }))
+                PENDING: 'pending',
+                CANCELLED: 'cancelled',
+                BLOCK: 'block'
+            }
         }),
         {
-            name: 'salon-plus-v4-storage', // Incremented storage name for fresh start
+            name: 'agenda-plus-storage',
             storage: createJSONStorage(() => localStorage),
             partialize: (state) => ({
                 businessName: state.businessName,
-                businessLogo: state.businessLogo,
-                auth: state.auth,
-                subscription: state.subscription
+                businessLogo: state.businessLogo
+                // We don't persist complex lists to avoid sync issues with DB
             }),
+            onRehydrateStorage: () => (state) => {
+                state.setHydrated(true);
+            }
         }
     )
 );

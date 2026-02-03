@@ -1,9 +1,9 @@
-import { useSalonStore } from './store';
+import { useSaaSStore } from './store';
 
-const API_URL = 'https://authentic-tenderness-production-a8bc.up.railway.app';
+const API_URL = import.meta.env.VITE_API_URL || ''; // Relative path for production
 
 const getHeaders = () => {
-    const token = useSalonStore.getState().auth.token;
+    const token = localStorage.getItem('agenda_plus_token');
     return {
         'Content-Type': 'application/json',
         'Authorization': token ? `Bearer ${token}` : ''
@@ -12,13 +12,18 @@ const getHeaders = () => {
 
 // Helper for error handling
 const request = async (url, options = {}) => {
-    console.log(`[API REQUEST] ${options.method || 'GET'} ${url}`, options.body ? JSON.parse(options.body) : '');
+    const bodyLog = options.body instanceof URLSearchParams
+        ? Object.fromEntries(options.body)
+        : (options.body ? JSON.parse(options.body) : '');
+
+    console.log(`[API REQUEST] ${options.method || 'GET'} ${url}`, bodyLog);
+
     try {
         const res = await fetch(`${API_URL}${url}`, {
             ...options,
             headers: {
-                ...getHeaders(),
-                ...options.headers
+                ...options.headers,
+                ...(!(options.body instanceof URLSearchParams) && getHeaders())
             }
         });
 
@@ -39,25 +44,28 @@ const request = async (url, options = {}) => {
 
 export const api = {
     // --- AUTH ---
+    login: (credentials) => request('/api/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: new URLSearchParams({
+            username: credentials.email,
+            password: credentials.password,
+        })
+    }),
+    register: (data) => request('/api/auth/register', { method: 'POST', body: JSON.stringify(data) }),
     getMe: () => request('/api/auth/me'),
-    updateMe: (data) => request('/api/auth/me', { method: 'PUT', body: JSON.stringify(data) }),
 
-    // --- STYLISTS ---
-    getStylists: () => request('/api/salon/stylists'),
-    createStylist: (data) => request('/api/salon/stylists', { method: 'POST', body: JSON.stringify(data) }),
-    updateStylist: (id, data) => request(`/api/salon/stylists/${id}`, { method: 'PUT', body: JSON.stringify(data) }),
-    deleteStylist: (id) => request(`/api/salon/stylists/${id}`, { method: 'DELETE' }),
+    // --- PROFESSIONALS (Stylists) ---
+    getProfessionals: () => request('/api/salon/stylists'),
+    createProfessional: (data) => request('/api/salon/stylists', { method: 'POST', body: JSON.stringify(data) }),
+    updateProfessional: (id, data) => request(`/api/salon/stylists/${id}`, { method: 'PUT', body: JSON.stringify(data) }),
+    deleteProfessional: (id) => request(`/api/salon/stylists/${id}`, { method: 'DELETE' }),
 
-    // --- SERVICES ---
-    getServices: () => request('/api/salon/services'),
-    createService: (data) => request('/api/salon/services', { method: 'POST', body: JSON.stringify(data) }),
-    deleteService: (id) => request(`/api/salon/services/${id}`, { method: 'DELETE' }),
-
-    // --- CLIENTS ---
-    getClients: () => request('/api/salon/clients'),
-    createClient: (data) => request('/api/salon/clients', { method: 'POST', body: JSON.stringify(data) }),
-    updateClient: (id, data) => request(`/api/salon/clients/${id}`, { method: 'PUT', body: JSON.stringify(data) }),
-    deleteClient: (id) => request(`/api/salon/clients/${id}`, { method: 'DELETE' }),
+    // --- PATIENTS (Clients) ---
+    getPatients: () => request('/api/salon/clients'),
+    createPatient: (data) => request('/api/salon/clients', { method: 'POST', body: JSON.stringify(data) }),
+    updatePatient: (id, data) => request(`/api/salon/clients/${id}`, { method: 'PUT', body: JSON.stringify(data) }),
+    deletePatient: (id) => request(`/api/salon/clients/${id}`, { method: 'DELETE' }),
 
     // --- APPOINTMENTS ---
     getAppointments: () => request('/api/salon/appointments'),
@@ -65,16 +73,12 @@ export const api = {
     updateAppointment: (id, data) => request(`/api/salon/appointments/${id}`, { method: 'PUT', body: JSON.stringify(data) }),
     deleteAppointment: (id) => request(`/api/salon/appointments/${id}`, { method: 'DELETE' }),
 
-    // --- PRODUCTS ---
-    getProducts: () => request('/api/salon/products'),
-    createProduct: (data) => request('/api/salon/products', { method: 'POST', body: JSON.stringify(data) }),
-    updateProduct: (id, data) => request(`/api/salon/products/${id}`, { method: 'PUT', body: JSON.stringify(data) }),
-    deleteProduct: (id) => request(`/api/salon/products/${id}`, { method: 'DELETE' }),
-
-    // --- PUBLIC BOOKING ---
-    getPublicSalonInfo: (slug) => request(`/api/salon/public/${slug}`),
-    publicBook: (slug, data) => request(`/api/salon/public/${slug}/book`, { method: 'POST', body: JSON.stringify(data) }),
-
     // --- BILLING ---
     subscribe: () => request('/api/billing/subscribe', { method: 'POST' }),
+
+    // --- AI ---
+    expandMedicalNote: (text, type) => request('/api/ai/expand-medical-note', {
+        method: 'POST',
+        body: JSON.stringify({ text, type })
+    }),
 };

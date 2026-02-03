@@ -1,0 +1,44 @@
+from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
+from dotenv import load_dotenv
+from . import models, database
+from .routers import auth, ventas, stats, fudo, salon, billing, ai
+
+# Load environment variables from .env file
+load_dotenv()
+
+# Create tables automatically (for simple dev, usually we use alembic in prod)
+app = FastAPI(title="Proyecto FOCUS API", version="0.1.0")
+
+print("--- BACKEND STARTING ---")
+try:
+    models.Base.metadata.create_all(bind=database.engine)
+    print("--- TABLES CREATED SUCCESSFULLY ---")
+except Exception as e:
+    print(f"--- ERROR CREATING TABLES: {e} ---")
+
+# CORS
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+app.include_router(auth.router)
+app.include_router(salon.router)
+app.include_router(ventas.router)
+app.include_router(stats.router)
+app.include_router(billing.router)
+app.include_router(ai.router)
+app.include_router(fudo.router, prefix="/api/fudo", tags=["fudo"])
+
+@app.get("/")
+def read_root():
+    return {"message": "Proyecto FOCUS Backend is running", "version": "v1.fix.billing.3"}
+
+@app.get("/health")
+def health_check():
+    return {"status": "ok", "version": "v1.fix.billing.3"}
+# TRIGGER DEPLOY V2
