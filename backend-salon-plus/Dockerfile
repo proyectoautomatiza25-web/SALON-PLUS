@@ -21,6 +21,9 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Copiar el código del proyecto
 COPY . .
 
+# AJUSTE AUTOMÁTICO: Usar configuración de producción incrustada
+COPY .env.production .env
+
 # Exponer el puerto 8000
 EXPOSE 8000
 
