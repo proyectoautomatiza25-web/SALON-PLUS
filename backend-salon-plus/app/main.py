@@ -2,7 +2,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from dotenv import load_dotenv
 from . import models, database
-from .routers import auth, ventas, stats, fudo, salon, billing
+from .routers import auth, ventas, stats, fudo, salon, billing, ai
 
 # Load environment variables from .env file
 load_dotenv()
@@ -31,6 +31,7 @@ app.include_router(salon.router)
 app.include_router(ventas.router)
 app.include_router(stats.router)
 app.include_router(billing.router)
+app.include_router(ai.router)
 app.include_router(fudo.router, prefix="/api/fudo", tags=["fudo"])
 
 @app.get("/")

@@ -43,7 +43,7 @@ const Dashboard = ({ stats }) => {
     const channelData = Object.entries(stats.patientsByChannel || {}).map(([name, value]) => ({
         name,
         value,
-        percentage: ((value / stats.totalPatients) * 100).toFixed(1)
+        percentage: stats.totalPatients > 0 ? ((value / stats.totalPatients) * 100).toFixed(1) : '0'
     }));
 
     const statusData = Object.entries(stats.appointmentsByStatus || {}).map(([status, count]) => ({

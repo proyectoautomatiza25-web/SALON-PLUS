@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { persist } from 'zustand/middleware';
+import { persist, createJSONStorage } from 'zustand/middleware';
 import { api } from './api';
 
 export const useSalonStore = create(
@@ -23,6 +23,7 @@ export const useSalonStore = create(
                     });
                 } catch (e) {
                     console.error("Error updating profile", e);
+                    set({ globalError: "Error al actualizar perfil" });
                     throw e;
                 }
             },
@@ -40,20 +41,31 @@ export const useSalonStore = create(
                     userEmail: data.email,
                     token: data.token
                 },
+                globalError: null
             })),
 
-            logout: () => set(() => ({
-                auth: { isAuthenticated: false, userEmail: null, token: null }
-            })),
+            logout: () => {
+                localStorage.removeItem('salon-plus-v3-storage');
+                set(() => ({
+                    auth: { isAuthenticated: false, userEmail: null, token: null },
+                    stylists: [],
+                    services: [],
+                    clients: [],
+                    appointments: [],
+                    products: [],
+                    globalError: null
+                }));
+                window.location.href = '/';
+            },
 
             // --- FETCH INITIAL DATA (Backend Sync) ---
             fetchInitialData: async () => {
                 const { auth } = get();
-                if (!auth.token) return;
+                if (!auth || !auth.token) return;
 
                 try {
                     console.log("Fetching Initial Data from Backend...");
-                    const [userData, rawStylists, rawServices, rawClients, rawAppointments, rawProducts] = await Promise.all([
+                    const responses = await Promise.allSettled([
                         api.getMe(),
                         api.getStylists(),
                         api.getServices(),
@@ -62,66 +74,76 @@ export const useSalonStore = create(
                         api.getProducts()
                     ]);
 
-                    // Sync Subscription & User Data
-                    set({
-                        businessName: userData.business_name || 'Salon Plus',
-                        businessLogo: userData.business_logo || null,
-                        bookingSlug: userData.booking_slug || null,
-                        subscription: {
-                            planType: userData.plan_type,
-                            trialEnd: userData.trial_end_at,
-                            active: userData.subscription_active
-                        }
-                    });
+                    const [userRes, stylistsRes, servicesRes, clientsRes, apptsRes, productsRes] = responses;
 
-                    // Map Entities for Frontend (snake_case -> camelCase)
-                    const stylists = rawStylists.map(s => ({
-                        id: s.id,
-                        name: s.name,
-                        specialty: s.specialty,
-                        color: s.color,
-                        avatar: s.avatar,
-                        active: s.active
-                    }));
+                    // Sync User Data
+                    if (userRes.status === 'fulfilled') {
+                        const userData = userRes.value;
+                        set({
+                            businessName: userData.business_name || 'Salon Plus',
+                            businessLogo: userData.business_logo || null,
+                            bookingSlug: userData.booking_slug || null,
+                            subscription: {
+                                planType: userData.plan_type || 'demo',
+                                trialEnd: userData.trial_end_at || new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
+                                active: userData.subscription_active || false
+                            }
+                        });
+                    }
 
-                    const clients = rawClients.map(c => ({
-                        id: c.id,
-                        name: c.nombre || c.name,
-                        phone: c.telefono || c.phone,
-                        email: c.email,
-                        notes: c.notes,
-                        lastVisit: c.ultima_compra || c.last_visit
-                    }));
+                    // Map Entities with safety checks
+                    const stylists = stylistsRes.status === 'fulfilled' && Array.isArray(stylistsRes.value)
+                        ? stylistsRes.value.map(s => ({
+                            id: s.id,
+                            name: s.name,
+                            specialty: s.specialty,
+                            color: s.color,
+                            avatar: s.avatar,
+                            active: s.active
+                        })) : [];
 
-                    const services = rawServices.map(s => ({
-                        id: s.id,
-                        name: s.name,
-                        duration: s.duration,
-                        price: s.price,
-                        color: s.color
-                    }));
+                    const clients = clientsRes.status === 'fulfilled' && Array.isArray(clientsRes.value)
+                        ? clientsRes.value.map(c => ({
+                            id: c.id,
+                            name: c.nombre || c.name || 'Sin nombre',
+                            phone: c.telefono || c.phone || '',
+                            email: c.email || '',
+                            notes: c.notes || '',
+                            lastVisit: c.ultima_compra || c.last_visit || null
+                        })) : [];
 
-                    const products = rawProducts.map(p => ({
-                        id: p.id,
-                        name: p.name,
-                        price: p.price,
-                        stock: p.stock,
-                        category: p.category
-                    }));
+                    const services = servicesRes.status === 'fulfilled' && Array.isArray(servicesRes.value)
+                        ? servicesRes.value.map(s => ({
+                            id: s.id,
+                            name: s.name,
+                            duration: s.duration || 60,
+                            price: s.price || 0,
+                            color: s.color || '#3b82f6'
+                        })) : [];
 
-                    const appointments = rawAppointments.map(appt => ({
-                        ...appt,
-                        stylistId: appt.stylist_id,
-                        clientId: appt.client_id,
-                        start: new Date(appt.start_time),
-                        end: new Date(appt.end_time)
-                    }));
+                    const products = productsRes.status === 'fulfilled' && Array.isArray(productsRes.value)
+                        ? productsRes.value.map(p => ({
+                            id: p.id,
+                            name: p.name,
+                            price: p.price || 0,
+                            stock: p.stock || 0,
+                            category: p.category || 'General'
+                        })) : [];
+
+                    const appointments = apptsRes.status === 'fulfilled' && Array.isArray(apptsRes.value)
+                        ? apptsRes.value.map(appt => ({
+                            ...appt,
+                            stylistId: appt.stylist_id,
+                            clientId: appt.client_id,
+                            start: new Date(appt.start_time),
+                            end: new Date(appt.end_time)
+                        })) : [];
 
                     set({ stylists, services, clients, appointments, products, globalError: null });
                     console.log("Data loaded successfully");
                 } catch (error) {
-                    console.error("Error loading initial data:", error);
-                    set({ globalError: "Error al conectar con el servidor. Revisa tu conexión." });
+                    console.error("Critical error in fetchInitialData:", error);
+                    set({ globalError: "Error de red. Por favor intenta recargar la página." });
                 }
             },
 
@@ -133,7 +155,6 @@ export const useSalonStore = create(
                 try {
                     const { id, ...payload } = stylist;
                     const newStylist = await api.createStylist(payload);
-                    // Map back to camelCase
                     const mapped = {
                         id: newStylist.id,
                         name: newStylist.name,
@@ -142,10 +163,11 @@ export const useSalonStore = create(
                         avatar: newStylist.avatar,
                         active: newStylist.active
                     };
-                    set((state) => ({ stylists: [...state.stylists, mapped] }));
+                    set((state) => ({ stylists: [...(state.stylists || []), mapped] }));
                     return mapped;
                 } catch (e) {
                     console.error("Error creating stylist", e);
+                    set({ globalError: "No se pudo guardar el estilista." });
                     throw e;
                 }
             },
@@ -163,7 +185,7 @@ export const useSalonStore = create(
                         active: result.active
                     };
                     set((state) => ({
-                        stylists: state.stylists.map(s => s.id === result.id ? mapped : s)
+                        stylists: (state.stylists || []).map(s => s.id === result.id ? mapped : s)
                     }));
                     return mapped;
                 } catch (e) {
@@ -175,7 +197,7 @@ export const useSalonStore = create(
             removeStylist: async (id) => {
                 try {
                     await api.deleteStylist(id);
-                    set((state) => ({ stylists: state.stylists.filter(s => s.id !== id) }));
+                    set((state) => ({ stylists: (state.stylists || []).filter(s => s.id !== id) }));
                 } catch (e) {
                     console.error("Error deleting stylist", e);
                 }
@@ -196,7 +218,7 @@ export const useSalonStore = create(
                         notes: newClient.notes,
                         lastVisit: newClient.last_visit
                     };
-                    set((state) => ({ clients: [...state.clients, mapped] }));
+                    set((state) => ({ clients: [...(state.clients || []), mapped] }));
                     return mapped;
                 } catch (e) {
                     console.error("Error creating client", e);
@@ -217,7 +239,7 @@ export const useSalonStore = create(
                         lastVisit: result.last_visit
                     };
                     set((state) => ({
-                        clients: state.clients.map(c => c.id === result.id ? mapped : c)
+                        clients: (state.clients || []).map(c => c.id === result.id ? mapped : c)
                     }));
                     return mapped;
                 } catch (e) {
@@ -229,7 +251,7 @@ export const useSalonStore = create(
             removeClient: async (id) => {
                 try {
                     await api.deleteClient(id);
-                    set((state) => ({ clients: state.clients.filter(c => c.id !== id) }));
+                    set((state) => ({ clients: (state.clients || []).filter(c => c.id !== id) }));
                 } catch (e) {
                     console.error("Error deleting client", e);
                 }
@@ -249,7 +271,7 @@ export const useSalonStore = create(
                         price: newService.price,
                         color: newService.color
                     };
-                    set((state) => ({ services: [...state.services, mapped] }));
+                    set((state) => ({ services: [...(state.services || []), mapped] }));
                     return mapped;
                 } catch (e) {
                     console.error("Error creating service", e);
@@ -269,7 +291,7 @@ export const useSalonStore = create(
                         color: result.color
                     };
                     set((state) => ({
-                        services: state.services.map(s => s.id === result.id ? mapped : s)
+                        services: (state.services || []).map(s => s.id === result.id ? mapped : s)
                     }));
                     return mapped;
                 } catch (e) {
@@ -281,7 +303,7 @@ export const useSalonStore = create(
             removeService: async (id) => {
                 try {
                     await api.deleteService(id);
-                    set((state) => ({ services: state.services.filter(s => s.id !== id) }));
+                    set((state) => ({ services: (state.services || []).filter(s => s.id !== id) }));
                 } catch (e) {
                     console.error("Error deleting service", e);
                 }
@@ -301,7 +323,7 @@ export const useSalonStore = create(
                         stock: newProduct.stock,
                         category: newProduct.category
                     };
-                    set((state) => ({ products: [...state.products, mapped] }));
+                    set((state) => ({ products: [...(state.products || []), mapped] }));
                     return mapped;
                 } catch (e) {
                     console.error("Error creating product", e);
@@ -320,7 +342,9 @@ export const useSalonStore = create(
                         stock: result.stock,
                         category: result.category
                     };
-                    set((state) => ({ products: state.products.map(p => p.id === result.id ? mapped : p) }));
+                    set((state) => ({
+                        products: (state.products || []).map(p => p.id === result.id ? mapped : p)
+                    }));
                     return mapped;
                 } catch (e) {
                     console.error("Error updating product", e);
@@ -331,7 +355,7 @@ export const useSalonStore = create(
             removeProduct: async (id) => {
                 try {
                     await api.deleteProduct(id);
-                    set((state) => ({ products: state.products.filter(p => p.id !== id) }));
+                    set((state) => ({ products: (state.products || []).filter(p => p.id !== id) }));
                 } catch (e) {
                     console.error("Error deleting product", e);
                 }
@@ -363,7 +387,7 @@ export const useSalonStore = create(
                         end: new Date(newAppt.end_time)
                     };
 
-                    set((state) => ({ appointments: [...state.appointments, frontendAppt] }));
+                    set((state) => ({ appointments: [...(state.appointments || []), frontendAppt] }));
                 } catch (e) {
                     console.error("Error creating appointment", e);
                 }
@@ -372,7 +396,7 @@ export const useSalonStore = create(
             updateAppointmentStatus: async (id, status) => {
                 try {
                     const state = get();
-                    const appt = state.appointments.find(a => a.id === id);
+                    const appt = (state.appointments || []).find(a => a.id === id);
                     if (!appt) return;
 
                     const payload = {
@@ -396,7 +420,7 @@ export const useSalonStore = create(
                     };
 
                     set((state) => ({
-                        appointments: state.appointments.map(a => a.id === id ? frontendAppt : a)
+                        appointments: (state.appointments || []).map(a => a.id === id ? frontendAppt : a)
                     }));
                 } catch (e) {
                     console.error("Error updating appointment status", e);
@@ -424,7 +448,7 @@ export const useSalonStore = create(
                         end: new Date(result.end_time)
                     };
                     set((state) => ({
-                        appointments: state.appointments.map(a => a.id === updatedAppt.id ? frontendAppt : a)
+                        appointments: (state.appointments || []).map(a => a.id === updatedAppt.id ? frontendAppt : a)
                     }));
                 } catch (e) {
                     console.error("Error updating appointment", e);
@@ -434,7 +458,7 @@ export const useSalonStore = create(
             removeAppointment: async (id) => {
                 try {
                     await api.deleteAppointment(id);
-                    set((state) => ({ appointments: state.appointments.filter(a => a.id !== id) }));
+                    set((state) => ({ appointments: (state.appointments || []).filter(a => a.id !== id) }));
                 } catch (e) {
                     console.error("Error deleting appointment", e);
                 }
@@ -477,7 +501,8 @@ export const useSalonStore = create(
             }))
         }),
         {
-            name: 'salon-plus-storage',
+            name: 'salon-plus-v4-storage', // Incremented storage name for fresh start
+            storage: createJSONStorage(() => localStorage),
             partialize: (state) => ({
                 businessName: state.businessName,
                 businessLogo: state.businessLogo,

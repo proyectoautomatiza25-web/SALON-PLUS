@@ -185,6 +185,16 @@ class SalonClient(Base):
     notes = Column(Text, nullable=True)
     last_visit = Column(DateTime, nullable=True)
 
+    # Medical specific fields
+    rut = Column(String, nullable=True)
+    address = Column(String, nullable=True)
+    birth_date = Column(DateTime, nullable=True)
+    prevision = Column(String, nullable=True) # Fonasa, Isapre, etc
+    category = Column(String, nullable=True)  # Crónico, etc
+    blood_type = Column(String, nullable=True)
+    allergies = Column(Text, nullable=True)
+    medications = Column(Text, nullable=True)
+
     owner = relationship("User", back_populates="clients")
     appointments = relationship("Appointment", back_populates="client")
 
@@ -201,9 +211,20 @@ class Appointment(Base):
     title = Column(String) # Service Name snapshot
     start_time = Column(DateTime)
     end_time = Column(DateTime)
-    status = Column(String, default="pending") # pending, confirmed, attended, no_show, cancelled
+    status = Column(String, default="pending") # pending, confirmed, attended, no_show, cancelled, block
     notes = Column(Text, nullable=True)
     price = Column(Numeric(10, 2), nullable=True)
+    
+    # Medical structured notes (SOAP)
+    anamnesis = Column(Text, nullable=True)
+    physical_exam = Column(Text, nullable=True)
+    diagnosis = Column(Text, nullable=True)
+    indications = Column(Text, nullable=True)
+    
+    # Measurements
+    weight = Column(String, nullable=True)
+    height = Column(String, nullable=True)
+    imc = Column(String, nullable=True)
     
     owner = relationship("User", back_populates="appointments")
     stylist = relationship("Stylist", back_populates="appointments")

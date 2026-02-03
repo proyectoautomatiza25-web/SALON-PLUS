@@ -1,0 +1,29 @@
+version: '3.8'
+
+services:
+  # Backend API
+  api:
+    build: 
+      context: ./backend-salon-plus
+      dockerfile: Dockerfile
+    container_name: agenda_plus_backend
+    ports:
+      - "8000:8000"
+    environment:
+      - DATABASE_URL=${DATABASE_URL}
+      - JWT_SECRET=${JWT_SECRET}
+      - JWT_ALGORITHM=HS256
+      - GOOGLE_API_KEY=${GOOGLE_API_KEY}
+    restart: always
+
+  # Frontend (Servido por Nginx)
+  web:
+    build:
+      context: ./agenda-plus
+      dockerfile: Dockerfile.prod
+    container_name: agenda_plus_frontend
+    ports:
+      - "80:80"
+    depends_on:
+      - api
+    restart: always

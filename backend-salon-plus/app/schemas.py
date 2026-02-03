@@ -177,6 +177,14 @@ class SalonClientBase(BaseModel):
     phone: Optional[str] = None
     email: Optional[str] = None
     notes: Optional[str] = None
+    rut: Optional[str] = None
+    address: Optional[str] = None
+    birth_date: Optional[datetime] = None
+    prevision: Optional[str] = None
+    category: Optional[str] = None
+    blood_type: Optional[str] = None
+    allergies: Optional[str] = None
+    medications: Optional[str] = None
 
 class SalonClientCreate(SalonClientBase):
     pass
@@ -199,6 +207,13 @@ class AppointmentBase(BaseModel):
     status: str = "pending"
     notes: Optional[str] = None
     price: Optional[float] = None
+    anamnesis: Optional[str] = None
+    physical_exam: Optional[str] = None
+    diagnosis: Optional[str] = None
+    indications: Optional[str] = None
+    weight: Optional[str] = None
+    height: Optional[str] = None
+    imc: Optional[str] = None
 
 class AppointmentCreate(AppointmentBase):
     pass
@@ -223,4 +238,5 @@ class PublicBookingCreate(BaseModel):
     client_name: str
     client_phone: str
     client_email: Optional[str] = None
+    client_rut: Optional[str] = None
     notes: Optional[str] = None

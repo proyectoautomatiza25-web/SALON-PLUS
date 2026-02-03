@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import {
     DollarSign, TrendingUp, TrendingDown, Layout,
     ArrowUpRight, ArrowDownRight, Clock, CheckCircle,
-    Users, Briefcase, Calendar, ShieldCheck
+    Users, Briefcase, Calendar, ShieldCheck, Download
 } from 'lucide-react';
 import { useSaaSStore } from './store';
 

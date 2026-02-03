@@ -1,141 +1,290 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
-    User, FileText, Clipboard, Pill, Paperclip, CreditCard,
-    Plus, Save, Trash2, Download, ExternalLink, Calendar,
-    ChevronRight, AlertCircle, History, MessageCircle, Printer
+    User, Clipboard, Paperclip, CreditCard,
+    Save, MessageCircle, History, X, Phone, Mail, FileText, Printer, FileDown, Plus, TrendingUp, Send,
+    Sparkles, Loader2
 } from 'lucide-react';
-import { jsPDF } from 'jspdf';
-import 'jspdf-autotable';
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import { useSaaSStore } from './store';
+import { api } from './api';
+
 
 const PatientFile = ({ patient, onClose }) => {
-    const [activeTab, setActiveTab] = useState('clinical');
-    const { addClinicalEntry, addReceta, addDocument } = useSaaSStore();
+    const [activeTab, setActiveTab] = useState('summary');
+    const { appointments, updateAppointment, updatePatient, patients } = useSaaSStore();
 
-    // Form states
-    const [showNewEntry, setShowNewEntry] = useState(false);
-    const [newEntry, setNewEntry] = useState({
-        reason: '',
+    // Debug logging
+    console.log('[PatientFile] Paciente recibido:', patient);
+    console.log('[PatientFile] Total citas en store:', appointments.length);
+
+    // Verificar que el paciente existe
+    if (!patient) {
+        console.error('[PatientFile] ERROR: Paciente es null o undefined');
+        return (
+            <div style={styles.overlay}>
+                <div style={styles.modal}>
+                    <p>No se pudo cargar el paciente</p>
+                    <button onClick={onClose}>Cerrar</button>
+                </div>
+            </div>
+        );
+    }
+
+    const formatIsoDate = (date) => {
+        if (!date) return '';
+        const d = new Date(date);
+        return isNaN(d) ? '' : d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+    };
+
+    const formatDateDisplay = (date) => {
+        if (!date || !(new Date(date) instanceof Date) || isNaN(new Date(date))) return 'Sin fecha';
+        return new Date(date).toLocaleDateString('es-CL');
+    };
+
+    // Obtener citas del paciente - Comparación robusta de IDs
+    const patientAppointments = (appointments || [])
+        .filter(a => {
+            const appointmentClientId = String(a.client_id || a.patientId || '');
+            const currentPatientId = String(patient.id || '');
+            return appointmentClientId === currentPatientId;
+        })
+        .sort((a, b) => {
+            const dateA = new Date(a.start_time || a.start);
+            const dateB = new Date(b.start_time || b.start);
+            return dateB - dateA; // Más reciente primero
+        });
+
+    const [selectedAppt, setSelectedAppt] = useState(patientAppointments[0] || null);
+
+    // Form states for editing
+    const [editData, setEditData] = useState({
         anamnesis: '',
-        physicalExam: '',
+        physical_exam: '',
+        diagnosis: '',
         indications: '',
         weight: '',
-        bloodPressure: '',
         height: '',
         imc: ''
     });
 
-    const [showNewReceta, setShowNewReceta] = useState(false);
-    const [newReceta, setNewReceta] = useState({ items: [{ medication: '', instruction: '' }] });
+    const [labText, setLabText] = useState('');
+    const [labAnalysis, setLabAnalysis] = useState('');
+    const [aiLoading, setAiLoading] = useState(null); // 'anamnesis', 'diagnosis', 'indications', 'dose_calc', 'lab_analysis'
 
-    // REAL INTEGRATION: WhatsApp (Free)
+    const handleAIExpand = async (field, type, customText = null) => {
+        const textToUse = customText || editData[field];
+        if (!textToUse || textToUse.length < 3) {
+            alert("Escriba algo primero.");
+            return;
+        }
+
+        setAiLoading(type === 'dose_calc' ? 'dose_calc' : field);
+        try {
+            const response = await api.expandMedicalNote(textToUse, type);
+            if (type === 'dose_calc') {
+                setEditData(prev => ({
+                    ...prev,
+                    [field]: prev[field] + "\n\nDOSIS SUGERIDA: " + response.expanded_text
+                }));
+            } else {
+                setEditData(prev => ({
+                    ...prev,
+                    [field]: response.expanded_text
+                }));
+            }
+        } catch (error) {
+            console.error("AI Error:", error);
+            alert("Error al conectar con Gemini.");
+        } finally {
+            setAiLoading(null);
+        }
+    };
+
+    useEffect(() => {
+        if (selectedAppt) {
+            setEditData({
+                anamnesis: selectedAppt.anamnesis || '',
+                physical_exam: selectedAppt.physical_exam || '',
+                diagnosis: selectedAppt.diagnosis || '',
+                indications: selectedAppt.indications || '',
+                weight: selectedAppt.weight || '',
+                height: selectedAppt.height || '',
+                imc: selectedAppt.imc || ''
+            });
+        }
+    }, [selectedAppt]);
+
+    // REAL INTEGRATION: WhatsApp
     const sendWhatsApp = (msg) => {
-        const phone = patient.phone.replace(/\+/g, '').replace(/\s/g, '');
+        const phone = (patient.phone || '').replace(/\+/g, '').replace(/\s/g, '');
+        if (!phone) {
+            alert("El paciente no tiene teléfono registrado");
+            return;
+        }
         const url = `https://wa.me/${phone}?text=${encodeURIComponent(msg)}`;
         window.open(url, '_blank');
     };
 
-    // REAL INTEGRATION: PDF Generation (Free)
-    const downloadRecetaPDF = (receta) => {
-        const doc = new jsPDF();
-
-        // Header
-        doc.setFillColor(0, 73, 117);
-        doc.rect(0, 0, 210, 40, 'F');
-        doc.setTextColor(255, 255, 255);
-        doc.setFontSize(22);
-        doc.text('CENTRO MEDICO DEL VALLE', 105, 20, { align: 'center' });
-        doc.setFontSize(10);
-        doc.text('Av. Principal 123, Providencia | +56 9 1234 5678', 105, 30, { align: 'center' });
-
-        // Body Info
-        doc.setTextColor(0, 0, 0);
-        doc.setFontSize(14);
-        doc.text('RECETA MEDICA ELECTRONICA', 20, 55);
-        doc.setFontSize(10);
-        doc.text(`Fecha: ${new Date(receta.date).toLocaleDateString()}`, 160, 55);
-        doc.line(20, 60, 190, 60);
-
-        // Patient Info
-        doc.setFont('helvetica', 'bold');
-        doc.text('PACIENTE:', 20, 75);
-        doc.setFont('helvetica', 'normal');
-        doc.text(`${patient.name}`, 50, 75);
-        doc.text(`RUT: ${patient.rut}`, 20, 82);
-
-        // Meds
-        doc.setFontSize(12);
-        doc.text('INDICACIONES:', 20, 100);
-
-        const tableData = receta.items.map(item => [item.medication, item.instruction]);
-        doc.autoTable({
-            startY: 105,
-            head: [['Medicamento', 'Instrucción']],
-            body: tableData,
-            theme: 'striped',
-            headStyles: { fillStyle: [0, 73, 117] }
+    const handleSaveClinical = async () => {
+        if (!selectedAppt) {
+            alert("No hay una cita seleccionada para guardar la evolución");
+            return;
+        }
+        await updateAppointment(selectedAppt.id, {
+            ...selectedAppt,
+            ...editData,
+            status: 'attended'
         });
-
-        const finalY = doc.lastAutoTable.finalY + 30;
-        doc.line(120, finalY, 180, finalY);
-        doc.text(receta.doctor, 150, finalY + 10, { align: 'center' });
-        doc.setFontSize(8);
-        doc.text('Firma Digital Autorizada', 150, finalY + 15, { align: 'center' });
-
-        doc.save(`Receta_${patient.name}_${receta.id}.pdf`);
-    };
-
-    const handleAddEntry = () => {
-        addClinicalEntry(patient.id, {
-            ...newEntry,
-            doctor: 'Dra. Nataly Malaspina',
-            specialty: 'Medicina General'
-        });
-        setNewEntry({
-            reason: '',
-            anamnesis: '',
-            physicalExam: '',
-            indications: '',
-            weight: '',
-            bloodPressure: '',
-            height: '',
-            imc: ''
-        });
-        setShowNewEntry(false);
-    };
-
-    const handleAddReceta = () => {
-        addReceta(patient.id, {
-            ...newReceta,
-            doctor: 'Dra. Nataly Malaspina'
-        });
-        setNewReceta({ items: [{ medication: '', instruction: '' }] });
-        setShowNewReceta(false);
+        alert("Evolución clínica guardada correctamente");
     };
 
     const tabs = [
         { id: 'summary', label: 'Resumen', icon: User },
         { id: 'clinical', label: 'Ficha Médica', icon: Clipboard },
-        { id: 'recetas', label: 'Recetas', icon: Pill },
-        { id: 'files', label: 'Exámenes y Archivos', icon: Paperclip },
-        { id: 'billing', label: 'Cuentas y Pagos', icon: CreditCard }
+        { id: 'growth', label: 'Crecimiento', icon: TrendingUp },
+        { id: 'documents', label: 'Documentos', icon: FileText },
+        { id: 'files', label: 'Exámenes', icon: Paperclip }
     ];
+
+    // Local state for recipes
+    const [recipes, setRecipes] = useState([]);
+    const [isIssuingRecipe, setIsIssuingRecipe] = useState(false);
+    const [newRecipe, setNewRecipe] = useState({
+        rp: '',
+        date: formatIsoDate(new Date()),
+        type: 'recipe'
+    });
+
+    const handleIssueRecipe = () => {
+        const doc = {
+            ...newRecipe,
+            id: Date.now(),
+            patientName: patient.name,
+            patientRut: patient.rut
+        };
+        setRecipes([doc, ...recipes]);
+        setIsIssuingRecipe(false);
+        setNewRecipe({ rp: '', date: formatIsoDate(new Date()), type: 'recipe' });
+        alert("Documento guardado correctamente.");
+    };
+
+    const printRecipe = (recipe) => {
+        const printWindow = window.open('', '_blank');
+        printWindow.document.write(`
+            <html>
+                <head>
+                    <title>Documento Clínico - ${patient.name}</title>
+                    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+                    <style>
+                        @page { margin: 0; size: letter; }
+                        body { font-family: 'Inter', sans-serif; padding: 40px; color: #1e293b; max-width: 800px; margin: 0 auto; line-height: 1.5; }
+                        .header-brand { display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 3px solid #004975; padding-bottom: 20px; margin-bottom: 30px; }
+                        .brand-logo { color: #004975; font-weight: 900; font-size: 28px; text-transform: uppercase; letter-spacing: -1px; }
+                        .brand-sub { font-size: 14px; color: #64748b; font-weight: 500; margin-top: 5px; }
+                        .clinic-details { text-align: right; font-size: 12px; color: #64748b; }
+                        
+                        .doc-title { text-align: center; text-transform: uppercase; letter-spacing: 2px; font-weight: 800; font-size: 22px; margin: 40px 0; color: #0f172a; border: 2px solid #e2e8f0; padding: 10px; border-radius: 8px; }
+                        
+                        .patient-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; background: #f8fafc; padding: 25px; border-radius: 12px; margin-bottom: 40px; border: 1px solid #e2e8f0; }
+                        .field-label { font-size: 11px; text-transform: uppercase; color: #64748b; font-weight: 700; margin-bottom: 4px; letter-spacing: 0.5px; }
+                        .field-value { font-size: 16px; font-weight: 600; color: #334155; }
+                        
+                        .rp-section { margin-bottom: 60px; }
+                        .rp-header { font-size: 24px; font-weight: 900; color: #004975; margin-bottom: 15px; font-family: serif; font-style: italic; }
+                        .rp-content { min-height: 300px; font-size: 16px; line-height: 1.8; white-space: pre-wrap; padding: 0 10px; }
+                        
+                        .footer { position: fixed; bottom: 40px; left: 40px; right: 40px; text-align: center; }
+                        .signature-box { display: flex; justify-content: flex-end; margin-bottom: 60px; padding-right: 20px; }
+                        .signature-line { width: 250px; text-align: center; border-top: 2px solid #334155; padding-top: 10px; }
+                        .doc-name { font-weight: 700; font-size: 14px; }
+                        .doc-rut { font-size: 12px; color: #64748b; }
+                        
+                        .legal-footer { font-size: 10px; color: #94a3b8; text-align: center; border-top: 1px solid #e2e8f0; padding-top: 15px; }
+                        
+                        @media print { 
+                            .no-print { display: none; } 
+                            body { padding: 20px; }
+                            .footer { position: fixed; bottom: 20px; }
+                        }
+                    </style>
+                </head>
+                <body>
+                    <div class="header-brand">
+                        <div>
+                            <div class="brand-logo">Agenda<span style="color: #38bdf8">Plus</span></div>
+                            <div class="brand-sub">Centro Médico Integral</div>
+                        </div>
+                        <div class="clinic-details">
+                            Av. Providencia 1234, Of. 601<br>
+                            Santiago, Chile<br>
+                            +56 2 2345 6789<br>
+                            contacto@agendaplus.cl
+                        </div>
+                    </div>
+
+                    <div class="doc-title">${recipe.type === 'recipe' ? 'RECETA MÉDICA' : 'CERTIFICADO CLÍNICO'}</div>
+
+                    <div class="patient-grid">
+                        <div>
+                            <div class="field-label">Paciente</div>
+                            <div class="field-value">${patient.name}</div>
+                        </div>
+                        <div>
+                            <div class="field-label">RUT</div>
+                            <div class="field-value">${patient.rut || 'Sin RUT'}</div>
+                        </div>
+                        <div>
+                            <div class="field-label">Fecha de Emisión</div>
+                            <div class="field-value">${formatDateDisplay(recipe.date)}</div>
+                        </div>
+                        <div>
+                            <div class="field-label">Edad</div>
+                            <div class="field-value">${patient.age || '-'}</div>
+                        </div>
+                    </div>
+
+                    <div class="rp-section">
+                        ${recipe.type === 'recipe' ? '<div class="rp-header">Rp.</div>' : ''}
+                        <div class="rp-content">${recipe.rp}</div>
+                    </div>
+
+                    <div class="footer">
+                        <div class="signature-box">
+                            <div class="signature-line">
+                                <div class="doc-name">Dra. Francis Zabaleta</div>
+                                <div class="doc-rut">Médico Cirujano - RUT: 12.345.678-9</div>
+                                <div class="doc-rut">Reg. Col. Med: 45678</div>
+                            </div>
+                        </div>
+                        <div class="legal-footer">
+                            Documento generado electrónicamente por Agenda Plus Software Médico. 
+                            La validez de este documento debe ser verificada según normativa vigente.
+                        </div>
+                    </div>
+
+                    <script>
+                        setTimeout(() => { window.print(); window.close(); }, 500);
+                    </script>
+                </body>
+            </html>
+        `);
+        printWindow.document.close();
+    };
 
     return (
         <div style={styles.overlay}>
             <div style={styles.modal} className="glass-panel animate-slide">
-                {/* Modal Header */}
                 <header style={styles.header}>
                     <div style={styles.patientInfo}>
-                        <div style={styles.bigAvatar}>{patient.name.charAt(0)}</div>
+                        <div style={styles.bigAvatar}>{patient.name?.charAt(0)}</div>
                         <div>
                             <h2 style={styles.patientName}>{patient.name}</h2>
-                            <p style={styles.patientSub}>{patient.rut} • {patient.prevision} • {patient.category}</p>
+                            <p style={styles.patientSub}>{patient.rut} • {patient.prevision || 'Sin Previsión'} • {patient.category || 'General'}</p>
                         </div>
                     </div>
                     <div style={{ display: 'flex', gap: '10px' }}>
                         <button
-                            onClick={() => sendWhatsApp(`Hola ${patient.name}, te saludamos del Centro Médico Del Valle. Queríamos recordarte tu orden médica...`)}
+                            onClick={() => sendWhatsApp(`Hola ${patient.name}, te saludo de la Agenda Plus...`)}
                             title="Enviar WhatsApp"
                             style={{ ...styles.iconBtn, color: '#25D366', borderColor: '#25D366' }}
                         >
@@ -145,7 +294,6 @@ const PatientFile = ({ patient, onClose }) => {
                     </div>
                 </header>
 
-                {/* Tabs Navigation */}
                 <nav style={styles.tabNav}>
                     {tabs.map(tab => (
                         <button
@@ -153,8 +301,8 @@ const PatientFile = ({ patient, onClose }) => {
                             onClick={() => setActiveTab(tab.id)}
                             style={{
                                 ...styles.tab,
-                                color: activeTab === tab.id ? 'var(--primary)' : '#94a3b8',
-                                borderBottom: activeTab === tab.id ? '2px solid var(--primary)' : 'none'
+                                color: activeTab === tab.id ? '#004975' : '#94a3b8',
+                                borderBottom: activeTab === tab.id ? '3px solid #004975' : 'none'
                             }}
                         >
                             <tab.icon size={18} />
@@ -163,367 +311,293 @@ const PatientFile = ({ patient, onClose }) => {
                     ))}
                 </nav>
 
-                {/* Content Area */}
                 <div style={styles.content}>
-
-                    {/* SUMMARY TAB */}
                     {activeTab === 'summary' && (
                         <div style={styles.summaryGrid}>
                             <div className="bento-card" style={styles.infoCard}>
-                                <h3 style={styles.cardTitle}>Datos del Paciente</h3>
+                                <h3 style={styles.cardTitle}>Datos Personales</h3>
                                 <div style={styles.infoRow}><span>Email:</span> <strong>{patient.email}</strong></div>
                                 <div style={styles.infoRow}><span>Teléfono:</span> <strong>{patient.phone}</strong></div>
-                                <div style={styles.infoRow}><span>F. Nacimiento:</span> <strong>{patient.birthDate}</strong></div>
+                                <div style={styles.infoRow}><span>Previsión:</span> <strong>{patient.prevision}</strong></div>
                                 <div style={styles.infoRow}><span>Dirección:</span> <strong>{patient.address}</strong></div>
-                                <div style={styles.infoRow}><span>Grupo Sanguíneo:</span> <strong>{patient.bloodType}</strong></div>
+                                <div style={styles.infoRow}><span>Categoría:</span> <strong>{patient.category}</strong></div>
                             </div>
-
                             <div className="bento-card" style={{ ...styles.infoCard, borderLeft: '4px solid #ef4444' }}>
-                                <h3 style={styles.cardTitle}>⚠️ Alergias y Contraindicaciones</h3>
-                                <ul style={styles.list}>
-                                    {patient.allergies.map((a, i) => <li key={i}>{a}</li>)}
-                                    {patient.allergies.length === 0 && <li>Ninguna registrada</li>}
-                                </ul>
+                                <h3 style={styles.cardTitle}>⚠️ Alergias</h3>
+                                <p style={{ fontSize: '0.95rem' }}>{patient.allergies || 'Ninguna registrada'}</p>
                             </div>
-
                             <div className="bento-card" style={{ ...styles.infoCard, borderLeft: '4px solid #3b82f6' }}>
                                 <h3 style={styles.cardTitle}>💊 Medicación Actual</h3>
-                                <ul style={styles.list}>
-                                    {patient.medications.map((m, i) => <li key={i}>{m}</li>)}
-                                    {patient.medications.length === 0 && <li>Ninguna registrada</li>}
-                                </ul>
+                                <p style={{ fontSize: '0.95rem' }}>{patient.medications || 'Ninguna registrada'}</p>
                             </div>
                         </div>
                     )}
 
-                    {/* CLINICAL HISTORY TAB */}
                     {activeTab === 'clinical' && (
-                        <div style={styles.historyContainer}>
-                            <div style={styles.historyAction}>
-                                <button className="btn-primary" onClick={() => setShowNewEntry(!showNewEntry)}>
-                                    <Plus size={18} />
-                                    <span>{showNewEntry ? 'Cancelar Atención' : 'Realizar Nueva Atención'}</span>
-                                </button>
-                            </div>
-
-                            {showNewEntry && (
-                                <div className="bento-card" style={styles.entryForm}>
-                                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
-                                        <h3 style={{ margin: 0 }}>Nueva Evolución Médica</h3>
-                                        <div style={styles.tag}>Atención Profesional</div>
-                                    </div>
-
-                                    <div style={styles.formGrid}>
-                                        <div style={styles.inputGroup}>
-                                            <label>Motivo de Consulta</label>
-                                            <input
-                                                type="text"
-                                                value={newEntry.reason}
-                                                onChange={e => setNewEntry({ ...newEntry, reason: e.target.value })}
-                                                placeholder="Ej: Control mensual, Otitis recurrente..."
-                                            />
-                                        </div>
-
-                                        <div style={{ ...styles.sectionHeader, marginTop: '10px' }}>
-                                            <MessageCircle size={16} color="var(--primary)" />
-                                            <strong>Anamnesis</strong>
-                                        </div>
-                                        <textarea
-                                            rows={3}
-                                            style={styles.textArea}
-                                            value={newEntry.anamnesis}
-                                            onChange={e => setNewEntry({ ...newEntry, anamnesis: e.target.value })}
-                                            placeholder="Antecedentes, síntomas actuales..."
-                                        />
-
-                                        <div style={styles.sectionHeader}>
-                                            <Clipboard size={16} color="var(--primary)" />
-                                            <strong>Examen físico</strong>
-                                        </div>
-                                        <div style={styles.vitalsFormGrid}>
-                                            <div style={styles.inputGroup}>
-                                                <label>Peso (kg)</label>
-                                                <input type="text" placeholder="32" value={newEntry.weight} onChange={e => setNewEntry({ ...newEntry, weight: e.target.value })} />
-                                            </div>
-                                            <div style={styles.inputGroup}>
-                                                <label>Talla (cm)</label>
-                                                <input type="text" placeholder="130.8" value={newEntry.height} onChange={e => setNewEntry({ ...newEntry, height: e.target.value })} />
-                                            </div>
-                                            <div style={styles.inputGroup}>
-                                                <label>IMC</label>
-                                                <input type="text" placeholder="18.7" value={newEntry.imc} onChange={e => setNewEntry({ ...newEntry, imc: e.target.value })} />
-                                            </div>
-                                            <div style={styles.inputGroup}>
-                                                <label>P.A.</label>
-                                                <input type="text" placeholder="120/80" value={newEntry.bloodPressure} onChange={e => setNewEntry({ ...newEntry, bloodPressure: e.target.value })} />
-                                            </div>
-                                        </div>
-                                        <textarea
-                                            rows={2}
-                                            style={styles.textArea}
-                                            value={newEntry.physicalExam}
-                                            onChange={e => setNewEntry({ ...newEntry, physicalExam: e.target.value })}
-                                            placeholder="Detalles del examen físico (ej: cerumen impacado...)"
-                                        />
-
-                                        <div style={styles.sectionHeader}>
-                                            <Pill size={16} color="var(--primary)" />
-                                            <strong>Indicaciones</strong>
-                                        </div>
-                                        <textarea
-                                            rows={3}
-                                            style={styles.textArea}
-                                            value={newEntry.indications}
-                                            onChange={e => setNewEntry({ ...newEntry, indications: e.target.value })}
-                                            placeholder="Tratamiento, medicamentos, reposo..."
-                                        />
-                                    </div>
-
-                                    <button className="btn-primary" onClick={handleAddEntry} style={{ marginTop: '15px', alignSelf: 'flex-end' }}>
-                                        <Save size={18} />
-                                        <span>Guardar en Ficha Permanente</span>
-                                    </button>
-                                </div>
-                            )}
-
-                            <div style={styles.timeline}>
-                                {patient.history.map((entry, i) => (
-                                    <div key={entry.id} style={styles.timelineEntry}>
-                                        <div style={styles.timelineDot} />
-                                        <div className="bento-card" style={styles.timelineCard}>
-                                            <div style={styles.entryHeader}>
-                                                <span><strong>{new Date(entry.date).toLocaleDateString()}</strong> - {entry.doctor}</span>
-                                                <span style={styles.tag}>{entry.specialty}</span>
-                                            </div>
-                                            <h4 style={{ color: 'var(--primary)', marginBottom: '15px' }}>Motivo: {entry.reason}</h4>
-
-                                            {entry.anamnesis && (
-                                                <div style={styles.entrySection}>
-                                                    <div style={styles.sectionSubHeader}><MessageCircle size={14} /> Anamnesis</div>
-                                                    <div style={styles.sectionContent}>{entry.anamnesis}</div>
-                                                </div>
-                                            )}
-
-                                            {(entry.physicalExam || entry.weight || entry.height) && (
-                                                <div style={styles.entrySection}>
-                                                    <div style={styles.sectionSubHeader}><Clipboard size={14} /> Examen físico</div>
-                                                    <div style={styles.sectionContent}>
-                                                        <div style={styles.vitalsRow}>
-                                                            {entry.weight && <span><strong>Peso:</strong> {entry.weight}</span>}
-                                                            {entry.height && <span><strong>Talla:</strong> {entry.height}</span>}
-                                                            {entry.imc && <span><strong>IMC:</strong> {entry.imc}</span>}
-                                                            {entry.bloodPressure && <span><strong>P.A:</strong> {entry.bloodPressure}</span>}
-                                                        </div>
-                                                        {entry.physicalExam && <div style={{ marginTop: '5px' }}>{entry.physicalExam}</div>}
-                                                    </div>
-                                                </div>
-                                            )}
-
-                                            {entry.indications && (
-                                                <div style={styles.entrySection}>
-                                                    <div style={styles.sectionSubHeader}><Pill size={14} /> Indicaciones</div>
-                                                    <div style={styles.sectionContent}>{entry.indications}</div>
-                                                </div>
-                                            )}
-
-                                            {entry.observation && !entry.anamnesis && (
-                                                <p style={{ marginTop: '10px' }}>{entry.observation}</p>
-                                            )}
-                                        </div>
-                                    </div>
-                                ))}
-                            </div>
-                        </div>
-                    )}
-
-                    {/* RECETAS TAB */}
-                    {activeTab === 'recetas' && (
-                        <div style={styles.recetasContainer}>
-                            <button className="btn-primary" onClick={() => setShowNewReceta(!showNewReceta)} style={{ marginBottom: '20px' }}>
-                                <Plus size={18} />
-                                <span>{showNewReceta ? 'Ocultar' : 'Emitir Nueva Receta'}</span>
-                            </button>
-
-                            {showNewReceta && (
-                                <div className="bento-card" style={styles.entryForm}>
-                                    <h3>Generador de Recetas</h3>
-                                    {newReceta.items.map((item, i) => (
-                                        <div key={i} style={styles.recetaItem}>
-                                            <input
-                                                placeholder="Medicamento (Ej: Amoxicilina 500mg)"
-                                                style={{ flex: 1 }}
-                                                value={item.medication}
-                                                onChange={e => {
-                                                    const newItems = [...newReceta.items];
-                                                    newItems[i].medication = e.target.value;
-                                                    setNewReceta({ ...newReceta, items: newItems });
-                                                }}
-                                            />
-                                            <input
-                                                placeholder="Instrucción (Ej: 1 cada 8h)"
-                                                style={{ flex: 1 }}
-                                                value={item.instruction}
-                                                onChange={e => {
-                                                    const newItems = [...newReceta.items];
-                                                    newItems[i].instruction = e.target.value;
-                                                    setNewReceta({ ...newReceta, items: newItems });
-                                                }}
-                                            />
-                                        </div>
-                                    ))}
-                                    <button className="btn-primary" onClick={handleAddReceta} style={{ marginTop: '15px' }}>Emite Receta Digital</button>
-                                </div>
-                            )}
-
-                            <div style={styles.recetasList}>
-                                {patient.recetas.map(r => (
-                                    <div key={r.id} className="bento-card" style={styles.recetaCard}>
-                                        <div style={styles.entryHeader}>
-                                            <strong>Receta - {new Date(r.date).toLocaleDateString()}</strong>
-                                            <div style={{ display: 'flex', gap: '10px' }}>
-                                                <button onClick={() => downloadRecetaPDF(r)} style={styles.iconBtn} title="Descargar PDF">
-                                                    <Printer size={14} />
-                                                </button>
-                                                <button style={styles.iconBtn}><ExternalLink size={14} /></button>
-                                            </div>
-                                        </div>
-                                        {r.items.map((item, i) => (
-                                            <div key={i} style={{ marginBottom: '10px', fontSize: '0.9rem' }}>
-                                                <strong>{item.medication}</strong>: {item.instruction}
-                                            </div>
-                                        ))}
-                                        <p style={{ fontSize: '0.75rem', color: '#94a3b8', marginTop: '10px' }}>Médico: {r.doctor}</p>
-                                    </div>
-                                ))}
-                            </div>
-                        </div>
-                    )}
-
-                    {/* FILES TAB */}
-                    {activeTab === 'files' && (
-                        <div style={styles.filesGrid}>
-                            <div style={{ gridColumn: '1/-1', marginBottom: '20px', display: 'flex', gap: '15px' }}>
-                                <input
-                                    type="text"
-                                    placeholder="Nombre del archivo (ej: Ecografía Abdominal)"
-                                    id="docName"
-                                    style={{ ...styles.modalInput, margin: 0, flex: 1 }}
-                                />
-                                <select id="docType" style={{ ...styles.modalInput, margin: 0, width: '150px' }}>
-                                    <option>Examen</option>
-                                    <option>Epicrisis</option>
-                                    <option>Consentimiento</option>
-                                    <option>Otro</option>
-                                </select>
-                                <button
-                                    className="btn-primary"
-                                    onClick={() => {
-                                        const name = document.getElementById('docName').value;
-                                        const type = document.getElementById('docType').value;
-                                        if (name) {
-                                            addDocument(patient.id, { name, type });
-                                            document.getElementById('docName').value = '';
-                                        }
-                                    }}
-                                >
-                                    <Plus size={18} />
-                                    <span>Adjuntar</span>
-                                </button>
-                            </div>
-                            {patient.documents.map(doc => (
-                                <div key={doc.id} className="bento-card" style={styles.fileCard}>
-                                    <Paperclip size={24} color="var(--primary)" />
-                                    <div style={{ flex: 1 }}>
-                                        <h4 style={{ fontSize: '0.9rem' }}>{doc.name}</h4>
-                                        <p style={{ fontSize: '0.75rem', color: '#94a3b8' }}>{doc.type} • {new Date(doc.date).toLocaleDateString()}</p>
-                                    </div>
-                                    <button style={styles.iconBtn}><Download size={16} /></button>
-                                </div>
-                            ))}
-                            {patient.documents.length === 0 && <div style={{ gridColumn: '1/-1', ...styles.empty }}>No hay documentos adjuntos.</div>}
-                        </div>
-                    )}
-
-                    {/* BILLING TAB */}
-                    {activeTab === 'billing' && (
-                        <div style={styles.billingContainer}>
-                            <div className="bento-card" style={styles.debtBanner}>
-                                <div style={{ display: 'flex', gap: '15px', alignItems: 'center' }}>
-                                    <AlertCircle color={patient.debts && patient.debts.some(d => d.type === 'Cargo') ? '#ef4444' : '#10b981'} size={32} />
-                                    <div>
-                                        <h3 style={{ color: patient.debts && patient.debts.some(d => d.type === 'Cargo') ? '#ef4444' : '#10b981' }}>
-                                            {patient.debts && patient.debts.some(d => d.type === 'Cargo') ? 'Saldo Pendiente' : 'Cuenta al Día'}
-                                        </h3>
-                                        <p style={{ fontSize: '1.5rem', fontWeight: '900' }}>
-                                            ${patient.debts ? patient.debts.reduce((acc, d) => d.type === 'Cargo' ? acc + d.amount : acc - d.amount, 0).toLocaleString() : 0}
-                                        </p>
-                                    </div>
-                                </div>
-                                <div style={{ display: 'flex', gap: '10px' }}>
-                                    <input
-                                        type="number"
-                                        id="payAmount"
-                                        placeholder="Monto"
-                                        style={{ ...styles.modalInput, margin: 0, width: '120px' }}
-                                    />
+                        <div style={styles.clinicalLayout}>
+                            <div style={styles.clinicalSidebar}>
+                                <h3>Historial de Citas</h3>
+                                {patientAppointments.map(appt => (
                                     <button
-                                        className="btn-primary"
-                                        style={{ background: '#10b981' }}
-                                        onClick={() => {
-                                            const amount = parseInt(document.getElementById('payAmount').value);
-                                            if (amount > 0) {
-                                                addTransaction(patient.id, { amount, type: 'Abono', description: 'Pago de consulta' });
-                                                document.getElementById('payAmount').value = '';
-                                            }
+                                        key={appt.id}
+                                        onClick={() => setSelectedAppt(appt)}
+                                        style={{
+                                            ...styles.apptSelector,
+                                            background: selectedAppt?.id === appt.id ? '#e0f2fe' : '#fff',
+                                            borderColor: selectedAppt?.id === appt.id ? '#004975' : '#e2e8f0'
                                         }}
                                     >
-                                        Regularizar Pago
+                                        <div style={{ fontWeight: '700' }}>{formatDateDisplay(appt.start)}</div>
+                                        <div style={{ fontSize: '0.75rem', color: '#64748b' }}>{appt.title}</div>
                                     </button>
-                                </div>
+                                ))}
                             </div>
 
-                            <h3>Historial de Transacciones</h3>
-                            <div className="bento-card" style={{ padding: '0' }}>
-                                <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-                                    <thead>
-                                        <tr style={{ borderBottom: '1px solid #e2e8f0', textAlign: 'left', background: '#f8fafc' }}>
-                                            <th style={{ padding: '12px 20px', fontSize: '0.85rem' }}>Fecha</th>
-                                            <th style={{ padding: '12px 20px', fontSize: '0.85rem' }}>Descripción</th>
-                                            <th style={{ padding: '12px 20px', fontSize: '0.85rem' }}>Tipo</th>
-                                            <th style={{ padding: '12px 20px', fontSize: '0.85rem' }}>Monto</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        {patient.debts && patient.debts.map(d => (
-                                            <tr key={d.id} style={{ borderBottom: '1px solid #f1f5f9' }}>
-                                                <td style={{ padding: '12px 20px', fontSize: '0.85rem' }}>{new Date(d.date).toLocaleDateString()}</td>
-                                                <td style={{ padding: '12px 20px', fontSize: '0.85rem' }}>{d.description}</td>
-                                                <td style={{ padding: '12px 20px', fontSize: '0.85rem' }}>
-                                                    <span style={{
-                                                        padding: '4px 8px',
-                                                        borderRadius: '6px',
-                                                        fontSize: '0.75rem',
-                                                        fontWeight: '700',
-                                                        background: d.type === 'Cargo' ? '#fee2e2' : '#dcfce7',
-                                                        color: d.type === 'Cargo' ? '#991b1b' : '#166534'
-                                                    }}>
-                                                        {d.type}
-                                                    </span>
-                                                </td>
-                                                <td style={{ padding: '12px 20px', fontSize: '0.85rem', fontWeight: '800' }}>
-                                                    {d.type === 'Cargo' ? '-' : '+'}${d.amount.toLocaleString()}
-                                                </td>
-                                            </tr>
-                                        ))}
-                                    </tbody>
-                                </table>
-                                {(!patient.debts || patient.debts.length === 0) && (
-                                    <div style={styles.empty}>No hay transacciones registradas este período.</div>
+                            <div style={styles.clinicalMain}>
+                                {selectedAppt ? (
+                                    <div style={styles.evolutionForm}>
+                                        <div style={styles.formHeader}>
+                                            <h3>Evolución Clínica - {formatDateDisplay(selectedAppt.start)}</h3>
+                                            <div style={{ display: 'flex', gap: '10px' }}>
+                                                <button
+                                                    className="btn-primary"
+                                                    style={{ background: '#25D366', borderColor: '#25D366' }}
+                                                    onClick={() => {
+                                                        const msg = `🏥 *SEGUIMIENTO MÉDICO: ADULTO-INFANTIL*\n\nHola *${patient.name}*, espero que estés bien. Soy el *Dr. Francis Zabaleta*.\n\nRecuerdo que en nuestro control de hoy vimos: "${editData.diagnosis || 'Consulta General'}".\n\n📌 *Indicaciones clave:*\n${editData.indications || 'Seguir tratamiento indicado.'}\n\nEstaré atento a cualquier duda por aquí. ¡Que tengas un excelente día!`;
+                                                        sendWhatsApp(msg);
+                                                    }}
+                                                >
+                                                    <Send size={18} />
+                                                    <span>Enviar Seguimiento WA</span>
+                                                </button>
+                                                <button className="btn-primary" onClick={handleSaveClinical}>
+                                                    <Save size={18} />
+                                                    <span>Guardar Ficha</span>
+                                                </button>
+                                            </div>
+                                        </div>
+
+                                        <div style={styles.sectionHeader}>
+                                            Anamnesis
+                                            <button
+                                                onClick={() => handleAIExpand('anamnesis', 'anamnesis')}
+                                                style={styles.aiBtn}
+                                                disabled={aiLoading === 'anamnesis'}
+                                            >
+                                                {aiLoading === 'anamnesis' ? <Loader2 size={14} className="animate-spin" /> : <Sparkles size={14} />}
+                                                <span>Aumentar profesionalismo</span>
+                                            </button>
+                                        </div>
+                                        <textarea
+                                            style={styles.textArea}
+                                            rows={4}
+                                            value={editData.anamnesis}
+                                            onChange={e => setEditData({ ...editData, anamnesis: e.target.value })}
+                                            placeholder="Describa el motivo de consulta y antecedentes..."
+                                        />
+
+                                        <div style={styles.sectionHeader}>Examen Físico y Mediciones</div>
+                                        <div style={styles.vitalsRow}>
+                                            <div style={styles.vitalInput}>
+                                                <label>Peso (kg)</label>
+                                                <input type="text" value={editData.weight} onChange={e => setEditData({ ...editData, weight: e.target.value })} />
+                                            </div>
+                                            <div style={styles.vitalInput}>
+                                                <label>Talla (cm)</label>
+                                                <input type="text" value={editData.height} onChange={e => setEditData({ ...editData, height: e.target.value })} />
+                                            </div>
+                                            <div style={styles.vitalInput}>
+                                                <label>IMC</label>
+                                                <input type="text" value={editData.imc} onChange={e => setEditData({ ...editData, imc: e.target.value })} />
+                                            </div>
+                                        </div>
+                                        <textarea
+                                            style={styles.textArea}
+                                            rows={4}
+                                            value={editData.physical_exam}
+                                            onChange={e => setEditData({ ...editData, physical_exam: e.target.value })}
+                                            placeholder="Hallazgos en el examen físico..."
+                                        />
+
+                                        <div style={styles.sectionHeader}>
+                                            Diagnóstico
+                                            <button
+                                                onClick={() => handleAIExpand('diagnosis', 'diagnosis')}
+                                                style={styles.aiBtn}
+                                                disabled={aiLoading === 'diagnosis'}
+                                            >
+                                                {aiLoading === 'diagnosis' ? <Loader2 size={14} className="animate-spin" /> : <Sparkles size={14} />}
+                                                <span>Sugerir detalle médico</span>
+                                            </button>
+                                        </div>
+                                        <textarea
+                                            style={styles.textArea}
+                                            rows={2}
+                                            value={editData.diagnosis}
+                                            onChange={e => setEditData({ ...editData, diagnosis: e.target.value })}
+                                            placeholder="Diagnóstico clínico (CIE-10 si aplica)..."
+                                        />
+
+                                        <div style={styles.sectionHeader}>
+                                            Indicaciones y Tratamiento
+                                            <div style={{ display: 'flex', gap: '8px' }}>
+                                                <button
+                                                    onClick={() => {
+                                                        const med = prompt("¿Qué medicamento quieres calcular? (Ej: Paracetamol, Ibuprofeno)");
+                                                        if (med) handleAIExpand('indications', 'dose_calc', `${med}. Peso del paciente: ${editData.weight}kg`);
+                                                    }}
+                                                    style={{ ...styles.aiBtn, background: '#fef3c7', color: '#92400e' }}
+                                                    disabled={aiLoading === 'dose_calc' || !editData.weight}
+                                                >
+                                                    {aiLoading === 'dose_calc' ? <Loader2 size={12} className="animate-spin" /> : <TrendingUp size={12} />}
+                                                    <span>Calc. Dosis</span>
+                                                </button>
+                                                <button
+                                                    onClick={() => handleAIExpand('indications', 'indications')}
+                                                    style={{ ...styles.aiBtn, background: 'linear-gradient(135deg, #10b981, #3b82f6)', color: '#fff' }}
+                                                    disabled={aiLoading === 'indications'}
+                                                >
+                                                    {aiLoading === 'indications' ? <Loader2 size={14} className="animate-spin" /> : <Sparkles size={14} />}
+                                                    <span>Generar Receta Pro</span>
+                                                </button>
+                                            </div>
+                                        </div>
+                                        <textarea
+                                            style={styles.textArea}
+                                            rows={4}
+                                            value={editData.indications}
+                                            onChange={e => setEditData({ ...editData, indications: e.target.value })}
+                                            placeholder="Receta, próximos controles, derivaciones..."
+                                        />
+                                    </div>
+                                ) : (
+                                    <div style={styles.emptyState}>
+                                        <History size={48} color="#cbd5e1" />
+                                        <p>Seleccione una cita del historial para ver o editar la evolución clínica.</p>
+                                    </div>
                                 )}
                             </div>
                         </div>
                     )}
 
+                    {activeTab === 'growth' && (
+                        <div style={{ background: '#fff', borderRadius: '20px', padding: '25px', height: '100%' }}>
+                            <div style={{ marginBottom: '25px', borderBottom: '1px solid #f1f5f9', paddingBottom: '15px' }}>
+                                <h3 style={{ margin: 0, color: '#004975' }}>Curvas de Crecimiento OMS</h3>
+                                <p style={{ fontSize: '0.85rem', color: '#64748b' }}>Evolución histórica de peso y talla basada en sus controles.</p>
+                            </div>
+                            <div style={{ height: '350px', width: '100%' }}>
+                                <ResponsiveContainer width="100%" height="100%">
+                                    <LineChart
+                                        data={patientAppointments
+                                            .filter(a => a.weight || a.height)
+                                            .sort((a, b) => new Date(a.start) - new Date(b.start))
+                                            .map(a => ({
+                                                name: formatDateDisplay(a.start),
+                                                peso: parseFloat(a.weight) || 0,
+                                                talla: parseFloat(a.height) || 0
+                                            }))}
+                                        margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
+                                    >
+                                        <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
+                                        <XAxis dataKey="name" fontSize={11} stroke="#94a3b8" />
+                                        <YAxis yAxisId="left" orientation="left" stroke="#004975" />
+                                        <YAxis yAxisId="right" orientation="right" stroke="#10b981" />
+                                        <Tooltip />
+                                        <Legend />
+                                        <Line yAxisId="left" type="monotone" dataKey="peso" stroke="#004975" name="Peso (Kg)" />
+                                        <Line yAxisId="right" type="monotone" dataKey="talla" stroke="#10b981" name="Talla (Cm)" />
+                                    </LineChart>
+                                </ResponsiveContainer>
+                            </div>
+                        </div>
+                    )}
+
+                    {activeTab === 'documents' && (
+                        <div style={styles.docsLayout}>
+                            {isIssuingRecipe ? (
+                                <div className="bento-card animate-reveal" style={styles.recipeForm}>
+                                    <h3 style={{ margin: 0 }}>Emitir {newRecipe.type === 'recipe' ? 'Receta' : 'Certificado'}</h3>
+                                    <textarea
+                                        style={styles.textArea}
+                                        rows={12}
+                                        value={newRecipe.rp}
+                                        onChange={e => setNewRecipe({ ...newRecipe, rp: e.target.value })}
+                                        placeholder="Escriba el RP o el cuerpo del certificado aquí..."
+                                    />
+                                    <div style={styles.recipeFooter}>
+                                        <button style={styles.cancelBtn} onClick={() => setIsIssuingRecipe(false)}>Cancelar</button>
+                                        <button className="btn-primary" onClick={handleIssueRecipe}>Guardar Documento</button>
+                                    </div>
+                                </div>
+                            ) : (
+                                <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+                                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                        <h3 style={{ margin: 0 }}>Historial de Documentos</h3>
+                                        <button className="btn-primary" onClick={() => setIsIssuingRecipe(true)}>
+                                            <Plus size={18} />
+                                            <span>Nuevo Documento</span>
+                                        </button>
+                                    </div>
+                                    <div style={styles.docsGrid}>
+                                        {recipes.map(r => (
+                                            <div key={r.id} className="bento-card" style={styles.docCard}>
+                                                <div>
+                                                    <div style={{ fontWeight: '700' }}>{r.type === 'recipe' ? 'Receta' : 'Certificado'}</div>
+                                                    <div style={{ fontSize: '0.75rem', color: '#64748b' }}>{r.date}</div>
+                                                </div>
+                                                <div style={styles.docActions}>
+                                                    <button onClick={() => printRecipe(r)} style={styles.miniBtn}><Printer size={16} /></button>
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
+                        </div>
+                    )}
+
+                    {activeTab === 'files' && (
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+                            <div className="bento-card" style={{ padding: '25px', background: 'linear-gradient(to bottom right, #ffffff, #f0f9ff)' }}>
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '15px' }}>
+                                    <Sparkles size={24} color="#004975" />
+                                    <h3 style={{ margin: 0, color: '#004975' }}>Analista de Laboratorio IA</h3>
+                                </div>
+                                <p style={{ fontSize: '0.9rem', color: '#64748b', marginBottom: '15px' }}>
+                                    Pega los resultados del examen para que Gemini analice tendencias.
+                                </p>
+                                <textarea
+                                    style={styles.textArea}
+                                    rows={6}
+                                    value={labText}
+                                    onChange={(e) => setLabText(e.target.value)}
+                                    placeholder="Ej: Hemoglobina 10.5 g/dL..."
+                                />
+                                <button
+                                    onClick={async () => {
+                                        setAiLoading('lab_analysis');
+                                        try {
+                                            const res = await api.expandMedicalNote(labText, 'lab_analysis');
+                                            setLabAnalysis(res.expanded_text);
+                                        } catch (e) { alert("Error al analizar"); }
+                                        finally { setAiLoading(null); }
+                                    }}
+                                    className="btn-primary"
+                                    style={{ marginTop: '15px', width: '100%', justifyContent: 'center' }}
+                                    disabled={aiLoading === 'lab_analysis' || !labText}
+                                >
+                                    {aiLoading === 'lab_analysis' ? <Loader2 size={18} className="animate-spin" /> : <Sparkles size={18} />}
+                                    <span>Analizar Resultados</span>
+                                </button>
+                                {labAnalysis && (
+                                    <div style={{ marginTop: '20px', padding: '15px', background: '#fff', borderRadius: '12px', borderLeft: '4px solid #004975' }}>
+                                        <div style={{ fontSize: '0.95rem', whiteSpace: 'pre-wrap' }}>{labAnalysis}</div>
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+                    )}
                 </div>
             </div>
         </div>
@@ -531,53 +605,42 @@ const PatientFile = ({ patient, onClose }) => {
 };
 
 const styles = {
-    overlay: { position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(0,0,0,0.5)', zIndex: 100, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '40px' },
-
-    header: { padding: '30px 40px', background: '#fff', borderBottom: '1.5px solid #e2e8f0', display: 'flex', justifyContent: 'space-between', alignItems: 'center' },
-    patientInfo: { display: 'flex', gap: '20px', alignItems: 'center' },
-    bigAvatar: { width: '60px', height: '60px', borderRadius: '18px', background: 'var(--primary-gradient)', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.8rem', fontWeight: '900' },
-    patientName: { fontSize: '1.5rem', fontWeight: '900' },
-    patientSub: { fontSize: '0.9rem', color: '#64748b', fontWeight: '600' },
+    overlay: { position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(0,0,0,0.5)', zIndex: 2000, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px' },
+    modal: { background: '#fff', width: '900px', maxWidth: '95vw', height: '85vh', borderRadius: '24px', display: 'flex', flexDirection: 'column', overflow: 'hidden', boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)' },
+    header: { padding: '20px 30px', borderBottom: '1px solid #e2e8f0', display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: '#f8fafc' },
+    patientInfo: { display: 'flex', alignItems: 'center', gap: '15px' },
+    bigAvatar: { width: '50px', height: '50px', borderRadius: '25px', background: '#004975', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.5rem', fontWeight: 'bold' },
+    patientName: { margin: 0, fontSize: '1.4rem', color: '#1e293b', fontWeight: '800' },
+    patientSub: { margin: 0, fontSize: '0.85rem', color: '#64748b' },
     closeBtn: { border: 'none', background: 'none', fontSize: '1.5rem', cursor: 'pointer', color: '#94a3b8' },
-    tabNav: { display: 'flex', background: '#fff', padding: '0 40px', gap: '30px', borderBottom: '1px solid #e2e8f0' },
-    tab: { padding: '15px 0', background: 'none', border: 'none', fontWeight: '700', fontSize: '0.9rem', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '10px' },
-    content: { flex: 1, padding: '40px', overflowY: 'auto' },
-    summaryGrid: { display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '25px' },
-    infoCard: { padding: '25px' },
-    cardTitle: { fontSize: '1.1rem', fontWeight: '800', marginBottom: '20px' },
-    infoRow: { display: 'flex', justifyContent: 'space-between', marginBottom: '12px', fontSize: '0.95rem' },
-    list: { paddingLeft: '20px', lineHeight: '1.8', fontSize: '0.95rem' },
-    historyContainer: { display: 'flex', flexDirection: 'column', gap: '30px' },
-    historyAction: { textAlign: 'right' },
-    entryForm: { padding: '30px', background: '#fff', display: 'flex', flexDirection: 'column', gap: '20px' },
-    formGrid: { display: 'flex', flexDirection: 'column', gap: '15px' },
-    inputGroup: { display: 'flex', flexDirection: 'column', gap: '8px' },
-    row: { display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '15px' },
-    timeline: { position: 'relative', paddingLeft: '30px', borderLeft: '2px solid #e2e8f0', marginLeft: '10px' },
-    timelineEntry: { position: 'relative', marginBottom: '30px' },
-    timelineDot: { position: 'absolute', left: '-37px', top: '15px', width: '12px', height: '12px', borderRadius: '50%', background: 'var(--primary)', border: '3px solid #fff' },
-    timelineCard: { padding: '20px' },
-    entryHeader: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px', fontSize: '0.85rem' },
-    tag: { padding: '4px 10px', background: '#f1f5f9', borderRadius: '6px', fontWeight: '700' },
-    vitals: { marginTop: '15px', display: 'flex', gap: '20px', fontSize: '0.8rem', color: '#64748b', fontWeight: '700' },
-    recetaItem: { display: 'flex', gap: '10px' },
-    recetasList: { display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '25px' },
-    recetaCard: { padding: '20px' },
-    iconBtn: { padding: '8px', border: '1.5px solid #e2e8f0', borderRadius: '8px', background: '#fff', cursor: 'pointer' },
-    filesGrid: { display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '20px' },
-    fileCard: { padding: '20px', display: 'flex', gap: '15px', alignItems: 'center' },
-    debtBanner: { padding: '25px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '30px', background: '#fef2f2', borderRadius: '20px', flexWrap: 'wrap', gap: '20px', border: '1px solid #fee2e2' },
-    empty: { padding: '60px', textAlign: 'center', color: '#94a3b8', fontStyle: 'italic', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '15px' },
-    modalInput: { padding: '12px 16px', borderRadius: '12px', border: '1.5px solid #e2e8f0', fontSize: '0.9rem', outline: 'none', transition: 'all 0.2s', width: '100%' },
-    textArea: { padding: '15px', borderRadius: '14px', border: '1.5px solid #e2e8f0', fontSize: '0.95rem', outline: 'none', background: '#fff', width: '100%', resize: 'none', transition: 'border-color 0.2s' },
-    sectionHeader: { display: 'flex', alignItems: 'center', gap: '10px', fontSize: '0.95rem', fontWeight: '700', color: 'var(--primary)', marginBottom: '12px', marginTop: '10px' },
-    vitalsFormGrid: { display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(100px, 1fr))', gap: '15px', marginBottom: '15px' },
-    entrySection: { marginBottom: '25px', padding: '5px' },
-    sectionSubHeader: { display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.8rem', fontWeight: '800', color: '#94a3b8', textTransform: 'uppercase', marginBottom: '10px', letterSpacing: '0.5px' },
-    sectionContent: { padding: '20px', background: '#fff', borderRadius: '16px', fontSize: '0.95rem', border: '1.5px solid #f1f5f9', boxShadow: '0 2px 4px rgba(0,0,0,0.02)' },
-    vitalsRow: { display: 'flex', flexWrap: 'wrap', gap: '25px', fontSize: '0.9rem', color: '#475569', marginBottom: '10px', paddingBottom: '10px', borderBottom: '1px solid #f1f5f9' },
-    modalOverlay: { position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(30, 41, 59, 0.7)', backdropFilter: 'blur(4px)', zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px' },
-    modal: { background: '#f8fafc', width: '100%', maxWidth: '1100px', maxHeight: '95vh', borderRadius: '28px', display: 'flex', flexDirection: 'column', overflow: 'hidden', boxShadow: '0 25px 50px -12px rgba(0,0,0,0.25)' }
+    iconBtn: { padding: '8px', borderRadius: '10px', border: '1.5px solid #e2e8f0', background: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' },
+    tabNav: { display: 'flex', gap: '30px', padding: '0 30px', borderBottom: '1px solid #e2e8f0', background: '#fff' },
+    tab: { padding: '15px 5px', border: 'none', background: 'none', fontSize: '0.9rem', fontWeight: '700', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px', transition: 'all 0.2s' },
+    content: { flex: 1, padding: '30px', overflowY: 'auto', background: '#f1f5f9' },
+    summaryGrid: { display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '20px' },
+    infoCard: { background: '#fff', padding: '20px', borderRadius: '16px', boxShadow: '0 4px 6px -1px rgba(0,0,0,0.1)' },
+    cardTitle: { marginTop: 0, marginBottom: '15px', fontSize: '1rem', color: '#1e293b', fontWeight: '700' },
+    infoRow: { display: 'flex', justifyContent: 'space-between', padding: '8px 0', borderBottom: '1px solid #f1f5f9', fontSize: '0.9rem' },
+    clinicalLayout: { display: 'grid', gridTemplateColumns: '250px 1fr', gap: '25px', height: '100%' },
+    clinicalSidebar: { background: '#fff', borderRadius: '16px', padding: '20px', display: 'flex', flexDirection: 'column', gap: '10px', border: '1px solid #e2e8f0' },
+    apptSelector: { padding: '12px', borderRadius: '12px', border: '1.5px solid #e2e8f0', textAlign: 'left', cursor: 'pointer', transition: 'all 0.2s' },
+    clinicalMain: { background: '#fff', borderRadius: '16px', padding: '25px', border: '1px solid #e2e8f0', overflowY: 'auto' },
+    evolutionForm: { display: 'flex', flexDirection: 'column', gap: '15px' },
+    formHeader: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' },
+    sectionHeader: { fontSize: '0.85rem', fontWeight: '800', color: '#004975', textTransform: 'uppercase', letterSpacing: '0.05em', marginTop: '10px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' },
+    aiBtn: { padding: '4px 10px', borderRadius: '20px', border: 'none', background: '#f0f9ff', color: '#0369a1', fontSize: '0.7rem', fontWeight: 'bold', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px', transition: 'all 0.3s ease', boxShadow: '0 2px 4px rgba(0,0,0,0.05)' },
+    textArea: { width: '100%', padding: '12px', borderRadius: '12px', border: '1.5px solid #e2e8f0', fontSize: '0.95rem', outline: 'none', resize: 'vertical', fontFamily: 'inherit' },
+    vitalsRow: { display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '15px' },
+    vitalInput: { display: 'flex', flexDirection: 'column', gap: '5px' },
+    emptyState: { height: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', color: '#64748b', gap: '15px', textAlign: 'center', minHeight: '300px' },
+    docsLayout: { height: '100%', display: 'flex', flexDirection: 'column' },
+    recipeForm: { background: '#fff', padding: '25px', borderRadius: '20px', display: 'flex', flexDirection: 'column', gap: '20px' },
+    recipeFooter: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingTop: '15px', borderTop: '1px solid #f1f5f9' },
+    cancelBtn: { border: 'none', background: 'none', color: '#ef4444', fontWeight: '700', cursor: 'pointer' },
+    docsGrid: { display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '15px' },
+    docCard: { padding: '15px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: '#fff', borderRadius: '12px', border: '1px solid #e2e8f0' },
+    docActions: { display: 'flex', gap: '5px' },
+    miniBtn: { width: '32px', height: '32px', borderRadius: '8px', border: '1.5px solid #f1f5f9', background: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: '#64748b' }
 };
 
 export default PatientFile;

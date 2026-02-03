@@ -6,26 +6,29 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-# Default to sqlite for local dev if no env var, but prepared for Postgres
 # Database Configuration
-# Priority: Env Var (Prod) > SQLite (Dev) -> Supabase Hardcoded Fallback (Prod Fix)
-
-SUPABASE_URL = "postgresql://postgres.wnzpltxackalafxrbeix:FLORENCIA2010JULIETA2022@aws-0-us-west-2.pooler.supabase.com:6543/postgres"
+# Priority:
+# 1. DATABASE_URL (Environment Variable - Production)
+# 2. SQLite Local (Fallback - Development)
 
 env_db_url = os.getenv("DATABASE_URL")
 
 if env_db_url:
-    # Fix for Heroku/Supabase style strings
+    # Fix for Heroku/Supabase style strings (postgres:// -> postgresql://)
     if env_db_url.startswith("postgres://"):
         DATABASE_URL = env_db_url.replace("postgres://", "postgresql://", 1)
     else:
         DATABASE_URL = env_db_url
 else:
-    # Fallback directly to Supabase if no env var is set (Fixing Railway SQLite issue)
-    DATABASE_URL = SUPABASE_URL
+    # Local Development Fallback
+    print("⚠️ WARNING: No DATABASE_URL set. Using local SQLite.")
+    DATABASE_URL = "sqlite:///./sql_app.db"
 
 engine = create_engine(
-    DATABASE_URL, connect_args={"check_same_thread": False} if "sqlite" in DATABASE_URL else {}
+    DATABASE_URL, 
+    connect_args={"check_same_thread": False} if "sqlite" in DATABASE_URL else {},
+    pool_pre_ping=True,
+    pool_recycle=3600
 )
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 

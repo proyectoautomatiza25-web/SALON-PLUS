@@ -4,8 +4,8 @@ import { Mail, Lock, User, Briefcase, ChevronRight, Layout } from 'lucide-react'
 const Login = ({ onLogin }) => {
     const [isLogin, setIsLogin] = useState(true);
     const [credentials, setCredentials] = useState({
-        email: 'admin@cmdelvalle.cl',
-        password: 'admin'
+        email: '',
+        password: ''
     });
 
     const handleSubmit = (e) => {

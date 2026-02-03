@@ -207,17 +207,27 @@ def get_public_salon_info(slug: str, db: Session = Depends(database.get_db)):
         "services": services
     }
 
-@router.post("/public/{slug}/book")
-def public_book(slug: str, booking: schemas.PublicBookingCreate, db: Session = Depends(database.get_db)):
-    user = db.query(models.User).filter(models.User.booking_slug == slug).first()
+@router.post("/appointments/public-simple")
+def public_book_simple(booking: schemas.PublicBookingCreate, db: Session = Depends(database.get_db)):
+    # 1. Buscar al usuario dueño (Francis o el primer usuario admin)
+    user = db.query(models.User).filter(models.User.email == "admin@agendaplus.cl").first()
     if not user:
-        raise HTTPException(status_code=404, detail="Salon not found")
-    
-    # 1. Look for client or create it
+        user = db.query(models.User).first()
+        
+    if not user:
+        raise HTTPException(status_code=404, detail="System not configured (No owner)")
+
+    # 2. Buscar o crear cliente (Paciente)
     client = db.query(models.SalonClient).filter(
         models.SalonClient.owner_id == user.id, 
-        models.SalonClient.phone == booking.client_phone
+        models.SalonClient.rut == booking.client_rut
     ).first()
+
+    if not client and booking.client_email:
+        client = db.query(models.SalonClient).filter(
+            models.SalonClient.owner_id == user.id,
+            models.SalonClient.email == booking.client_email
+        ).first()
     
     if not client:
         client = models.SalonClient(
@@ -225,32 +235,144 @@ def public_book(slug: str, booking: schemas.PublicBookingCreate, db: Session = D
             name=booking.client_name,
             phone=booking.client_phone,
             email=booking.client_email,
+            rut=booking.client_rut,
             notes="Creado vía reserva online"
         )
         db.add(client)
         db.commit()
         db.refresh(client)
         
-    # 2. Get service info for duration and price
-    service = db.query(models.Service).filter(models.Service.id == booking.service_id).first()
-    if not service:
-        raise HTTPException(status_code=404, detail="Service not found")
-        
-    end_time = booking.start_time + timedelta(minutes=service.duration)
+    # 3. Datos del servicio (Usamos un default 'Consulta General' si no viene ID)
+    service = db.query(models.Service).filter(models.Service.owner_id == user.id).first()
+    duration = 30
+    price = 0
+    service_id = None
+    title = "Consulta General"
+
+    if service:
+        duration = service.duration
+        price = service.price
+        service_id = service.id
+        title = service.name
+
+    end_time = booking.start_time + timedelta(minutes=duration)
     
-    # 3. Create appointment
+    # 4. Asegurar Profesional (Stylist)
+    stylist = db.query(models.Stylist).filter(models.Stylist.owner_id == user.id).first()
+    if not stylist:
+        stylist = models.Stylist(
+            owner_id=user.id,
+            name="Dra. Francis Zabaleta",
+            specialty="Medicina General",
+            color="#004975"
+        )
+        db.add(stylist)
+        db.commit()
+        db.refresh(stylist)
+
+    # 5. Crear la Cita
     db_appt = models.Appointment(
         owner_id=user.id,
-        stylist_id=booking.stylist_id,
+        stylist_id=stylist.id,
         client_id=client.id,
-        service_id=service.id,
-        title=service.name,
+        service_id=service_id,
+        title=title + " (Online)",
         start_time=booking.start_time,
         end_time=end_time,
-        status="pending",
-        notes=booking.notes,
-        price=service.price
+        status="confirmed",
+        notes=f"Reserva Online. Motivo: {booking.notes or 'General'}",
+        price=price
     )
     db.add(db_appt)
     db.commit()
-    return {"message": "Booking successful", "appointment_id": db_appt.id}
+    db.refresh(db_appt)
+    
+    return {"message": "Reserva Exitosa", "id": db_appt.id}
+@router.post("/appointments/public-simple")
+def public_book_simple(booking: schemas.PublicBookingCreate, db: Session = Depends(database.get_db)):
+    # 1. Buscar al usuario dueño (Francis o el primer usuario admin)
+    # En producción esto debería ser dinámico, pero para tu caso "monoclinica" usamos el primero
+    user = db.query(models.User).filter(models.User.email == "admin@agendaplus.cl").first()
+    if not user:
+        user = db.query(models.User).first() # Fallback al primero que encuentre
+        
+    if not user:
+        raise HTTPException(status_code=404, detail="System not configured (No owner)")
+
+    # 2. Buscar o crear cliente (Paciente)
+    client = db.query(models.SalonClient).filter(
+        models.SalonClient.owner_id == user.id, 
+        models.SalonClient.rut == booking.client_rut # Usar RUT como identificador principal si viene
+    ).first()
+
+    # Si no existe por RUT, buscar por email como fallback
+    if not client and booking.client_email:
+        client = db.query(models.SalonClient).filter(
+            models.SalonClient.owner_id == user.id,
+            models.SalonClient.email == booking.client_email
+        ).first()
+    
+    if not client:
+        client = models.SalonClient(
+            owner_id=user.id,
+            name=booking.client_name,
+            phone=booking.client_phone,
+            email=booking.client_email,
+            rut=booking.client_rut, # Asegúrate de que tu modelo tenga RUT
+            notes="Creado vía reserva online"
+        )
+        db.add(client)
+        db.commit()
+        db.refresh(client)
+        
+    # 3. Datos del servicio (Usamos un default 'Consulta General' si no viene ID)
+    # Buscamos un servicio cualquiera para tener referencia de precio/duración
+    service = db.query(models.Service).filter(models.Service.owner_id == user.id).first()
+    duration = 30
+    price = 0
+    service_id = None
+    title = "Consulta General"
+
+    if service:
+        duration = service.duration
+        price = service.price
+        service_id = service.id
+        title = service.name
+
+    # Calcular hora fin
+    # booking.start_time viene como datetime
+    end_time = booking.start_time + timedelta(minutes=duration)
+    
+    # 4. Asegurar Profesional (Stylist)
+    # Ignoramos el ID que viene del front (que es mock) y buscamos uno real
+    stylist = db.query(models.Stylist).filter(models.Stylist.owner_id == user.id).first()
+    if not stylist:
+        # Si no hay profesionales creados, creamos uno por defecto
+        stylist = models.Stylist(
+            owner_id=user.id,
+            name="Dra. Francis Zabaleta",
+            specialty="Medicina General",
+            color="#004975"
+        )
+        db.add(stylist)
+        db.commit()
+        db.refresh(stylist)
+
+    # 5. Crear la Cita
+    db_appt = models.Appointment(
+        owner_id=user.id,
+        stylist_id=stylist.id, # Ahora sí usamos un ID válido
+        client_id=client.id,
+        service_id=service_id,
+        title=title + " (Online)",
+        start_time=booking.start_time,
+        end_time=end_time,
+        status="confirmed",
+        notes=f"Reserva Online. Motivo: {booking.notes or 'General'}",
+        price=price
+    )
+    db.add(db_appt)
+    db.commit()
+    db.refresh(db_appt)
+    
+    return {"message": "Reserva Exitosa", "id": db_appt.id}

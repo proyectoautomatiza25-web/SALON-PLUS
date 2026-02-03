@@ -34,15 +34,15 @@ const Professionals = () => {
             </header>
 
             <div style={styles.grid}>
-                {professionals.map(prof => (
-                    <div key={prof.id} className="bento-card" style={styles.profCard}>
-                        <div style={{ ...styles.colorBar, background: prof.color }} />
+                {(professionals || []).map(prof => (
+                    <div key={prof?.id} className="bento-card" style={styles.profCard}>
+                        <div style={{ ...styles.colorBar, background: prof?.color || '#004975' }} />
                         <div style={styles.cardContent}>
                             <div style={styles.avatarRow}>
-                                <div style={styles.avatar}>{prof.name.charAt(0)}</div>
+                                <div style={styles.avatar}>{prof?.name?.charAt(0) || '?'}</div>
                                 <div style={styles.info}>
-                                    <h3 style={styles.name}>{prof.name}</h3>
-                                    <span style={styles.role}>{prof.role}</span>
+                                    <h3 style={styles.name}>{prof?.name || 'Profesional'}</h3>
+                                    <span style={styles.role}>{prof?.role || 'Médico'}</span>
                                 </div>
                                 <button style={styles.editBtn} onClick={() => setSelectedProf(prof)}>
                                     <Settings size={18} color="#94a3b8" />
@@ -52,17 +52,17 @@ const Professionals = () => {
                             <div style={styles.statsRow}>
                                 <div style={styles.stat}>
                                     <span style={styles.statLabel}>Comisión</span>
-                                    <span style={styles.statValue}>{prof.commission}%</span>
+                                    <span style={styles.statValue}>{prof?.commission || 0}%</span>
                                 </div>
                                 <div style={styles.stat}>
                                     <span style={styles.statLabel}>Valor Consulta</span>
-                                    <span style={styles.statValue}>${prof.consultationPrice.toLocaleString()}</span>
+                                    <span style={styles.statValue}>${(prof?.consultationPrice || 0).toLocaleString()}</span>
                                 </div>
                             </div>
 
                             <div style={styles.contactRow}>
-                                <div style={styles.contactItem}><Mail size={14} /> {prof.email}</div>
-                                <div style={styles.contactItem}><Phone size={14} /> {prof.phone}</div>
+                                <div style={styles.contactItem}><Mail size={14} /> {prof?.email || 'N/A'}</div>
+                                <div style={styles.contactItem}><Phone size={14} /> {prof?.phone || 'N/A'}</div>
                             </div>
 
                             <div style={styles.schedulePreview}>
@@ -73,8 +73,8 @@ const Professionals = () => {
                                             key={day.id}
                                             style={{
                                                 ...styles.dayBadge,
-                                                background: prof.schedule[day.id]?.enabled ? 'var(--primary-gradient)' : '#f1f5f9',
-                                                color: prof.schedule[day.id]?.enabled ? '#fff' : '#94a3b8'
+                                                background: prof?.schedule?.[day.id]?.enabled ? 'var(--primary-gradient)' : '#f1f5f9',
+                                                color: prof?.schedule?.[day.id]?.enabled ? '#fff' : '#94a3b8'
                                             }}
                                         >
                                             {day.label.charAt(0)}

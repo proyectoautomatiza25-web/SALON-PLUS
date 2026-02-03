@@ -83,8 +83,9 @@ function AdminApp() {
         shadow-xl text-white flex-shrink-0
       `}>
         {/* Logo Icon Area */}
-        <div className="h-16 flex items-center justify-center border-b border-gray-800">
+        <div className="h-16 flex flex-col items-center justify-center border-b border-gray-800">
           <div className="text-2xl font-serif font-bold tracking-tighter">S</div>
+          <div className="text-[8px] text-blue-400 font-bold tracking-widest uppercase">v2.4.1</div>
         </div>
 
         {/* Navigation */}
